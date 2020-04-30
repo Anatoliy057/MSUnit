@@ -7,7 +7,7 @@ if (!import('unit_run')) {
   	    'executor': closure() {
             @size = array_size(@arguments[2])
             if (@size == 0) {
-                export('unit_arg', '-start all')
+                export('unit_arg', @UNIT_COMMAND_PREFIX.@UNIT_COMMAND_START.' all')
             } else {
                 @builder = res_create_resource('STRING_BUILDER')
                 for(@i = 0, @i < @size, @i++) {
@@ -26,7 +26,8 @@ if (!import('unit_run')) {
         console('CHUnit: [WARNING] file '.@UNIT_PATH_SETTING.' of setting doesn\'t exist')
         console('CHUnit: Sure that path is correct.')
     }
-} else {
+    die()
+}
 
 include('commands.ms')
 include('runner.ms')
@@ -68,4 +69,3 @@ include('runner.ms')
 }
 
 execute(import('unit_arg'), @__unit_start_main)
-}
