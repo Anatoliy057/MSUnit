@@ -2,4 +2,4 @@
 test/
 
 # Settings
-setting.properties
+tests.properties

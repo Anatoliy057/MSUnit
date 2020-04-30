@@ -1,4 +1,5 @@
 if (!import('unit_run')) {
+    include('constants.ms')
     register_command('unit', array(
   	    'description': 'Unit module control',
   	    'usage': '/unit',
@@ -18,37 +19,45 @@ if (!import('unit_run')) {
             include('main.ms')
   	    }
     ));
+    if (import('module_log')) {
+        console('CHUnit ready to start')
+    }
+    if (!file_exists(@UNIT_PATH_SETTING)) {
+        console('CHUnit: [WARNING] file '.@UNIT_PATH_SETTING.' of setting doesn\'t exist')
+        console('CHUnit: Sure that path is correct.')
+    }
 } else {
 
-include('constants.ms')
 include('commands.ms')
+include('runner.ms')
 
 @__unit_start_main = closure(string @arg) {
-    @args = _unit_split_arg(@arg, @UNIT_DEFAULT_COMMAND_PREFIX)
+    @args = _util_split_arg(@arg, @UNIT_COMMAND_PREFIX)
 
     @commander = _util_commander_init_self()
 
     _util_commander_register(
         @commander,
-        @UNIT_DEFAULT_COMMAND_INIT,
+        @UNIT_COMMAND_INIT,
         closure() {
-            _package_unit_create_setting(@UNIT_DEFAULT_PATH_SETTING, @UNIT_DEFAULT_PATH_TEST)
+            _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST)
         }
     )
 
     _util_commander_register(
         @commander,
-        @UNIT_DEFAULT_COMMAND_UPDATE,
+        @UNIT_COMMAND_UPDATE,
         closure() {
-            _package_unit_update_setting(@UNIT_DEFAULT_PATH_SETTING, @UNIT_DEFAULT_PATH_TEST)
+            _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST)
         }
 
     )
+
     _util_commander_register(
         @commander,
-        @UNIT_DEFAULT_COMMAND_START,
+        @UNIT_COMMAND_START,
         closure() {
-            _package_unit_start_test(@UNIT_DEFAULT_PATH_SETTING, @UNIT_DEFAULT_PATH_TEST)
+            _package_unit_start_test(@UNIT_PATH_SETTING, @UNIT_SETTING, @arguments[0], @UNIT_CONSOLE_OUT, @UNIT_FILE_OUT)
         }
     )
 
