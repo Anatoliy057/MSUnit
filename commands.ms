@@ -1,5 +1,5 @@
-proc _package_unit_create_setting(string @path_to_set_groups, string @path_to_test) {
-    console('CHUnit: creating '.@path_to_set_groups.' ...')
+proc _package_unit_create_setting(string @path_to_groups, string @path_to_test) {
+    console('CHUnit: creating '.@path_to_groups.' ...')
     @len_pref = length(get_absolute_path(@path_to_test)) - length(@path_to_test)
     @files = array_sort(_util_get_all_scripts(get_absolute_path(@path_to_test)), 'STRING')
     @prop = _util_properties_init_self()
@@ -10,44 +10,38 @@ proc _package_unit_create_setting(string @path_to_set_groups, string @path_to_te
             ""
         )
     }
-    if (!file_exists(@path_to_set_groups), create_file(@path_to_set_groups))
-    write_file(@path_to_set_groups, _util_properties_to_string(@prop), 'OVERWRITE')
-    console('CHUnit: '.@path_to_set_groups.' created')
+    if (!file_exists(@path_to_groups), create_file(@path_to_groups))
+    write_file(@path_to_groups, _util_properties_to_string(@prop), 'OVERWRITE')
+    console('CHUnit: '.@path_to_groups.' created')
 }
 
-proc _package_unit_update_setting(string @path_to_set_groups, string @path_to_test) {
-    console('CHUnit: updating '.@path_to_set_groups.'...')
-    if (!file_exists(@path_to_set_groups)) {
-        console('CHUnit: [ERROR] file '.@path_to_set_groups.' of setting doesn\'t exist')
-        console('CHUnit: Sure that path is correct.')
-        return()
+proc _package_unit_update_setting(string @path_to_groups, string @path_to_test) {
+    console('CHUnit: updating '.@path_to_groups.'...')
+    if (!file_exists(@path_to_groups)) {
+        console(_package_unit_get_msg('setting_groups_not_found'))
     }
     @prop = _util_properties_init_self()
-    _util_properties_parse_string(@prop, read(@path_to_set_groups))
+    _util_properties_parse_string(@prop, read(@path_to_groups))
     @len_pref = length(get_absolute_path(@path_to_test)) - length(@path_to_test)
     @files = array_sort(_util_get_all_scripts(get_absolute_path(@path_to_test)), 'STRING')
     for (@i = 0, @i < array_size(@files), @i++) {
         @file = replace(replace(@files[@i][cslice(@len_pref, -1)], '\\', '.'), '.ms', '')
         if (!_util_properties_contains(@prop, @file), _util_properties_push(@prop, @file, ""))
     }
-    write_file(@path_to_set_groups, _util_properties_to_string(@prop), 'OVERWRITE')
-    console('CHUnit: '.@path_to_set_groups.' updated')
+    write_file(@path_to_groups, _util_properties_to_string(@prop), 'OVERWRITE')
+    console('CHUnit: '.@path_to_groups.' updated')
 }
 
-proc _package_unit_start_test(@path_to_set_groups, @setting, @groups) {
+proc _package_unit_start_test(@path_to_groups, @setting, @groups) {
     console('CHUnit: starting tests...')
     @prop = _util_properties_init_self()
     if (array_size(@arguments) < 4) {
-        console('CHUnit: [ERROR] no out?')
-        console('CHUnit: finish')
-        return()
+        console(_package_unit_get_msg('setting_out_not_found'))
     }
-    if (!file_exists(@path_to_set_groups)) {
-        console('CHUnit: [ERROR] properties group don\'t found')
-        console('CHUnit: finish')
-        return()
+    if (!file_exists(@path_to_groups)) {
+        console(_package_unit_get_msg('setting_groups_not_found'), @path_to_groups)
     }
-    _util_properties_parse_string(@prop, read(@path_to_set_groups))
+    _util_properties_parse_string(@prop, read(@path_to_groups))
     @tests = array()
 
     if (array_contains(@groups, 'all')) {

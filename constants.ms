@@ -1,14 +1,15 @@
 @UNIT_PATH_SETTING = "tests.properties"
 @UNIT_PATH_TEST = "test"
+@UNIT_PATH_MSG = 'message.json'
 
 @UNIT_COMMAND_PREFIX = "-"
 @UNIT_COMMAND_INIT = 'init'
-@UNIT_COMMAND_START = 'start'
+@UNIT_COMMAND_START = 'run'
 @UNIT_COMMAND_UPDATE = 'update'
 
 @UNIT_SETTING = array(
-    'assert_timeout' : 30,
-    'proc_timeout' : 120,
+    'assert_timeout' : 15,
+    'proc_timeout' : 30,
     'number_threads' : 4,
     'pref_test_proc' : "_unit_test_",
     'pref_before_proc' : "_unit_before_all",

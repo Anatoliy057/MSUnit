@@ -1,5 +1,6 @@
 if (!import('unit_run')) {
     include('constants.ms')
+    include('statics.ms')
     register_command('unit', array(
   	    'description': 'Unit module control',
   	    'usage': '/unit',
@@ -23,12 +24,9 @@ if (!import('unit_run')) {
         console('CHUnit ready to start')
     }
     if (!file_exists(@UNIT_PATH_SETTING)) {
-        console('CHUnit: [WARNING] file '.@UNIT_PATH_SETTING.' of setting doesn\'t exist')
-        console('CHUnit: Sure that path is correct.')
+        console(_package_unit_get_msg('setting_groups_not_found'), @UNIT_PATH_SETTING)
     }
-    die()
-}
-
+} else {
 include('commands.ms')
 include('runner.ms')
 
@@ -69,3 +67,5 @@ include('runner.ms')
 }
 
 execute(import('unit_arg'), @__unit_start_main)
+
+}
