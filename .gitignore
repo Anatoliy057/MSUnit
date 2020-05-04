@@ -3,3 +3,6 @@ test/
 
 # Settings
 tests.properties
+
+# Folder logs
+logs/*

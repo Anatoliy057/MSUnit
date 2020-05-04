@@ -21,6 +21,8 @@ proc _package_unit_do_tests(@tests, @setting, @out) {
         _util_task_ex_add(@task_ex, @task)
     }
     _util_task_ex_start(@task_ex)
+    sleep(0.5)
+    console(dump_tracked_threads())
     while(_util_task_ex_complited(@task_ex) != array_size(@tasks)) {}
     _util_task_ex_stop(@task_ex)
     _private_unit_log_result(@result, @out)
@@ -74,19 +76,23 @@ proc _private_unit_init_model(@map, @setting) {
 proc _private_unit_init_tasks(@model, @setting, @result) {
     @tasks = array()
     foreach(@script_name: @val in @model) {
-        # @script_name is name script
+        # @script_name is name of script
         # @val is info of test
         @result[@script_name] = array()
         @runnable = closure() {
-            @lymda_before = @val['procs']['before_all'][0]
-            @lymda_each = @val['procs']['before_each'][0]
+            @lymda_before
+            @lymda_each
             @tests = @val['procs']['tests']
         
-            if (@lymda_before == null) {
-                @lymda_before = closure() {return('Doesn\'t init')}
+            if (@val['procs']['before_all'] == null || array_size(@val['procs']['before_all']) == 0) {
+                @lymda_before = '_private_unit_undef_proc'
+            } else {
+                @lymda_before = @val['procs']['before_all'][0]
             }
-            if (@lymda_each == null) {
-                @lymda_each = closure() {return('Doesn\'t init')}
+            if (@val['procs']['before_each'] == null || array_size(@val['procs']['before_each']) == 0) {
+                @lymda_each = '_private_unit_undef_proc'
+            } else {
+                @lymda_each = @val['procs']['before_each'][0]
             }
 
             @before_all = call_proc(@lymda_before)
@@ -97,9 +103,9 @@ proc _private_unit_init_tasks(@model, @setting, @result) {
                 @result[@script_name][@proc_test] = array()
                 @res = @result[@script_name][@proc_test]
                 @res['successful'] = true
-                @res['log'] = array()
                 @res['assert_timeout'] = @setting['assert_timeout']
                 @res['proc_timeout'] = @setting['proc_timeout']
+                @res['user_log'] = res_create_resource('STRING_BUILDER')
 
                 @name_thread = @script_name.':'.@proc_test
                 x_new_tracked_thread(@name_thread, closure() {
@@ -108,15 +114,15 @@ proc _private_unit_init_tasks(@model, @setting, @result) {
                         call_proc(@proc_test, @before_all, @before_each)
                     } catch(Exception @e) {
                         @res['successful'] = false
-                        console(@e)
-                        //todo log
+                        @res['log'] = _package_unit_log_unex_throw(@e)
                     } finally {
                         @res['time'] += nano_time()
+                        @res['time'] /= 1000000000
                     }
                 })
-                _package_unit_set_syn_o(@script_name)
+                @motitor = _package_unit_set_syn_o(@script_name)
                 @id_interval = _util_interval(1, 0, closure() {
-                    synchronized(_package_unit_get_syn_timer(@script_name)) {
+                    synchronized(@motitor) {
                         @res['assert_timeout'] -= 1
                         @res['proc_timeout'] -= 1
                     }
@@ -124,12 +130,14 @@ proc _private_unit_init_tasks(@model, @setting, @result) {
                 while (tracked_thread_is_alive(@name_thread)) {
                     if (@res['assert_timeout'] <= 0 && tracked_thread_is_alive(@name_thread)) {
                         x_stop_tracked_thread(@name_thread)
-                        //todo log
+                        @res['successful'] = false
+                        @res['log'] = _package_unit_log_assert_timeout()
                         break()
                     }
                     if (@res['proc_timeout'] <= 0  && tracked_thread_is_alive(@name_thread)) {
                         x_stop_tracked_thread(@name_thread)
-                        //todo log
+                        @res['successful'] = false
+                        @res['log'] = _package_unit_log_proc_timeout()
                         break()
                     }
                 }
@@ -141,8 +149,44 @@ proc _private_unit_init_tasks(@model, @setting, @result) {
     return(@tasks)
 }
 
-proc _private_unit_log_result(@result, @out) {
-    foreach(@key: @value in @result) {
-        console(@result)
+proc _private_unit_log_result(@result, @outs) {
+    foreach(@out in @outs) {
+        if (!@out['enable'], continue())
+        @builder = res_create_resource('STRING_BUILDER')
+        string_append(@builder, '[TIME] 'simple_date('yyyy.MM.dd G \'at\' HH:mm:ss z'))
+        string_append(@builder, '\n')
+        if (@out['short'] == true) {
+            foreach(@script: @tests in @result) {
+                string_append(@builder, 'Script: ')
+                string_append(@builder, @script)
+                string_append(@builder, '\n')
+                foreach(@test: @info in @tests) {
+                    string_append(@builder, '\tTest: ')
+                    string_append(@builder, @test)
+                    string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
+                }
+            }
+        } else {
+            foreach(@script: @tests in @result) {
+                string_append(@builder, 'Script: ')
+                string_append(@builder, @script)
+                string_append(@builder, '\n')
+                foreach(@test: @info in @tests) {
+                    string_append(@builder, '\tTest: ')
+                    string_append(@builder, @test)
+                    string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
+                    if (!@info['successful']) {
+                        string_append(@builder, @info['log'])
+                        string_append(@builder, '\n')
+                    }
+                    string_append(@builder, string(@info['user_log']))     
+                }
+            }
+        }
+        execute(string(@builder), @out['write'])
     }
+}
+
+proc _private_unit_undef_proc() {
+    return('Doesn\'t init')
 }

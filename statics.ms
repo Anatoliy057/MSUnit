@@ -13,11 +13,20 @@ export('__unit_synchron', array())
 export('__unit_log', array())
 
 proc _package_unit_get_msg(@key) {
-    if (array_size(@arguments) == 0) {
+    @msg = import('__unit_msg')
+    if (array_size(@arguments) == 1) {
         return(@msg['prefix'].@msg[@key])
     } else {
-        @msg = import('__unit_msg')
         return(sprintf(@msg['prefix'].@msg[@key], @arguments[1..]))
+    }
+}
+
+proc _package_unit_get_clear_msg(@key) {
+    @msg = import('__unit_msg')
+    if (array_size(@arguments) == 1) {
+        return(@msg[@key])
+    } else {
+        return(sprintf(@msg[@key], @arguments[1..]))
     }
 }
 
@@ -26,14 +35,20 @@ proc _package_unit_get_log() {
 }
 
 proc _package_unit_get_cur_log() {
-    @id = split(':', _util_get_cur_thread())
+    @id = _package_unit_get_id_thread()
     return(_package_unit_get_log()[@id[0]][@id[1]])
 }
 
-proc _package_unit_get_syn_timer(@script) {
-    return(import('__unit_synchron')[@script])
+proc _package_unit_get_id_thread() {
+    return(split(':', _util_get_cur_thread()))
+}
+
+proc _package_unit_get_syn_o(@key) {
+    return(import('__unit_synchron')[@key])
 }
 
 proc _package_unit_set_syn_o(string @o) {
-    import('__unit_synchron')[@o] = '__unit_synchron_'.@o
+    @monitor =  '__unit_synchron_'.@o
+    import('__unit_synchron')[@o] = @monitor
+    return(@monitor)
 }

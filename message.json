@@ -14,11 +14,15 @@
     "procs_test_not_found" :
     "[WARNING] not found tests '%s' in script: '%s'. Ignored this script",
     "cause_timeout_assert" :
-    "time passed waiting for the call assert* in proc: %s",
+    "Cause: time passed waiting for the call assert*",
     "cause_timeout_proc" :
-    "time passed waiting for finis proc: %s",
-    "cause_failed_assert" :
-    "assert type %s failed",
+    "Cause: time passed waiting for finish procedure",
     "cause_unexpected_throw" :
-    "Unexpected throw exception: %s"
+    "Cause: unexpected throw exception: %s",
+    "template_cause_failed_assert" :
+    "Cause: assert type %s failed",
+    "template_diff":
+    "Difference:\nExpect: %s\nActually: %s",
+    "template_result":
+    "Received: %s"
 }

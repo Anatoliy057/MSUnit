@@ -1,4 +1,4 @@
-if (!import('unit_run')) {
+if (!import('__unit_run')) {
     include('constants.ms')
     include('statics.ms')
     register_command('unit', array(
@@ -6,17 +6,12 @@ if (!import('unit_run')) {
   	    'usage': '/unit',
   	    'aliases':array('unit', 'test'),
   	    'executor': closure() {
-            @size = array_size(@arguments[2])
-            if (@size == 0) {
-                export('unit_arg', @UNIT_COMMAND_PREFIX.@UNIT_COMMAND_START.' all')
+            if (array_size(@arguments[2]) == 0) {
+                export('__unit_arg', @UNIT_DEFAULT_COMMAND)
             } else {
-                @builder = res_create_resource('STRING_BUILDER')
-                for(@i = 0, @i < @size, @i++) {
-                    string_append(@builder, @arguments[2][@i])
-                }
-                export('unit_arg', string(@builder))
+                export('__unit_arg', array_implode(@arguments[2], " "))
             }
-            export('unit_run', true)
+            export('__unit_run', true)
             include('main.ms')
   	    }
     ));
@@ -27,10 +22,13 @@ if (!import('unit_run')) {
         console(_package_unit_get_msg('setting_groups_not_found'), @UNIT_PATH_SETTING)
     }
 } else {
+
 include('commands.ms')
 include('runner.ms')
+include('log_builder.ms')
 
 @__unit_start_main = closure(string @arg) {
+    console(@arg)
     @args = _util_split_arg(@arg, @UNIT_COMMAND_PREFIX)
 
     @commander = _util_commander_init_self()
@@ -39,7 +37,11 @@ include('runner.ms')
         @commander,
         @UNIT_COMMAND_INIT,
         closure() {
-            _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST)
+            if (array_size(@arguments[0]) > 0) {
+                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL))
+            } else {
+                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP)
+            }
         }
     )
 
@@ -47,25 +49,29 @@ include('runner.ms')
         @commander,
         @UNIT_COMMAND_UPDATE,
         closure() {
-            _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST)
+            if (array_size(@arguments[0]) > 0) {
+                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL))
+            } else {
+                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP)
+            }
         }
-
     )
 
     _util_commander_register(
         @commander,
         @UNIT_COMMAND_START,
         closure() {
-            _package_unit_start_test(@UNIT_PATH_SETTING, @UNIT_SETTING, @arguments[0], @UNIT_CONSOLE_OUT, @UNIT_FILE_OUT)
+            _package_unit_start_test(@UNIT_PATH_SETTING, @UNIT_SETTING, @arguments[0], @UNIT_GROUP_DEL, @UNIT_CONSOLE_OUT, @UNIT_FILE_OUT)
         }
     )
 
     @size = array_size(@args)
     for(@i = 0, @i < @size, @i++) {
+        console( @args[@i][1])
         _util_commander_execute(@commander, @args[@i][0], @args[@i][1])
     }
 }
 
-execute(import('unit_arg'), @__unit_start_main)
+execute(import('__unit_arg'), @__unit_start_main)
 
 }
