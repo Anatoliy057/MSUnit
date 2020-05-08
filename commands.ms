@@ -18,7 +18,7 @@ proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, 
 proc _package_unit_update_setting(string @path_to_groups, string @path_to_test, string @def_value) {
     console('CHUnit: updating '.@path_to_groups.'...')
     if (!file_exists(@path_to_groups)) {
-        console(_package_unit_get_msg('setting_groups_not_found'))
+        console(_package_unit_msg_module_log('setting_groups_not_found'))
     }
     @prop = _util_properties_init_self()
     _util_properties_parse_string(@prop, read(@path_to_groups))
@@ -36,10 +36,10 @@ proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups) {
     console('CHUnit: starting tests...')
     @prop = _util_properties_init_self()
     if (array_size(@arguments) < 5) {
-        console(_package_unit_get_msg('setting_out_not_found'))
+        console(_package_unit_msg_module_log('setting_out_not_found'))
     }
     if (!file_exists(@path_to_groups)) {
-        console(_package_unit_get_msg('setting_groups_not_found'), @path_to_groups)
+        console(_package_unit_msg_module_log('setting_groups_not_found'), @path_to_groups)
     }
     _util_properties_parse_string(@prop, read(@path_to_groups))
     @tests = array()
@@ -54,5 +54,5 @@ proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups) {
     for(@i = 4, @i < array_size(@arguments), @i++) {
         array_push(@out, @arguments[@i])
     }
-    _package_unit_do_tests(@tests, @setting, @out)
+    _package_unit_runner(@tests, @setting, @out)
 }

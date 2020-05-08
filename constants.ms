@@ -17,8 +17,8 @@
     'proc_timeout' : 30,
     'number_threads' : 4,
     'pref_test_proc' : "_unit_test_",
-    'pref_before_proc' : "_unit_before_all",
-    'pref_test_init_proc' : "_unit_before_each_"    
+    'pref_before_proc' : "_unit_before_each_",
+    'pref_test_init_proc' : "_unit_before_all_"    
 )
 
 @UNIT_LOG_PACK = 'logs'
@@ -26,7 +26,7 @@
 
 @UNIT_CONSOLE_OUT = array(
     'enable' : true,
-    'short' : true,
+    'short' : false,
     'write' : closure(@text) {
         console(@text)
     }

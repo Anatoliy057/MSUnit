@@ -1,6 +1,5 @@
 if (!import('__unit_run')) {
     include('constants.ms')
-    include('statics.ms')
     register_command('unit', array(
   	    'description': 'Unit module control',
   	    'usage': '/unit',
@@ -23,12 +22,17 @@ if (!import('__unit_run')) {
     }
 } else {
 
+include('statics.ms')
+include('resourse.ms')
+include('environment.ms')
+include('message.ms')
+include('synchron.ms')
+include('log_builder.ms')
 include('commands.ms')
 include('runner.ms')
-include('log_builder.ms')
+include('assertion_api.ms')
 
 @__unit_start_main = closure(string @arg) {
-    console(@arg)
     @args = _util_split_arg(@arg, @UNIT_COMMAND_PREFIX)
 
     @commander = _util_commander_init_self()
@@ -67,7 +71,6 @@ include('log_builder.ms')
 
     @size = array_size(@args)
     for(@i = 0, @i < @size, @i++) {
-        console( @args[@i][1])
         _util_commander_execute(@commander, @args[@i][0], @args[@i][1])
     }
 }

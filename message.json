@@ -1,28 +1,24 @@
 {
-    "prefix" :
-    "CHUnit: ",
-    "setting_groups_not_found" :
-    "[FATAL] file '%s' of properties of groups doesn't exist. Sure that path is correct.",
-    "setting_out_not_found" :
-    "[FATAL] no args for setting log output",
-    "script_not_found" :
-    "[ERROR] Script: '%s' don't found. Ignored it'",
-    "collision_proc_before_each" : 
-    "[ERROR] syntax error in script: '%s'. Method '%s* should be the only one. 'Found functions: '%s'. 'Ignored this script'",
-    "collision_proc_before_all" : 
-    "[ERROR] syntax error in script: '%s'. Method '%s*' should be the only one. Found functions: '%s'. Ignored this script",
-    "procs_test_not_found" :
-    "[WARNING] not found tests '%s' in script: '%s'. Ignored this script",
-    "cause_timeout_assert" :
-    "Cause: time passed waiting for the call assert*",
-    "cause_timeout_proc" :
-    "Cause: time passed waiting for finish procedure",
-    "cause_unexpected_throw" :
-    "Cause: unexpected throw exception: %s",
-    "template_cause_failed_assert" :
-    "Cause: assert type %s failed",
-    "template_diff":
-    "Difference:\nExpect: %s\nActually: %s",
-    "template_result":
-    "Received: %s"
+    "prefix": "CHUnit: ",
+    "module_log": {
+        "setting_groups_not_found": "[FATAL] file '%s' of properties of groups doesn't exist. Sure that path is correct.",
+        "setting_out_not_found": "[FATAL] no args for setting log output",
+        "script_not_found": "[ERROR] Script: '%s' don't found. Ignored it'",
+        "collision_proc_before_each": "[ERROR] syntax error in script: '%s'. Method '%s* should be the only one. 'Found functions: '%s'. 'Ignored this script'",
+        "collision_proc_before_all": "[ERROR] syntax error in script: '%s'. Method '%s*' should be the only one. Found functions: '%s'. Ignored this script",
+        "procs_test_not_found": "[WARNING] not found tests '%s' in script: '%s'. Ignored this script",
+    },
+    "test_log" : {
+        "cause" : {
+            "timeout_assert": "Cause: time passed waiting for the call assert*",
+            "timeout_proc": "Cause: time passed waiting for finish procedure",
+            "unexpected_ex": "Cause: unexpected throw exception",
+            "assert_fail": "Cause: assert failed"
+        },
+        "msg" : {
+            "result" : "Received: %s",
+            "diff" : "Difference:\nExpect: %s\nActually: %s",
+            "throw" : "Exception thrown: %s"
+        }
+    }
 }
