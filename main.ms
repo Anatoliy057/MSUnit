@@ -15,10 +15,10 @@ if (!import('__unit_run')) {
   	    }
     ));
     if (import('module_log')) {
-        console('CHUnit ready to start')
+        console('MSUnit ready to start', false)
     }
     if (!file_exists(@UNIT_PATH_SETTING)) {
-        console(_package_unit_get_msg('setting_groups_not_found'), @UNIT_PATH_SETTING)
+        console(_package_unit_get_msg('setting_groups_not_found', @UNIT_PATH_SETTING), false)
     }
 } else {
 
@@ -42,9 +42,9 @@ include('assertion_api.ms')
         @UNIT_COMMAND_INIT,
         closure() {
             if (array_size(@arguments[0]) > 0) {
-                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL))
+                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
-                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP)
+                _package_unit_create_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
         }
     )
@@ -54,9 +54,9 @@ include('assertion_api.ms')
         @UNIT_COMMAND_UPDATE,
         closure() {
             if (array_size(@arguments[0]) > 0) {
-                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL))
+                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, array_implode(@arguments[0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
-                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP)
+                _package_unit_update_setting(@UNIT_PATH_SETTING, @UNIT_PATH_TEST, @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
         }
     )
@@ -66,6 +66,14 @@ include('assertion_api.ms')
         @UNIT_COMMAND_START,
         closure() {
             _package_unit_start_test(@UNIT_PATH_SETTING, @UNIT_SETTING, @arguments[0], @UNIT_GROUP_DEL, @UNIT_CONSOLE_OUT, @UNIT_FILE_OUT)
+        }
+    )
+
+    _util_commander_register(
+        @commander,
+        @UNIT_COMMAND_RECOMPILE,
+        closure() {
+            _package_unit_recompile()
         }
     )
 

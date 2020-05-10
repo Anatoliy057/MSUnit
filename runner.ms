@@ -9,7 +9,7 @@ proc _package_unit_runner(@tests, @setting, @out) {
             @new_procs = get_procedures()
             @map[@test] = _util_array_minus(@new_procs, @old_procs)
         } else {
-            console(_package_unit_msg_module_log('script_not_found', @test))
+            console(_package_unit_msg_module_log('script_not_found', @test), false)
             continue()
         }
     }
@@ -54,15 +54,14 @@ proc _private_unit_runner_init_model(@map, @setting) {
     @model = array()
     foreach(@script: @procs in @map) {
         @sorted_procs = _private_unit_runner_sort_procs(@procs, @setting)
-
         if (array_size(@sorted_procs['before_each']) > 1) {
-            console(_package_unit_msg_module_log('collision_proc_before_each', @script, @setting['pref_before_proc'], @sorted_procs['before_each']))
+            console(_package_unit_msg_module_log('collision_proc_before_each', @script, @setting['pref_before_proc'], @sorted_procs['before_each']), false)
             continue()
         } else if (array_size(@sorted_procs['before_all']) > 1) {
-            console(_package_unit_msg_module_log('collision_proc_before_all', @script, @setting['pref_test_init_proc'], @sorted_procs['before_all']))
+            console(_package_unit_msg_module_log('collision_proc_before_all', @script, @setting['pref_test_init_proc'], @sorted_procs['before_all']), false)
             continue()
         } else if (array_size(@sorted_procs['tests']) == 0) {
-            console(_package_unit_msg_module_log('procs_test_not_found', @setting['pref_test_proc'], @script))
+            console(_package_unit_msg_module_log('procs_test_not_found', @setting['pref_test_proc'], @script), false)
             continue()
         }
 

@@ -40,11 +40,14 @@ Some options can be changed in the constans.ms script.
 
 ### Commands
 
-- unit <-command=run> \<args=all\> <-command> \<args\>...
+- unit <-command> \<args=all\> <-command> \<args\>...
 
   - run \<args\> - Runs the groups of tests indicated in \<args\>
   - init \<args=all\> - Creates configuration file of groups of tests, giving them the default group specified in the arguments
   - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments
+  - r - Calls a function 'x_recompile_includes' for the test catalog
+
+> Default command: unit -> unit -update all -r -run all
 
 ### Assertions
 

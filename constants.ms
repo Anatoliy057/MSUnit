@@ -6,11 +6,12 @@
 @UNIT_COMMAND_INIT = 'init'
 @UNIT_COMMAND_START = 'run'
 @UNIT_COMMAND_UPDATE = 'update'
+@UNIT_COMMAND_RECOMPILE = 'r'
 
 @UNIT_GROUP_DEL = '|'
 @UNIT_DEFAULT_GROUP = 'all'
 
-@UNIT_DEFAULT_COMMAND = @UNIT_COMMAND_PREFIX.@UNIT_COMMAND_START.' '.@UNIT_DEFAULT_GROUP
+@UNIT_DEFAULT_COMMAND = @UNIT_COMMAND_PREFIX.@UNIT_COMMAND_UPDATE.' '.@UNIT_COMMAND_PREFIX.@UNIT_COMMAND_RECOMPILE.' '.@UNIT_COMMAND_PREFIX.@UNIT_COMMAND_START.' '.@UNIT_DEFAULT_GROUP
 
 @UNIT_SETTING = array(
     'assert_timeout' : 5,
@@ -26,9 +27,9 @@
 
 @UNIT_CONSOLE_OUT = array(
     'enable' : true,
-    'short' : false,
+    'short' : true,
     'write' : closure(@text) {
-        console(@text)
+        console(@text, false)
     }
 )
 
@@ -41,7 +42,3 @@
         write_file(@UNIT_LOG_PACK.'\\'.@UNIT_LOG_FILE, @text, 'APPEND')
     }
 )
-
-if (import('script_log')) {
-    console('CHUnit: constans.ms loaded')
-}

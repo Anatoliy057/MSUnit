@@ -1,10 +1,10 @@
 {
-    "prefix": "CHUnit: ",
+    "prefix": "MSUnit: ",
     "module_log": {
         "setting_groups_not_found": "[FATAL] file '%s' of properties of groups doesn't exist. Sure that path is correct.",
         "setting_out_not_found": "[FATAL] no args for setting log output",
         "script_not_found": "[ERROR] Script: '%s' don't found. Ignored it'",
-        "collision_proc_before_each": "[ERROR] syntax error in script: '%s'. Method '%s* should be the only one. 'Found functions: '%s'. 'Ignored this script'",
+        "collision_proc_before_each": "[ERROR] syntax error in script: '%s'. Method '%s* should be the only one. 'Found functions: '%s'. Ignored this script",
         "collision_proc_before_all": "[ERROR] syntax error in script: '%s'. Method '%s*' should be the only one. Found functions: '%s'. Ignored this script",
         "procs_test_not_found": "[WARNING] not found tests '%s' in script: '%s'. Ignored this script",
     },
