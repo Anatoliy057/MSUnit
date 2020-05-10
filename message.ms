@@ -17,3 +17,9 @@ proc _package_unit_msg_test_log(string @type, string @key) {
         return(sprintf(@template, @arguments[2..]))
     }
 }
+
+proc _package_unit_msg_test_log_with_args(string @type, string @key, array @args) {
+    @model = import('__unit_msg')
+    @template = @model['test_log'][@type][@key]
+    return(sprintf(@template, @args))
+}

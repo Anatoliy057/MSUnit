@@ -17,7 +17,8 @@
         },
         "msg" : {
             "result" : "Received: %s",
-            "diff" : "Difference:\nExpect: %s\nActually: %s",
+            "diff" : "Difference: Expect: %s; Actually: %s",
+            "undiff" : "Difference: Unexpect: %s; Actually: %s",
             "throw" : "Exception thrown: %s"
         }
     }

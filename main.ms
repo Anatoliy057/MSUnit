@@ -8,7 +8,7 @@ if (!import('__unit_run')) {
             if (array_size(@arguments[2]) == 0) {
                 export('__unit_arg', @UNIT_DEFAULT_COMMAND)
             } else {
-                export('__unit_arg', array_implode(@arguments[2], " "))
+                export('__unit_arg', array_implode(@arguments[2], ' '))
             }
             export('__unit_run', true)
             include('main.ms')

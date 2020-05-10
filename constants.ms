@@ -1,8 +1,8 @@
-@UNIT_PATH_SETTING = "tests.properties"
-@UNIT_PATH_TEST = "test"
+@UNIT_PATH_SETTING = 'tests.properties'
+@UNIT_PATH_TEST = 'test'
 @UNIT_PATH_MSG = 'message.json'
 
-@UNIT_COMMAND_PREFIX = "-"
+@UNIT_COMMAND_PREFIX = '-'
 @UNIT_COMMAND_INIT = 'init'
 @UNIT_COMMAND_START = 'run'
 @UNIT_COMMAND_UPDATE = 'update'
@@ -13,12 +13,12 @@
 @UNIT_DEFAULT_COMMAND = @UNIT_COMMAND_PREFIX.@UNIT_COMMAND_START.' '.@UNIT_DEFAULT_GROUP
 
 @UNIT_SETTING = array(
-    'assert_timeout' : 15,
-    'proc_timeout' : 30,
+    'assert_timeout' : 5,
+    'proc_timeout' : 10,
     'number_threads' : 4,
-    'pref_test_proc' : "_unit_test_",
-    'pref_before_proc' : "_unit_before_each_",
-    'pref_test_init_proc' : "_unit_before_all_"    
+    'pref_test_proc' : '_unit_test_',
+    'pref_before_proc' : '_unit_before_each_',
+    'pref_test_init_proc' : '_unit_before_all_'    
 )
 
 @UNIT_LOG_PACK = 'logs'

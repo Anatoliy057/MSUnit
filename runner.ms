@@ -33,15 +33,15 @@ proc _private_unit_runner_sort_procs(@procs, @setting) {
     @sorted_procs['before_all'] = array()
     foreach(@proc in @procs) {
         @len = length(@setting['pref_test_proc'])
-        if (@proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
+        if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
             array_push(@sorted_procs['tests'], @proc)
         } else {
             @len = length(@setting['pref_before_proc'])
-            if (@proc[cslice(0, @len-1)] == @setting['pref_before_proc']) {
+            if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_before_proc']) {
                 array_push(@sorted_procs['before_each'], @proc)
             } else {
                 @len = length(@setting['pref_test_init_proc'])
-                if (@proc[cslice(0, @len-1)] == @setting['pref_test_init_proc']) {
+                if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_test_init_proc']) {
                     array_push(@sorted_procs['before_all'], @proc)
                 }
             }
@@ -152,36 +152,61 @@ proc _private_unit_runner_log_result(@result, @outs) {
     foreach(@out in @outs) {
         if (!@out['enable'], continue())
         @builder = res_create_resource('STRING_BUILDER')
-        string_append(@builder, '[TIME] 'simple_date('yyyy.MM.dd G \'at\' HH:mm:ss z'))
+        string_append(@builder, '[TIME] 'simple_date('yyyy.MM.dd \'at\' HH:mm:ss'))
         string_append(@builder, '\n')
         if (@out['short'] == true) {
             foreach(@script: @tests in @result) {
+                string_append(@builder, '######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
-                    string_append(@builder, '\tTest: ')
+                    string_append(@builder, '------------------------------------------------------\n')
+                    if (@info['successful']) {
+                        string_append(@builder, '+ ')
+                    } else {
+                        string_append(@builder, '- ')
+                    }
+                    string_append(@builder, 'Test: ')
                     string_append(@builder, @test)
                     string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
+                    @user_log = string(@info['user_log'])
+                    if (@user_log != '') {
+                        string_append(@builder, @user_log)
+                        string_append(@builder, '\n')
+                    }
                 }
             }
         } else {
             foreach(@script: @tests in @result) {
+                string_append(@builder, '######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
-                    string_append(@builder, '\tTest: ')
+                    string_append(@builder, '------------------------------------------------------\n')
+                    if (@info['successful']) {
+                        string_append(@builder, '+ ')
+                    } else {
+                        string_append(@builder, '- ')
+                    }
+                    string_append(@builder, 'Test: ')
                     string_append(@builder, @test)
                     string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
-                    if (!@info['successful']) {
-                        string_append(@builder, @info['test_log'])
+                    @user_log = string(@info['user_log'])
+                    if (@user_log != '') {
+                        string_append(@builder, @user_log)
                         string_append(@builder, '\n')
                     }
-                    string_append(@builder, string(@info['user_log']))     
+                    if (!@info['successful']) {
+                        string_append(@builder, @info['test_log'])
+                        string_append(@builder, '\n')  
+                    }   
                 }
             }
         }
+        string_append(@builder, '\n')
+        string_append(@builder, '\n')
         execute(string(@builder), @out['write'])
     }
 }

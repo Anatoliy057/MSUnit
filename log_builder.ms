@@ -23,7 +23,7 @@ proc _unit_log_set_result(@self, @res) {
 }
 
 proc _unit_log_set_type_msg(@self, @type, @vals) {
-    @self['private_msg'] = @self['private_tab']._package_unit_msg_test_log('msg', @type, @vals)
+    @self['private_msg'] = @self['private_tab']._package_unit_msg_test_log_with_args('msg', @type, @vals)
 }
 
 proc _unit_log_set_trace(@self, @private_traces) {
