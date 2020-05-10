@@ -111,6 +111,7 @@ proc _private_unit_runner_init_tasks(@model, @setting, @result) {
                         call_proc(@proc_test, @before_all, @before_each)
                     } catch(Exception @e) {
                         @res['successful'] = false
+                        @e['stackTrace'] = @e['stackTrace'][..-2]
                         @res['test_log'] = _package_unit_log_unex_throw(@e)
                     } finally {
                         @res['time'] += nano_time()
