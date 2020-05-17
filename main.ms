@@ -71,9 +71,9 @@ include('assertion_api.ms')
 
     _util_commander_register(
         @commander,
-        @UNIT_COMMAND_RECOMPILE,
+        @UNIT_COMMAND_RUN,
         closure() {
-            _package_unit_recompile()
+            _package_unit_run_test(@UNIT_PATH_TEST, @UNIT_PATH_SETTING, @UNIT_SETTING, @arguments[0], @UNIT_GROUP_DEL, @UNIT_CONSOLE_OUT, @UNIT_FILE_OUT)
         }
     )
 

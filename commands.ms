@@ -35,6 +35,35 @@ proc _package_unit_update_setting(string @path_to_groups, string @path_to_test, 
     console('MSUnit: '.@path_to_groups.' updated', false)
 }
 
+proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @del_groups) {
+    console('MSUnit: recompiling tests...', false)
+    x_recompile_includes(@path_to_test)
+    console(get_procedures())
+    console('MSUnit: finished recompile...', false)
+    console('MSUnit: starting tests...', false)
+    @prop = _util_properties_init_self()
+    if (array_size(@arguments) < 6) {
+        console(_package_unit_msg_module_log('setting_out_not_found'), false)
+    }
+    if (!file_exists(@path_to_groups)) {
+        console(_package_unit_msg_module_log('setting_groups_not_found', @path_to_groups), false)
+    }
+    _util_properties_parse_string(@prop, read(@path_to_groups))
+    @tests = array()
+
+    foreach(@file: @str_group in _util_properties_to_map(@prop)) {
+        if (_util_array_some_contains(split(@del_groups, @str_group), @groups)) {
+            array_push(@tests, @file)
+        }
+    }
+
+    @out = array()
+    for(@i = 5, @i < array_size(@arguments), @i++) {
+        array_push(@out, @arguments[@i])
+    }
+    _package_unit_runner(@tests, @setting, @out)
+}
+
 proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups) {
     console('MSUnit: starting tests...', false)
     @prop = _util_properties_init_self()
@@ -58,8 +87,4 @@ proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups) {
         array_push(@out, @arguments[@i])
     }
     _package_unit_runner(@tests, @setting, @out)
-}
-
-proc _package_unit_recompile(@path_to_test) {
-    x_recompile_includes(@path_to_test)
 }
