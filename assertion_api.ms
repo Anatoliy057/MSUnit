@@ -1,10 +1,10 @@
-proc _print(@msg) {
-    @log = _unit_env_cur()()
+proc _print(mixed @msg) {
+    @log = _unit_env_cur()
     string_append(@log['user_log'], @msg)
 }
 
-proc _println(@msg) {
-    @log = _unit_env_cur()()
+proc _println(mixed @msg) {
+    @log = _unit_env_cur()
     string_append(@log['user_log'], @msg)
     string_append(@log['user_log'], '\n')
 }
@@ -16,81 +16,81 @@ proc _sleep(int @seconds) {
     }
 }
 
-proc _assert_true(boolean @bool) {
+proc _assert_time_assert(int @seconds) {
+    @log = _unit_env_cur()
     @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
     synchronized(@monitor) {
-        _private_assert_eq(true, @bool, 1)
+        @log['assert_timeout'] = @seconds
     }
+}
+
+proc _assert_time_proc(int @seconds) {
+    @log = _unit_env_cur()
+    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
+    synchronized(@monitor) {
+        @log['proc_timeout'] = @seconds
+    }
+}
+
+proc _assert_restart_time() {
+    @log = _unit_env_cur()
+    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
+    synchronized(@monitor) {
+        @log['assert_timeout'] = @log['time_assert']
+    }
+}
+
+proc _assert_restart_time_all() {
+    @log = _unit_env_cur()
+    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
+    synchronized(@monitor) {
+        @log['assert_timeout'] = @log['time_assert']
+        @log['proc_timeout'] = @log['time_proc']
+    }
+}
+
+proc _assert_true(boolean @bool) {
+    _private_assert_eq(true, @bool, 1)
 }
 
 proc _assert_false(boolean @bool) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(false, @bool, 1)
-    }
+    _private_assert_eq(false, @bool, 1)
 }
 
 proc _assert_null(mixed @object) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(null, @object, 1)
-    }
+    _private_assert_eq(null, @object, 1)
 }
 
 proc _assert_not_null(mixed @object) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_not_eq(null, @object, 1)
-    }
+    _private_assert_not_eq(null, @object, 1)
 }
 
 proc _assert_equals(mixed @exp, mixed @act) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@exp, @act, 1)
-    }
+    _private_assert_eq(@exp, @act, 1)
 }
 
 proc _assert_not_equals(mixed @arg1, mixed @arg2) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_not_eq(@arg1, @arg2, 1)
-    }
+    _private_assert_not_eq(@arg1, @arg2, 1)
 }
 
 proc _assert_size(int @size, array @arr) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@size, array_size(@arr), 1)
-    }
+    _private_assert_eq(@size, array_size(@arr), 1)
 }
 
 proc _assert_length(int @length, mixed @act) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@length, length(@act), 1)
-    }
+    _private_assert_eq(@length, length(@act), 1)
 }
 
 proc _assert_empty(mixed @object) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(0, length(@object), 1)
-    }
+    _private_assert_eq(0, length(@object), 1)
 }
 
 proc _assert_not_empty(mixed @object) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_not_eq(0, length(@object), 1)
-    }
+    _private_assert_not_eq(0, length(@object), 1)
 }
 
 proc _assert_type(string @type, mixed @object) {
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@type, typeof(@object), 1)
-    }
+    _private_assert_eq(@type, typeof(@object), 1)
 }
 
 proc _assert_proc_throw(string @classType, string @proc_name) {
@@ -104,11 +104,7 @@ proc _assert_proc_throw(string @classType, string @proc_name) {
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@classType, @act_type, 1)
-    }
+    _private_assert_eq(@classType, @act_type, 1)
 }
 
 proc _assert_closure_throw(string @classType, closure @lymda) {
@@ -122,16 +118,12 @@ proc _assert_closure_throw(string @classType, closure @lymda) {
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-
-    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        _private_assert_eq(@classType, @act_type, 1)
-    }
+    _private_assert_eq(@classType, @act_type, 1)
 }
 
 proc _assert_proc_does_not_throw(string @proc_name) {
     @log = _unit_env_cur()
-    _private_assert_syn_restart_time(@log)
+    _private_assert_restart_time(@log)
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -147,7 +139,7 @@ proc _assert_proc_does_not_throw(string @proc_name) {
 
 proc _assert_closure_does_not_throw(closure @lymda) {
     @log = _unit_env_cur()
-    _private_assert_syn_restart_time(@log)
+    _private_assert_restart_time(@log)
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -204,12 +196,8 @@ proc _private_assert_fail(@log, @mode, @stack) {
 }
 
 proc _private_assert_restart_time(@log) {
-    @log['assert_timeout'] = integer(@log['time_assert'])
-}
-
-proc _private_assert_syn_restart_time(@log) {
     @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
     synchronized(@monitor) {
-        _private_assert_restart_time(@log)
+        @log['assert_timeout'] = integer(@log['time_assert'])
     }
 }

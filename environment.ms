@@ -4,7 +4,7 @@ proc _unit_env_cur() {
 }
 
 proc _unit_env_get(@id) {
-    return(import('__unit_test_log')[@id[0]][@id[1]])
+    return(import('__UNIT_TEST_LOG')[@id[0]][@id[1]])
 }
 
 proc _unit_env_init_cur(@log, @setting) {
@@ -18,5 +18,5 @@ proc _unit_env_init_cur(@log, @setting) {
 }
 
 proc _unit_env_global_get() {
-    return(import('__unit_test_log'))
+    return(import('__UNIT_TEST_LOG'))
 }

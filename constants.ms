@@ -11,7 +11,7 @@
 @UNIT_GROUP_DEL = '|'
 @UNIT_DEFAULT_GROUP = 'all'
 
-@UNIT_DEFAULT_COMMAND = '-run all'
+@UNIT_DEFAULT_COMMAND = '-update all -run all'
 
 @UNIT_SETTING = array(
     'assert_timeout' : 5,

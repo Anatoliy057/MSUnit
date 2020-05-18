@@ -42,12 +42,12 @@ Some options can be changed in the constans.ms script.
 
 - unit <-command> \<args=all\> <-command> \<args\>...
 
-  - run \<args\> - Runs the groups of tests indicated in \<args\>
-  - init \<args=all\> - Creates configuration file of groups of tests, giving them the default group specified in the arguments
-  - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments
-  - r - Calls a function 'x_recompile_includes' for the test catalog
+  - test \<args\> - Runs the groups of tests indicated in \<args\>
+  - init \<args=all\> - Creates configuration file of groups of tests, giving them the default group specified in the arguments.
+  - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments.
+  - run \<args\> - Recompiles and runs the groups of tests indicated in \<args\>.
 
-> Default command: unit -> unit -update all -r -run all
+> Default command: unit -> unit -update all -run all
 
 ### Assertions
 
@@ -67,6 +67,16 @@ Some options can be changed in the constans.ms script.
 - _assert_proc_does_not_throw(string @proc_name)
 - _assert_closure_does_not_throw(closure @lymda)
 
+### Supporting Procedures
+
+- _print(mixed @msg)
+- _println(mixed @msg)
+- _sleep(int @seconds)
+- _assert_time_assert(int @seconds)
+- _assert_time_proc(int @seconds)
+- _assert_restart_time()
+- _assert_restart_time_all()
+
 ***
 
 ## Recuired
@@ -76,4 +86,4 @@ Some options can be changed in the constans.ms script.
   - [CHThreads](https://github.com/Community-Cadabra-Project/CHThreads)
 
 - Libraries:
-  - [Util](https://github.com/Community-Cadabra-Project/CHUtil)
+  - [MSUtil](https://github.com/Community-Cadabra-Project/MSUtil)

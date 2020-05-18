@@ -38,7 +38,6 @@ proc _package_unit_update_setting(string @path_to_groups, string @path_to_test, 
 proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @del_groups) {
     console('MSUnit: recompiling tests...', false)
     x_recompile_includes(@path_to_test)
-    console(get_procedures())
     console('MSUnit: finished recompile...', false)
     console('MSUnit: starting tests...', false)
     @prop = _util_properties_init_self()
