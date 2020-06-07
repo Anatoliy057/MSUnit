@@ -1,19 +1,20 @@
 if (!import('__unit_run')) {
     include('constants.ms')
-
-    register_command('unit', array(
+    proc _unit_register_command() {
+        register_command('unit', array(
   	    'description': 'Unit module control',
   	    'usage': '/unit',
   	    'aliases':array('unit', 'test'),
   	    'executor': closure() {
+              console(is_proc('_quest_entity_checker'))
             if (array_size(@arguments[2]) == 0) {
-                export('__unit_arg', array(arg: @UNIT_DEFAULT_COMMAND, setting: _package_unit_get_constants()['modules']['unit']))
+                export('__unit_arg', array(arg: '-update all -run all', setting: _package_unit_get_constants()['modules']['unit']))
             } else if (array_size(@arguments[2]) == 1) {
                 if (!array_index_exists(_package_unit_get_constants()['modules'], @arguments[2][0])) {
                     console('MSUnit: [FATAL] Unkown module')
                     die()
                 }
-                export('__unit_arg', array(arg: @UNIT_DEFAULT_COMMAND, setting: _package_unit_get_constants()['modules'][@arguments[2][0]]))
+                export('__unit_arg', array(arg: '-update all -run all', setting: _package_unit_get_constants()['modules'][@arguments[2][0]]))
             } else {
                 export('__unit_arg', array(arg: array_implode(@arguments[2][1..], ' '), setting: _package_unit_get_constants()['modules'][@arguments[2][0]]))
             }
@@ -21,11 +22,33 @@ if (!import('__unit_run')) {
             include('main.ms')
   	    }
     ));
+    }
     if (import('module_log')) {
         console('MSUnit ready to start', false)
     }
 } else {
 execute(closure() {
+
+@UNIT_PATH_MSG = 'message.json'
+
+@UNIT_COMMAND_PREFIX = '-'
+@UNIT_COMMAND_INIT = 'init'
+@UNIT_COMMAND_RUN = 'run'
+@UNIT_COMMAND_UPDATE = 'update'
+
+@UNIT_COMMAND_START = 'start'
+
+@UNIT_GROUP_DEL = '|'
+@UNIT_DEFAULT_GROUP = 'all'
+
+@UNIT_SETTING = array(
+    'assert_timeout' : 5,
+    'proc_timeout' : 10,
+    'number_threads' : 4,
+    'pref_test_proc' : '_unit_test',
+    'pref_before_proc' : '_unit_before_each',
+    'pref_test_init_proc' : '_unit_before_all'    
+)
 
 include('statics.ms')
 include('resourse.ms')

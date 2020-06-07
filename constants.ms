@@ -1,26 +1,3 @@
-@UNIT_PATH_MSG = 'message.json'
-
-@UNIT_COMMAND_PREFIX = '-'
-@UNIT_COMMAND_INIT = 'init'
-@UNIT_COMMAND_RUN = 'run'
-@UNIT_COMMAND_UPDATE = 'update'
-
-@UNIT_COMMAND_START = 'start'
-
-@UNIT_GROUP_DEL = '|'
-@UNIT_DEFAULT_GROUP = 'all'
-
-@UNIT_DEFAULT_COMMAND = '-update all -run all'
-
-@UNIT_SETTING = array(
-    'assert_timeout' : 5,
-    'proc_timeout' : 10,
-    'number_threads' : 4,
-    'pref_test_proc' : '_unit_test_',
-    'pref_before_proc' : '_unit_before_each_',
-    'pref_test_init_proc' : '_unit_before_all_'    
-)
-
 string proc _package_unit_constants_name() {
     return('__UNIT_SETTING')
 }

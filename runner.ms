@@ -51,6 +51,9 @@ proc _private_unit_runner_init_task(string @test, array @sorted_procs, @setting,
     @runnable = closure() {
         @lymda_before
         @lymda_each
+        @before_all
+        @before_each
+
         @tests = @sorted_procs['tests']
     
         if (@sorted_procs['before_all'] == null || array_size(@sorted_procs['before_all']) == 0) {
@@ -63,11 +66,32 @@ proc _private_unit_runner_init_task(string @test, array @sorted_procs, @setting,
         } else {
             @lymda_each = @sorted_procs['before_each'][0]
         }
-
-        @before_all = call_proc(@lymda_before)
+        try {
+            @before_all = call_proc(@lymda_before)
+        } catch (Exception @e) {
+            console(_package_unit_msg_module_log(
+                'error_before_all',
+                @lymda_before,
+                @e['classType'],
+                @e['message'],
+                _util_parse_stack_trace(1, @e['stackTrace'], 1)
+            ), false)
+            die()
+        }
         for(@i = 0, @i < array_size(@tests), @i ++) {
             @proc_test = @tests[@i]
-            @before_each = call_proc(@lymda_each)
+            try {
+                @before_each = call_proc(@lymda_each)
+            } catch (Exception @e) {
+                console(_package_unit_msg_module_log(
+                    'error_before_each',
+                    @lymda_each,
+                    @e['classType'],
+                    @e['message'],
+                    _util_parse_stack_trace(1, @e['stackTrace'], 1)
+                ), false)
+                die()
+            } 
 
             @result[@test][@proc_test] = array()
             @res = @result[@test][@proc_test]
@@ -125,15 +149,15 @@ proc _private_unit_runner_sort_procs(@procs, @setting) {
     @sorted_procs['before_all'] = array()
     foreach(@proc in @procs) {
         @len = length(@setting['pref_test_proc'])
-        if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
+        if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
             array_push(@sorted_procs['tests'], @proc)
         } else {
             @len = length(@setting['pref_before_proc'])
-            if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_before_proc']) {
+            if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_before_proc']) {
                 array_push(@sorted_procs['before_each'], @proc)
             } else {
                 @len = length(@setting['pref_test_init_proc'])
-                if (length(@proc) > @len && @proc[cslice(0, @len-1)] == @setting['pref_test_init_proc']) {
+                if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_test_init_proc']) {
                     array_push(@sorted_procs['before_all'], @proc)
                 }
             }
@@ -170,6 +194,11 @@ proc _private_unit_runner_log_result(@setting, @result, @outs) {
                     string_append(@builder, 'Test: ')
                     string_append(@builder, @test)
                     string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
+                    if (@info['user_message'] != null) {
+                        string_append(@builder, 'Message: ')
+                        string_append(@builder, @info['user_message'])
+                        string_append(@builder, '\n')
+                    }
                     @user_log = string(@info['user_log'])
                     if (@user_log != '') {
                         string_append(@builder, @user_log)
@@ -197,6 +226,11 @@ proc _private_unit_runner_log_result(@setting, @result, @outs) {
                     string_append(@builder, 'Test: ')
                     string_append(@builder, @test)
                     string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
+                    if (@info['user_message'] != null) {
+                        string_append(@builder, 'Message: ')
+                        string_append(@builder, @info['user_message'])
+                        string_append(@builder, '\n')
+                    }
                     @user_log = string(@info['user_log'])
                     if (@user_log != '') {
                         string_append(@builder, @user_log)

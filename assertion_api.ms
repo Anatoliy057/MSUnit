@@ -49,51 +49,51 @@ proc _assert_restart_time_all() {
     }
 }
 
-proc _assert_true(boolean @bool) {
-    _private_assert_eq(true, @bool, 1)
+proc _assert_true(boolean @bool, string @msg = null) {
+    _private_assert_eq(true, @bool, 1, @msg)
 }
 
-proc _assert_false(boolean @bool) {
-    _private_assert_eq(false, @bool, 1)
+proc _assert_false(boolean @bool, string @msg = null) {
+    _private_assert_eq(false, @bool, 1, @msg)
 }
 
-proc _assert_null(mixed @object) {
-    _private_assert_eq(null, @object, 1)
+proc _assert_null(mixed @object, string @msg = null) {
+    _private_assert_eq(null, @object, 1, @msg)
 }
 
-proc _assert_not_null(mixed @object) {
-    _private_assert_not_eq(null, @object, 1)
+proc _assert_not_null(mixed @object, string @msg = null) {
+    _private_assert_not_eq(null, @object, 1, @msg)
 }
 
-proc _assert_equals(mixed @exp, mixed @act) {
-    _private_assert_eq(@exp, @act, 1)
+proc _assert_equals(mixed @exp, mixed @act, string @msg = null) {
+    _private_assert_eq(@exp, @act, 1, @msg)
 }
 
-proc _assert_not_equals(mixed @arg1, mixed @arg2) {
-    _private_assert_not_eq(@arg1, @arg2, 1)
+proc _assert_not_equals(mixed @arg1, mixed @arg2, string @msg = null) {
+    _private_assert_not_eq(@arg1, @arg2, 1, @msg)
 }
 
-proc _assert_size(int @size, array @arr) {
-    _private_assert_eq(@size, array_size(@arr), 1)
+proc _assert_size(int @size, array @arr, string @msg = null) {
+    _private_assert_eq(@size, array_size(@arr), 1, @msg)
 }
 
-proc _assert_length(int @length, mixed @act) {
-    _private_assert_eq(@length, length(@act), 1)
+proc _assert_length(int @length, mixed @act, string @msg = null) {
+    _private_assert_eq(@length, length(@act), 1, @msg)
 }
 
-proc _assert_empty(mixed @object) {
-    _private_assert_eq(0, length(@object), 1)
+proc _assert_empty(mixed @object, string @msg = null) {
+    _private_assert_eq(0, length(@object), 1, @msg)
 }
 
-proc _assert_not_empty(mixed @object) {
-    _private_assert_not_eq(0, length(@object), 1)
+proc _assert_not_empty(mixed @object, string @msg = null) {
+    _private_assert_not_eq(0, length(@object), 1, @msg)
 }
 
-proc _assert_type(string @type, mixed @object) {
-    _private_assert_eq(@type, typeof(@object), 1)
+proc _assert_type(string @type, mixed @object, string @msg = null) {
+    _private_assert_eq(@type, typeof(@object), 1, @msg)
 }
 
-proc _assert_proc_throw(string @classType, string @proc_name) {
+proc _assert_proc_throw(string @classType, string @proc_name, string @msg = null) {
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -104,10 +104,10 @@ proc _assert_proc_throw(string @classType, string @proc_name) {
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@classType, @act_type, 1)
+    _private_assert_eq(@classType, @act_type, 1, @msg)
 }
 
-proc _assert_closure_throw(string @classType, closure @lymda) {
+proc _assert_closure_throw(string @classType, closure @lymda, string @msg = null) {
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -118,10 +118,10 @@ proc _assert_closure_throw(string @classType, closure @lymda) {
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@classType, @act_type, 1)
+    _private_assert_eq(@classType, @act_type, 1, @msg)
 }
 
-proc _assert_proc_does_not_throw(string @proc_name) {
+proc _assert_proc_does_not_throw(string @proc_name, string @msg = null) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     @args = null
@@ -132,12 +132,12 @@ proc _assert_proc_does_not_throw(string @proc_name) {
     try {
         call_proc(@proc_name, @args)
     } catch (Exception @e) {
-        _private_assert_fail(@log, 'throw', 1, @e['classType'])
+        _private_assert_fail(@log, 'throw', 1, array(@e['classType']), @msg)
     }
     _private_assert_successful(@log)
 }
 
-proc _assert_closure_does_not_throw(closure @lymda) {
+proc _assert_closure_does_not_throw(closure @lymda, string @msg = null) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     @args = null
@@ -148,7 +148,7 @@ proc _assert_closure_does_not_throw(closure @lymda) {
     try {
         execute(@args, @lymda)
     } catch (Exception @e) {
-        _private_assert_fail(@log, 'throw', 1, @e['classType'])
+        _private_assert_fail(@log, 'throw', 1, array(@e['classType']), @msg)
     }
     _private_assert_successful(@log)
 }
@@ -157,27 +157,27 @@ proc _private_assert_successful(@log) {
     @log['successful'] = true
 }
 
-proc _private_assert_eq(@exp, @act, @stack) {
+proc _private_assert_eq(@exp, @act, int @stack, string @msg) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@exp == @act) {
         _private_assert_successful(@log)
     } else {
-        _private_assert_fail(@log, 'diff', @stack + 1, @exp, @act)
+        _private_assert_fail(@log, 'diff', @stack + 1, array(@exp, @act), @msg)
     }
 }
 
-proc _private_assert_not_eq(@arg1, @arg2, @stack) {
+proc _private_assert_not_eq(@arg1, @arg2, int @stack, string @msg) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@arg1 != @arg2) {
         _private_assert_successful(@log)
     } else {
-        _private_assert_fail(@log, 'undiff', @stack + 1, @arg1, @arg2)
+        _private_assert_fail(@log, 'undiff', @stack + 1, array(@arg1, @arg2), @msg)
     }
 }
 
-proc _private_assert_fail(@log, @mode, @stack) {
+proc _private_assert_fail(@log, @mode, int @stack, array @args = array(), string @msg) {
     @builder = _unit_log_init_self()
     // _unit_log_set_trace(@builder, array_filter(get_stack_trace(), closure(@key, @val) {
     //     return(@val['id'][..8] != '_assert_' || @val['id'][..16] != '_private_assert_')
@@ -185,11 +185,8 @@ proc _private_assert_fail(@log, @mode, @stack) {
     @trace = get_stack_trace()
     _unit_log_set_trace(@builder, @trace[cslice(@stack, array_size(@trace)-2)])
     _unit_log_set_def_cause(@builder, 'assert_fail')
-    if (array_size(@arguments) < 4) {
-        _unit_log_set_type_msg(@builder, @mode, array())
-    } else {
-        _unit_log_set_type_msg(@builder, @mode, @arguments[3..])
-    }
+    _unit_log_set_type_msg(@builder, @mode, @args)
+    @log['user_message'] = @msg
     @log['test_log'] = _unit_log_build(@builder)
     @log['successful'] = false
     die()

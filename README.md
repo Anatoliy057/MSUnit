@@ -75,21 +75,21 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 
 ### Assertions
 
-- _assert_true(boolean @bool)
-- _assert_false(boolean @bool)
-- _assert_null(mixed @object)
-- _assert_not_null(mixed @object)
-- _assert_equals(mixed @exp, mixed @act)
-- _assert_not_equals(mixed @arg1, mixed @arg2)
-- _assert_size(int @size, array @arr)
-- _assert_length(int @length, mixed @act)
-- _assert_empty(mixed @object)
-- _assert_not_empty(mixed @object)
-- _assert_type(string @type, mixed @object)
-- _assert_proc_throw(string @classType, string @proc_name)
-- _assert_closure_throw(string @classType, closure @lymda)
-- _assert_proc_does_not_throw(string @proc_name)
-- _assert_closure_does_not_throw(closure @lymda)
+- _assert_true(boolean @bool, string @msg = null)
+- _assert_false(boolean @bool, string @msg = null)
+- _assert_null(mixed @object, string @msg = null)
+- _assert_not_null(mixed @object, string @msg = null)
+- _assert_equals(mixed @exp, mixed @act, string @msg = null)
+- _assert_not_equals(mixed @arg1, mixed @arg2, string @msg = null)
+- _assert_size(int @size, array @arr, string @msg = null)
+- _assert_length(int @length, mixed @act, string @msg = null)
+- _assert_empty(mixed @object, string @msg = null)
+- _assert_not_empty(mixed @object, string @msg = null)
+- _assert_type(string @type, mixed @object, string @msg = null)
+- _assert_proc_throw(string @classType, string @proc_name, string @msg = null)
+- _assert_closure_throw(string @classType, closure @lymda, string @msg = null)
+- _assert_proc_does_not_throw(string @proc_name, string @msg = null)
+- _assert_closure_does_not_throw(closure @lymda, string @msg = null)
 
 ### Supporting Procedures
 
