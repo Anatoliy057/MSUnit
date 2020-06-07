@@ -8,7 +8,29 @@
 
 To connect the module, just connect main.ms.
 
-Put your test scripts in a folder './test/'. Test scripts may contain only procedures, which are of three types:
+Register the module for which you want to write tests using procedures:
+
+- _unit_register_module_fast(string @id, string @folder)
+- _unit_register_module_pro(string @id, string @folder, string @groups, array @outs)
+
+You can use the default log output methods:
+
+- proc _unit_get_default_outs(@path_to_log)
+
+For example:
+
+```ms
+_unit_register_module_pro(
+  'unit',
+  get_absolute_path('test'),
+  get_absolute_path('tests.properties'),
+  _unit_get_default_outs(get_absolute_path('logs'))
+)
+```
+
+>For details see [constants.ms](constants.ms)
+
+Put your test scripts in a "@folder". Test scripts may contain only procedures, which are of three types:
 
 - Before all [prefix='_unit_before_all']
 
@@ -22,17 +44,19 @@ Put your test scripts in a folder './test/'. Test scripts may contain only proce
 
   The procedure is test.
 
+The names of the procedures can only match if they are in different scripts.
+
 Before starting the tests, you need to initialize the settings with the command:
 
->unit -init
+>unit \<module\> -init
 
 After running the tests themselves with the command:
 
->unit
+>unit \<module\>
 
-Test logs will be displayed in the console and in the file './logs/log.txt'.
+Test logs will be displayed in the console and in the file "@path_to_log" if you used ```_unit_get_default_outs```.
 
-Some options can be changed in the constans.ms script.
+Some options can be changed in the [constants.ms](constants.ms) script.
 
 ***
 
@@ -40,14 +64,14 @@ Some options can be changed in the constans.ms script.
 
 ### Commands
 
-- unit <-command> \<args=all\> <-command> \<args\>...
+- unit \<module\> <-command> \<args=all\> <-command> \<args\>...
 
   - test \<args\> - Runs the groups of tests indicated in \<args\>
   - init \<args=all\> - Creates configuration file of groups of tests, giving them the default group specified in the arguments.
   - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments.
   - run \<args\> - Recompiles and runs the groups of tests indicated in \<args\>.
 
-> Default command: unit -> unit -update all -run all
+> Default command: unit -> unit unit -update all -run all
 
 ### Assertions
 

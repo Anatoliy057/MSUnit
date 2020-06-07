@@ -1,11 +1,10 @@
-@UNIT_PATH_SETTING = 'tests.properties'
-@UNIT_PATH_TEST = 'test'
 @UNIT_PATH_MSG = 'message.json'
 
 @UNIT_COMMAND_PREFIX = '-'
 @UNIT_COMMAND_INIT = 'init'
 @UNIT_COMMAND_RUN = 'run'
 @UNIT_COMMAND_UPDATE = 'update'
+
 @UNIT_COMMAND_START = 'start'
 
 @UNIT_GROUP_DEL = '|'
@@ -22,23 +21,60 @@
     'pref_test_init_proc' : '_unit_before_all_'    
 )
 
-@UNIT_LOG_PACK = 'logs'
-@UNIT_LOG_FILE = 'log.txt'
+string proc _package_unit_constants_name() {
+    return('__UNIT_SETTING')
+}
 
-@UNIT_CONSOLE_OUT = array(
-    'enable' : true,
-    'short' : true,
-    'write' : closure(@text) {
-        console(@text, false)
-    }
-)
+array proc _package_unit_get_constants() {
+    return(import(_package_unit_constants_name()))
+}
 
-@UNIT_FILE_OUT = array(
-    'enable' : true,
-    'short' : false,
-    'write' : closure(@text) {
-        if (!file_exists(@UNIT_LOG_PACK), create_dir(@UNIT_LOG_PACK))
-        if (!file_exists(@UNIT_LOG_PACK.'\\'.@UNIT_LOG_FILE), create_file(@UNIT_LOG_PACK.'\\'.@UNIT_LOG_FILE))
-        write_file(@UNIT_LOG_PACK.'\\'.@UNIT_LOG_FILE, @text, 'APPEND')
-    }
-)
+export(_package_unit_constants_name(), array(modules: array()))
+
+proc _unit_register_module_fast(string @id, string @folder) {
+    @conts = _package_unit_get_constants()
+    @path_to_log = @folder.'\\logs'
+    @conts['modules'][@id] = array(
+        id: @id,
+        setting_tests: @folder.'\\tests.properties',
+        tests: @folder,
+        outs: _unit_get_default_outs(@path_to_log)
+    )
+}
+
+proc _unit_register_module_pro(string @id, string @folder, string @groups, array @outs) {
+    @conts = _package_unit_get_constants()
+    @conts['modules'][@id] = array(
+        id: @id,
+        setting_tests: @groups,
+        tests: @folder,
+        outs: @outs
+    )
+}
+
+proc _unit_get_default_outs(@path_to_log) {
+    return(
+        array(
+            array(
+                'enable' : true,
+                'short' : false,
+                'write' : closure(@text) {
+                    console(@text, false)
+                }
+            ),
+            array(
+                'enable' : true,
+                'short' : false,
+                'write' : closure(@text) {
+                    @path_to_log_file = @path_to_log.'\\'.simple_date('yyyy.MM.dd').'.txt'
+                    if (file_exists(@path_to_log_file)) {
+                        _util_make_dir(@path_to_log_file)
+                    }
+                    write_file(@path_to_log_file, @text, 'APPEND')
+                }
+            )
+        )
+    )
+}
+
+_unit_register_module_pro('unit', get_absolute_path('test'), get_absolute_path('tests.properties'), _unit_get_default_outs(get_absolute_path('logs')))
