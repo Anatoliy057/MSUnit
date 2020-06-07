@@ -6,7 +6,7 @@
 
 ## Using
 
-To connect the module, just connect main.ms.
+To connect the module, just connect main.ms and call procedure: ``_unit_register_command`` after all includes.
 
 Register the module for which you want to write tests using procedures:
 
