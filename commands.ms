@@ -1,3 +1,11 @@
+proc _private_unit_commands_name() {
+    return('__UNIT_COMMANDS')
+}
+
+proc _package_unit_commands_get() {
+    return(import(_private_unit_commands_name()))
+}
+
 proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, string @def_value, string @group_del) {
     console('MSUnit: creating '.@path_to_groups.' ...', false)
     _util_make_dir(@path_to_groups)
@@ -54,7 +62,7 @@ proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @
             array_push(@tests, @file)
         }
     }
-    _package_unit_runner(@tests, @path_to_test, @setting, @out)
+    _package_unit_tester(@tests, @path_to_test, @setting, @out)
 }
 
 proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups, @out) {
@@ -72,5 +80,57 @@ proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups, @
         }
     }
 
-    _package_unit_runner(@tests, @setting, @out)
+    _package_unit_tester(@tests, @setting, @out)
+}
+
+
+proc _package_unit_commands_init(@setting) {
+
+    include('constants.ms')
+
+    @commander = _util_commander_init_self()
+
+    @UNIT_SETTING['name_module'] = @setting['id']
+
+    _util_commander_register(
+        @commander,
+        @UNIT_COMMAND_INIT,
+        closure() {
+            if (array_size(@arguments[0][0]) > 0) {
+                _package_unit_create_setting(@setting['setting_tests'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+            } else {
+                _package_unit_create_setting(@setting['setting_tests'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
+            }
+        }
+    )
+
+    _util_commander_register(
+        @commander,
+        @UNIT_COMMAND_UPDATE,
+        closure() {
+            if (array_size(@arguments[0][0]) > 0) {
+                _package_unit_update_setting(@setting['setting_tests'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+            } else {
+                _package_unit_update_setting(@setting['setting_tests'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
+            }
+        }
+    )
+
+    _util_commander_register(
+        @commander,
+        @UNIT_COMMAND_START,
+        closure() {
+            _package_unit_start_test(@setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
+        }
+    )
+
+    _util_commander_register(
+        @commander,
+        @UNIT_COMMAND_RUN,
+        closure() {
+            _package_unit_run_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
+        }
+    )
+
+    export(_private_unit_commands_name(), @commander)
 }

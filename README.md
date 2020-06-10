@@ -6,12 +6,12 @@
 
 ## Using
 
-To connect the module, just connect main.ms and call procedure: ``_unit_register_command`` after all includes.
+To connect the module, just connect main.ms and call procedure: ``_unit_init_module`` after all includes.
 
 Register the module for which you want to write tests using procedures:
 
 - _unit_register_module_fast(string @id, string @folder)
-- _unit_register_module_pro(string @id, string @folder, string @groups, array @outs)
+- _unit_register_module(string @id, string @folder, string @groups, array @outs)
 
 You can use the default log output methods:
 
@@ -20,7 +20,7 @@ You can use the default log output methods:
 For example:
 
 ```ms
-_unit_register_module_pro(
+_unit_register_module(
   'unit',
   get_absolute_path('test'),
   get_absolute_path('tests.properties'),
