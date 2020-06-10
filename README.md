@@ -28,7 +28,7 @@ _unit_register_module(
 )
 ```
 
->For details see [constants.ms](constants.ms)
+>For details see [register.ms](register.ms)
 
 Put your test scripts in a "@folder". Test scripts may contain only procedures, which are of three types:
 
