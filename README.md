@@ -71,7 +71,7 @@ Some options can be changed in the [constants.ms](constants.ms) script.
   - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments.
   - run \<args\> - Recompiles and runs the groups of tests indicated in \<args\>.
 
-> Default command: unit -> unit unit -update all -run all
+> Default command: unit \<module\> -> unit \<module\> -update all -run all
 
 ### Assertions
 
