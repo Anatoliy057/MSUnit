@@ -7,3 +7,5 @@ proc _package_unit_syn_set(string @key) {
     import('__UNIT_SYNCHRON')[@key] = @monitor
     return(@monitor)
 }
+
+export('__UNIT_SYNCHRON', array())

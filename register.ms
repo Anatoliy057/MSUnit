@@ -29,7 +29,7 @@ proc _unit_register_module(string @id, string @folder, string @groups, array @ou
     )
 }
 
-array proc _unit_get_default_outs(string @path_to_log) {
+array proc _unit_get_default_outs(string @path_to_log, int @ignore_for_permission = 3) {
     return(
         array(
             array(
@@ -44,8 +44,8 @@ array proc _unit_get_default_outs(string @path_to_log) {
                 'short' : false,
                 'write' : closure(@text) {
                     @path_to_log_file = @path_to_log.'\\'.simple_date('yyyy.MM.dd').'.txt'
-                    if (file_exists(@path_to_log_file)) {
-                        _util_make_dir(@path_to_log_file)
+                    if (!file_exists(@path_to_log_file)) {
+                        _util_make_file(@path_to_log_file, '\\', @ignore_for_permission)
                     }
                     write_file(@path_to_log_file, @text, 'APPEND')
                 }
@@ -53,7 +53,3 @@ array proc _unit_get_default_outs(string @path_to_log) {
         )
     )
 }
-
-
-
-_unit_register_module('unit', get_absolute_path('test'), get_absolute_path('tests.properties'), _unit_get_default_outs(get_absolute_path('logs')))

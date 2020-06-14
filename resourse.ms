@@ -6,6 +6,3 @@ if (!file_exists(@UNIT_PATH_MSG)) {
 } else {
     export('__UNIT_MSG', json_decode(read(@UNIT_PATH_MSG)))
 }
-
-export('__UNIT_SYNCHRON', array())
-export('__UNIT_TEST_LOG', array())

@@ -8,7 +8,7 @@ proc _package_unit_commands_get() {
 
 proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, string @def_value, string @group_del) {
     console('MSUnit: creating '.@path_to_groups.' ...', false)
-    _util_make_dir(@path_to_groups)
+    _util_make_file(@path_to_groups)
     @files = array_sort(_util_get_all_scripts(@path_to_test), 'STRING')
     @prop = _util_properties_init_self()
     foreach(@file in @files) {
@@ -65,7 +65,7 @@ proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @
     _package_unit_tester(@tests, @path_to_test, @setting, @out)
 }
 
-proc _package_unit_start_test(@path_to_groups, @setting, @groups, @del_groups, @out) {
+proc _package_unit_start_test(@path_to_test, @path_to_groups, @setting, @groups, @del_groups, @out) {
     console('MSUnit: starting tests...', false)
     @prop = _util_properties_init_self()
     if (!file_exists(@path_to_groups)) {
@@ -120,7 +120,7 @@ proc _package_unit_commands_init(@setting) {
         @commander,
         @UNIT_COMMAND_START,
         closure() {
-            _package_unit_start_test(@setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
+            _package_unit_start_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
         }
     )
 

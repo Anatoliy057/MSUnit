@@ -21,3 +21,5 @@ proc _unit_env_init_cur(@log, @setting) {
 proc _unit_env_global_get() {
     return(import('__UNIT_TEST_LOG'))
 }
+
+export('__UNIT_TEST_LOG', array())

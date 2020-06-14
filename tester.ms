@@ -1,4 +1,8 @@
 proc _package_unit_tester(@tests, @path_to_test, @setting, @out) {
+
+    include('synchron.ms')
+    include('environment.ms')
+
     @task_ex = _util_task_ex_init_self('__unit_thread_starting_tests', @setting['number_threads'], 1, false)
     @result = _unit_env_global_get()
     foreach(@test in @tests) {
@@ -178,13 +182,13 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
         string_append(@builder, '\n')
         if (@out['short'] == true) {
             foreach(@script: @tests in @result) {
-                string_append(@builder, '######################################################\n')
+                string_append(@builder, '\n\n######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
                     @count_tests++
-                    string_append(@builder, '------------------------------------------------------\n')
+                    string_append(@builder, '\n------------------------------------------------------\n')
                     if (@info['successful']) {
                         string_append(@builder, '+ ')
                     } else {
@@ -210,13 +214,13 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
             string_append(@builder, "Tests run: @count_tests, Failures: @count_failures")
         } else {
             foreach(@script: @tests in @result) {
-                string_append(@builder, '######################################################\n')
+                string_append(@builder, '\n\n######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
                     @count_tests++
-                    string_append(@builder, '------------------------------------------------------\n')
+                    string_append(@builder, '\n------------------------------------------------------\n')
                     if (@info['successful']) {
                         string_append(@builder, '+ ')
                     } else {

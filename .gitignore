@@ -1,8 +1,1 @@
-# Folder tests
-test/
-
-# Settings
-tests.properties
-
-# Folder logs
-logs/*
+*/logs/*

@@ -93,6 +93,20 @@ proc _assert_type(string @type, mixed @object, string @msg = null) {
     _private_assert_eq(@type, typeof(@object), 1, @msg)
 }
 
+proc _assert_key_exist(string @key, array @array, string @msg = null) {
+    if (!is_associative(@array)) {
+        throw(CastException, 'array not associative')
+    }
+    _private_assert_eq(true, array_index_exists(@array, @key, 1, @msg))
+}
+
+proc _assert_key_not_exist(string @key, array @array, string @msg = null) {
+    if (!is_associative(@array)) {
+        throw(CastException, 'array not associative')
+    }
+    _private_assert_eq(false, array_index_exists(@array, @key, 1, @msg))
+}
+
 proc _assert_proc_throw(string @classType, string @proc_name, string @msg = null) {
     @args = null
     @act_type = null

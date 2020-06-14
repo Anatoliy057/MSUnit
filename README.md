@@ -90,6 +90,8 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 - _assert_closure_throw(string @classType, closure @lymda, string @msg = null)
 - _assert_proc_does_not_throw(string @proc_name, string @msg = null)
 - _assert_closure_does_not_throw(closure @lymda, string @msg = null)
+- _assert_key_exist(string @key, array @array, string @msg = null)
+- _assert_key_not_exist(string @key, array @array, string @msg = null)
 
 ### Supporting Procedures
 
