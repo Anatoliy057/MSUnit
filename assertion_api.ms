@@ -49,6 +49,12 @@ proc _assert_restart_time_all() {
     }
 }
 
+proc _skip_test() {
+    @log = _unit_env_cur()
+    @log['skipped'] = true
+    die()
+}
+
 proc _assert_true(boolean @bool, string @msg = null) {
     _private_assert_eq(true, @bool, 1, @msg)
 }

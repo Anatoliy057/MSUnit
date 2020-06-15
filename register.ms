@@ -9,6 +9,10 @@ array proc _package_unit_get_constants() {
 export(_package_unit_constants_name(), array(modules: array()))
 
 proc _unit_register_module_fast(string @id, string @folder) {
+    if (!is_dir(@folder)) {
+        console(_package_unit_msg_module_log('is_not_folder', @folder), false)
+        die()
+    }
     @conts = _package_unit_get_constants()
     @path_to_log = @folder.'\\logs'
     @conts['modules'][@id] = array(
@@ -20,6 +24,10 @@ proc _unit_register_module_fast(string @id, string @folder) {
 }
 
 proc _unit_register_module(string @id, string @folder, string @groups, array @outs) {
+    if (!is_dir(@folder)) {
+        console(_package_unit_msg_module_log('is_not_folder', @folder), false)
+        die()
+    }
     @conts = _package_unit_get_constants()
     @conts['modules'][@id] = array(
         id: @id,

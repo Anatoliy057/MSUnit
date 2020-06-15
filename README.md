@@ -98,6 +98,7 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 - _print(mixed @msg)
 - _println(mixed @msg)
 - _sleep(int @seconds)
+- _skip_test()
 - _assert_time_assert(int @seconds)
 - _assert_time_proc(int @seconds)
 - _assert_restart_time()

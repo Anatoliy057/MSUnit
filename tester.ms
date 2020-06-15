@@ -177,6 +177,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
     foreach(@out in @outs) {
         int @count_tests = 0
         int @count_failures = 0
+        int @count_skipped = 0
         if (!@out['enable'], continue())
         @builder = res_create_resource('STRING_BUILDER')
         string_append(@builder, '\n[TIME] ')
@@ -192,7 +193,14 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 foreach(@test: @info in @tests) {
                     @count_tests++
                     string_append(@builder, '\n------------------------------------------------------\n')
-                    if (@info['successful']) {
+                    if (@info['skipped']) {
+                        @count_skipped++
+                        string_append(@builder, '# ')
+                        string_append(@builder, 'Test: ')
+                        string_append(@builder, @test)
+                        string_append(@builder, ' - skipped\n')
+                        continue()
+                    } else if (@info['successful']) {
                         string_append(@builder, '+ ')
                     } else {
                         @count_failures++
@@ -224,7 +232,14 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 foreach(@test: @info in @tests) {
                     @count_tests++
                     string_append(@builder, '\n------------------------------------------------------\n')
-                    if (@info['successful']) {
+                    if (@info['skipped']) {
+                        @count_skipped++
+                        string_append(@builder, '# ')
+                        string_append(@builder, 'Test: ')
+                        string_append(@builder, @test)
+                        string_append(@builder, ' - skipped\n')
+                        continue()
+                    } else if (@info['successful']) {
                         string_append(@builder, '+ ')
                     } else {
                         @count_failures++
@@ -250,7 +265,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 }
             }
             string_append(@builder, '\n')
-            string_append(@builder, "Tests run: @count_tests, Failures: @count_failures")   
+            string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         }
         string_append(@builder, '\n')
         execute(string(@builder), @out['write'])

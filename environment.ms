@@ -12,6 +12,7 @@ proc _unit_env_init_cur(@log, @setting) {
     @log['test_log'] = ''
     @log['user_message'] = null
     @log['successful'] = true
+    @log['skipped'] = false
     @log['time_assert'] = @setting['assert_timeout']
     @log['time_proc'] = @setting['proc_timeout']
     @log['assert_timeout'] = @setting['assert_timeout']

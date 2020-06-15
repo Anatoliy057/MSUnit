@@ -28,9 +28,7 @@ proc _unit_test_throw_3() {
 }
 
 proc _unit_test_not_throw_1() {
-    @test = closure() {
-        _print('SUCCESSFUL')
-    }
+    @test = closure() {}
     _assert_closure_does_not_throw(@test)
     _assert_proc_does_not_throw('_not_throw')
 }

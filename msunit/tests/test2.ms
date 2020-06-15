@@ -8,16 +8,18 @@ proc _unit_before_each_some_text0() {
     return('test')
 }
 
-// proc _unit_test_0_assert_out() {
-//     sleep(100)
-// }
+proc _unit_test_0_assert_out() {
+    _skip_test()
+    sleep(100)
+}
 
-// proc _unit_test_0_proc_out() {
-//     while(true) {
-//         sleep(1)
-//         _assert_true(true)
-//     }
-// }
+proc _unit_test_0_proc_out() {
+    _skip_test()
+    while(true) {
+        sleep(1)
+        _assert_true(true)
+    }
+}
 
 proc _unit_test_unex_throw() {
     throw(Exception, 'SUCCESSFUL')
