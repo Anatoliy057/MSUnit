@@ -53,10 +53,10 @@ proc _private_unit_tester_sep_procs(string @script, array @procs, array @setting
 proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting, @result) {
     @result[@test] = array()
     @runnable = closure() {
-        @lymda_before
-        @lymda_each
-        @before_all
-        @before_each
+        string @lymda_before
+        string @lymda_each
+        mixed @before_all
+        mixed @before_each
 
         @tests = @sorted_procs['tests']
     
@@ -110,9 +110,12 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                 try {
                     call_proc(@proc_test, @before_all, @before_each)
                 } catch(Exception @e) {
+                    @exception = array()
+                    @exception['classType'] = @e['classType']
+                    @exception['message'] = @e['message']
+                    @exception['stackTrace'] = @e['stackTrace'][..-2]
                     @res['successful'] = false
-                    @e['stackTrace'] = @e['stackTrace'][..-2]
-                    @res['test_log'] = _package_unit_log_unex_throw(@e)
+                    @res['test_log'] = _package_unit_log_unex_throw(@exception)
                 } finally {
                     @res['time'] += nano_time()
                     @res['time'] /= 1000000000
