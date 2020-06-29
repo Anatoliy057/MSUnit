@@ -1,16 +1,16 @@
-string proc _package_unit_constants_name() {
-    return('__UNIT_SETTING')
-}
-
 array proc _package_unit_get_constants() {
-    return(import(_package_unit_constants_name()))
+    return(import('org.cadabra.msunit.register'))
 }
 
-export(_package_unit_constants_name(), array(modules: array()))
+export('org.cadabra.msunit.register', array(modules: array()))
 
 proc _unit_register_module_fast(string @id, string @folder) {
     if (!is_dir(@folder)) {
-        console(_package_unit_msg_module_log('is_not_folder', @folder), false)
+        console(
+            "[FATAL] This is not a directory: @folder\n"
+            ."In _unit_register_module_fast()",
+            , false
+        )
         die()
     }
     @conts = _package_unit_get_constants()
@@ -25,7 +25,11 @@ proc _unit_register_module_fast(string @id, string @folder) {
 
 proc _unit_register_module(string @id, string @folder, string @groups, array @outs) {
     if (!is_dir(@folder)) {
-        console(_package_unit_msg_module_log('is_not_folder', @folder), false)
+        console(
+            "[FATAL] This is not a directory: @folder\n"
+            ."In _unit_register_module()",
+            , false
+        )
         die()
     }
     @conts = _package_unit_get_constants()

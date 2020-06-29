@@ -4,7 +4,7 @@ proc _unit_env_cur() {
 }
 
 proc _unit_env_get(@id) {
-    return(import('__UNIT_TEST_LOG')[@id[0]][@id[1]])
+    return(import('org.cadabra.msunit.env')[@id[0]][@id[1]])
 }
 
 proc _unit_env_init_cur(@log, @setting) {
@@ -20,7 +20,7 @@ proc _unit_env_init_cur(@log, @setting) {
 }
 
 proc _unit_env_global_get() {
-    return(import('__UNIT_TEST_LOG'))
+    return(import('org.cadabra.msunit.env'))
 }
 
-export('__UNIT_TEST_LOG', array())
+export('org.cadabra.msunit.env', array())

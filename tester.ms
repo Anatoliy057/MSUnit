@@ -3,15 +3,15 @@ proc _package_unit_tester(@tests, @path_to_test, @setting, @out) {
     include('synchron.ms')
     include('environment.ms')
 
-    @task_ex = _util_task_ex_init_self('__unit_thread_starting_tests', @setting['number_threads'], 1, false)
+    @task_ex = _util_tasker_init_self('__unit_thread_starting_tests', @setting['number_threads'], 1, false)
     @result = _unit_env_global_get()
     foreach(@test in @tests) {
         _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
     }
-    @size = _util_task_ex_size_waiting(@task_ex)
-    _util_task_ex_start(@task_ex)
-    while(_util_task_ex_complited(@task_ex) != @size) {}
-    _util_task_ex_stop(@task_ex)
+    @size = _util_tasker_size_waiting(@task_ex)
+    _util_tasker_start(@task_ex)
+    while(_util_tasker_complited(@task_ex) != @size) {}
+    _util_tasker_stop(@task_ex)
     _private_unit_tester_log_result(@setting, @result, @out)
 }
 
@@ -32,7 +32,7 @@ proc _private_unit_tester_add_test(string @test, string @path_to_test, array @se
         return()
     }
     @task = _private_unit_tester_init_task(@test, @sorted_procs, @setting, @result)
-    _util_task_ex_add(@task_ex, @task)
+    _util_tasker_add(@task_ex, @task)
 }
 
 proc _private_unit_tester_sep_procs(string @script, array @procs, array @setting) {

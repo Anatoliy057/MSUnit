@@ -1,14 +1,15 @@
 include('register.ms')
-include('statics.ms')
-include('resourse.ms')
-include('message.ms')
-include('log_builder.ms')
-include('commands.ms')
-include('tester.ms')
-include('assertion_api.ms')
-include('runner.ms')
 
 proc _unit_init_module() {
+
+    include('statics.ms')
+    include('resourse.ms')
+    include('message.ms')
+    include('log_builder.ms')
+    include('commands.ms')
+    include('tester.ms')
+    include('assertion_api.ms')
+    include('runner.ms')
 
     _unit_register_module(
         'msunit',

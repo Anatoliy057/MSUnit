@@ -1,9 +1,5 @@
-proc _private_unit_commands_name() {
-    return('__UNIT_COMMANDS')
-}
-
 proc _package_unit_commands_get() {
-    return(import(_private_unit_commands_name()))
+    return(import('org.cadabra.msunit.commands'))
 }
 
 proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, string @def_value, string @group_del) {
@@ -132,5 +128,5 @@ proc _package_unit_commands_init(@setting) {
         }
     )
 
-    export(_private_unit_commands_name(), @commander)
+    export('org.cadabra.msunit.commands', @commander)
 }
