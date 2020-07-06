@@ -13,7 +13,7 @@
     'assert_timeout' : 5,
     'proc_timeout' : 10,
     'number_threads' : 4,
-    'pref_test_proc' : '_unit_test',
-    'pref_before_proc' : '_unit_before_each',
-    'pref_test_init_proc' : '_unit_before_all'    
+    'pref_test_proc' : '_test',
+    'pref_before_proc' : '_before_each',
+    'pref_test_init_proc' : '_before_all'    
 )

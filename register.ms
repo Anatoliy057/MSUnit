@@ -19,7 +19,19 @@ proc _unit_register_module_fast(string @id, string @folder) {
         id: @id,
         setting_tests: @folder.'\\tests.properties',
         tests: @folder,
-        outs: _unit_get_default_outs(@path_to_log)
+        outs: _unit_get_default_outs(@path_to_log),
+        run: closure(string @arg, array @setting) {
+            @root = import('org.cadabra.msunit.path')
+            include("@root\\statics.ms")
+            include("@root\\resourse.ms")
+            include("@root\\message.ms")
+            include("@root\\log_builder.ms")
+            include("@root\\commands.ms")
+            include("@root\\tester.ms")
+            include("@root\\assertion_api.ms")
+            include("@root\\runner.ms")
+            _unit_run(@arg, @setting)
+        }
     )
 }
 
@@ -37,7 +49,19 @@ proc _unit_register_module(string @id, string @folder, string @groups, array @ou
         id: @id,
         setting_tests: @groups,
         tests: @folder,
-        outs: @outs
+        outs: @outs,
+        run: closure(string @arg, array @setting) {
+            @root = import('org.cadabra.msunit.path')
+            include("@root\\statics.ms")
+            include("@root\\resourse.ms")
+            include("@root\\message.ms")
+            include("@root\\log_builder.ms")
+            include("@root\\commands.ms")
+            include("@root\\tester.ms")
+            include("@root\\assertion_api.ms")
+            include("@root\\runner.ms")
+            _unit_run(@arg, @setting)
+        }
     )
 }
 

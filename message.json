@@ -1,7 +1,6 @@
 {
     "prefix": "MSUnit: ",
     "module_log": {
-        "is_not_folder": "[FATAL] this is not a directory: %s",
         "is_not_file": "[FATAL] this is not a fuke: %s",
         "setting_groups_not_found": "[FATAL] file '%s' of properties of groups doesn't exist. Sure that path is correct.",
         "setting_out_not_found": "[FATAL] no args for setting log output",

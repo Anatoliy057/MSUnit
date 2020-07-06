@@ -1,15 +1,7 @@
 include('register.ms')
+export('org.cadabra.msunit.path', get_absolute_path(''))
 
 proc _unit_init_module() {
-
-    include('statics.ms')
-    include('resourse.ms')
-    include('message.ms')
-    include('log_builder.ms')
-    include('commands.ms')
-    include('tester.ms')
-    include('assertion_api.ms')
-    include('runner.ms')
 
     _unit_register_module(
         'msunit',
@@ -26,14 +18,17 @@ proc _unit_init_module() {
             if (array_size(@arguments[2]) == 0) {
                 console('MSUnit: [FATAL] no arguments', false)
                 die()
-            } else if (array_size(@arguments[2]) == 1) {
-                if (!array_index_exists(_package_unit_get_constants()['modules'], @arguments[2][0])) {
-                    console('MSUnit: [FATAL] Unknown module '. @arguments[2][0], false)
-                    die()
-                }
-                _unit_run('-update all -run all',  _package_unit_get_constants()['modules'][@arguments[2][0]][])
+            }
+            if (!array_index_exists(_package_unit_get_constants()['modules'], @arguments[2][0])) {
+                console('MSUnit: [FATAL] Unknown module '. @arguments[2][0], false)
+                die()
+            }
+            if (array_size(@arguments[2]) == 1) {
+                @module = _package_unit_get_constants()['modules'][@arguments[2][0]][]
+                execute('-update all -run all', @module, @module['run'])
             } else {
-                _unit_run(array_implode(@arguments[2][1..], ' '),  _package_unit_get_constants()['modules'][@arguments[2][0]][])
+                @module = _package_unit_get_constants()['modules'][@arguments[2][0]][]
+                execute(array_implode(@arguments[2][1..], ' '), @module, @module['run'])
             }
         }
     ))

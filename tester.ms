@@ -1,9 +1,7 @@
 proc _package_unit_tester(@tests, @path_to_test, @setting, @out) {
-
     include('synchron.ms')
     include('environment.ms')
-
-    @task_ex = _util_tasker_init_self('__unit_thread_starting_tests', @setting['number_threads'], 1, false)
+    @task_ex = _util_tasker_init_self('org.cadabra.msunit.tester-thread', @setting['number_threads'], 1, false)
     @result = _unit_env_global_get()
     foreach(@test in @tests) {
         _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
@@ -56,7 +54,6 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
         string @lymda_before
         string @lymda_each
         mixed @before_all
-        mixed @before_each
 
         @tests = @sorted_procs['tests']
     
@@ -84,30 +81,20 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
         }
         for(@i = 0, @i < array_size(@tests), @i ++) {
             @proc_test = @tests[@i]
-            try {
-                @before_each = call_proc(@lymda_each)
-            } catch (Exception @e) {
-                console(_package_unit_msg_module_log(
-                    'error_before_each',
-                    @lymda_each,
-                    @e['classType'],
-                    @e['message'],
-                    _util_parse_stack_trace(1, @e['stackTrace'], 1)
-                ), false)
-                die()
-            } 
-
-            @result[@test][@proc_test] = array()
+            synchronized('org.cadabra.msunit.result') {
+                @result[@test][@proc_test] = array()
+            }
             @res = @result[@test][@proc_test]
             _unit_env_init_cur(@res, @setting)
             
             @name_thread = @test.':'.@proc_test
             @motitor = _package_unit_syn_set(@name_thread)
             @name_thread = _package_unit_static_to_unit_thread(@name_thread)
-
-            x_new_tracked_thread(@name_thread, closure() {
+            x_tracked_new_thread(@name_thread, closure() {
                 @res['time'] = -nano_time()
                 try {
+                    @before_each = null
+                    @before_each = call_proc(@lymda_each)
                     call_proc(@proc_test, @before_all, @before_each)
                 } catch(Exception @e) {
                     @exception = array()
@@ -121,28 +108,24 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                     @res['time'] /= 1000000000
                 }
             })
-
             @id_interval = _util_interval(1, 0, closure() {
                 synchronized(@motitor) {
                     @res['assert_timeout'] -= 1
                     @res['proc_timeout'] -= 1
+
+                    if (@res['assert_timeout'] <= 0) {
+                        x_stop_thread(@name_thread)
+                        @res['successful'] = false
+                        @res['test_log'] = _package_unit_log_assert_timeout()
+                    }
+                    if (@res['proc_timeout'] <= 0) {
+                        x_stop_thread(@name_thread)
+                        @res['successful'] = false
+                        @res['test_log'] = _package_unit_log_proc_timeout()
+                    }
                 }
             })
-
-            while (tracked_thread_is_alive(@name_thread)) {
-                if (@res['assert_timeout'] <= 0 && tracked_thread_is_alive(@name_thread)) {
-                    x_stop_tracked_thread(@name_thread)
-                    @res['successful'] = false
-                    @res['test_log'] = _package_unit_log_assert_timeout()
-                    break()
-                }
-                if (@res['proc_timeout'] <= 0  && tracked_thread_is_alive(@name_thread)) {
-                    x_stop_tracked_thread(@name_thread)
-                    @res['successful'] = false
-                    @res['test_log'] = _package_unit_log_proc_timeout()
-                    break()
-                }
-            }
+            while (x_thread_is_alive(@name_thread)) {}
             _util_clear_interval(@id_interval)
         }
     }
@@ -186,15 +169,20 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
         string_append(@builder, '\n')
         if (@out['short'] == true) {
             foreach(@script: @tests in @result) {
+                int @lcount_tests = 0
+                int @lcount_failures = 0
+                int @lcount_skipped = 0
                 string_append(@builder, '\n\n######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
                     @count_tests++
+                    @lcount_tests++
                     string_append(@builder, '\n------------------------------------------------------\n')
                     if (@info['skipped']) {
                         @count_skipped++
+                        @lcount_skipped++
                         string_append(@builder, '# ')
                         string_append(@builder, 'Test: ')
                         string_append(@builder, @test)
@@ -204,6 +192,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '+ ')
                     } else {
                         @count_failures++
+                        @lcount_failures++
                         string_append(@builder, '- ')
                     }
                     string_append(@builder, 'Test: ')
@@ -220,20 +209,27 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '\n')
                     }
                 }
+                string_append(@builder, '\n******************************************************\n')
+                string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped\n")   
             }
             string_append(@builder, '\n')
-            string_append(@builder, "Tests run: @count_tests, Failures: @count_failures")
+            string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         } else {
             foreach(@script: @tests in @result) {
                 string_append(@builder, '\n\n######################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
+                int @lcount_tests = 0
+                int @lcount_failures = 0
+                int @lcount_skipped = 0
                 foreach(@test: @info in @tests) {
                     @count_tests++
+                    @lcount_tests++
                     string_append(@builder, '\n------------------------------------------------------\n')
                     if (@info['skipped']) {
                         @count_skipped++
+                        @lcount_skipped++
                         string_append(@builder, '# ')
                         string_append(@builder, 'Test: ')
                         string_append(@builder, @test)
@@ -243,6 +239,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '+ ')
                     } else {
                         @count_failures++
+                        @lcount_failures++
                         string_append(@builder, '- ')
                     }
                     string_append(@builder, 'Test: ')
@@ -263,9 +260,11 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '\n')  
                     }
                 }
+                string_append(@builder, '\n******************************************************\n')
+                string_append(@builder, "Tests run: @lcount_tests, Failures: @lcount_failures, Skipped: @lcount_skipped\n")   
             }
             string_append(@builder, '\n')
-            string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
+            string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         }
         string_append(@builder, '\n')
         execute(string(@builder), @out['write'])

@@ -3,11 +3,11 @@ proc _unit_env_cur() {
     return(_unit_env_get(@id))
 }
 
-proc _unit_env_get(@id) {
-    return(import('org.cadabra.msunit.env')[@id[0]][@id[1]])
+proc _unit_env_get(array @id) {
+    return(_unit_env_global_get()[@id[0]][@id[1]])
 }
 
-proc _unit_env_init_cur(@log, @setting) {
+proc _unit_env_init_cur(array @log, array @setting) {
     @log['user_log'] = res_create_resource('STRING_BUILDER')
     @log['test_log'] = ''
     @log['user_message'] = null

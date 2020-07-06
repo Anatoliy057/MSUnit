@@ -1,8 +1,10 @@
-proc _unit_test_println() {
+proc _test_println() {
     _println('print')
     _print('ln')
+    _print('SUCCESSFUL')
 }
 
-proc _unit_test_simular() {
+proc _test_simular() {
     _print('Test 1')
+    _println('SUCCESSFUL')
 }

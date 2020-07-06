@@ -55,6 +55,26 @@ proc _skip_test() {
     die()
 }
 
+proc _assert_true_obj(mixed @o, string @msg = null) {
+   @log = _unit_env_cur()
+    _private_assert_restart_time(@log)
+    if (@o) {
+        _private_assert_successful(@log)
+    } else {
+        _private_assert_fail(@log, 'diff', @stack + 1, array(@o, 'object'), @msg)
+    }
+}
+
+proc _assert_false_obj(mixed @o, string @msg = null) {
+   @log = _unit_env_cur()
+    _private_assert_restart_time(@log)
+    if (!@o) {
+        _private_assert_successful(@log)
+    } else {
+        _private_assert_fail(@log, 'diff', @stack + 1, array(@o, 'not object'), @msg)
+    }
+}
+
 proc _assert_true(boolean @bool, string @msg = null) {
     _private_assert_eq(true, @bool, 1, @msg)
 }
