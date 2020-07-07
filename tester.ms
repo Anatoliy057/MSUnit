@@ -247,11 +247,12 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                     string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
                     if (@info['user_message'] != null) {
                         string_append(@builder, 'Message: ')
-                        string_append(@builder, @info['user_message'])
+                        string_append(@builder, string(@info['user_message']))
                         string_append(@builder, '\n')
                     }
                     @user_log = string(@info['user_log'])
                     if (@user_log != '') {
+                        string_append(@builder, '\n')
                         string_append(@builder, @user_log)
                         string_append(@builder, '\n')
                     }
