@@ -10,12 +10,12 @@ To connect the module, just connect main.ms and call procedure: ``_unit_init_mod
 
 Register the module for which you want to write tests using procedures:
 
-- _unit_register_module_fast(string @id, string @folder)
-- _unit_register_module(string @id, string @folder, string @groups, array @outs)
+- _unit_register_module_fast(string id, string folder)
+- _unit_register_module(string id, string folder, string groups, array outs)
 
 You can use the default log output methods:
 
-- proc _unit_get_default_outs(@path_to_log)
+- proc _unit_get_default_outs(string path_to_log)
 
 For example:
 
@@ -30,7 +30,7 @@ _unit_register_module(
 
 >For details see [register.ms](register.ms)
 
-Put your test scripts in a "@folder". Test scripts may contain only procedures, which are of three types:
+Put your test scripts in a "folder". Test scripts may contain only procedures, which are of three types:
 
 - Before all [prefix='_unit_before_all']
 
@@ -54,7 +54,7 @@ After running the tests themselves with the command:
 
 >unit \<module\>
 
-Test logs will be displayed in the console and in the file "@path_to_log" if you used ```_unit_get_default_outs```.
+Test logs will be displayed in the console and in the file "path_to_log" if you used ```_unit_get_default_outs```.
 
 Some options can be changed in the [constants.ms](constants.ms) script.
 
@@ -75,32 +75,32 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 
 ### Assertions
 
-- _assert_true(boolean @bool, string @msg = null)
-- _assert_false(boolean @bool, string @msg = null)
-- _assert_null(mixed @object, string @msg = null)
-- _assert_not_null(mixed @object, string @msg = null)
-- _assert_equals(mixed @exp, mixed @act, string @msg = null)
-- _assert_not_equals(mixed @arg1, mixed @arg2, string @msg = null)
-- _assert_size(int @size, array @arr, string @msg = null)
-- _assert_length(int @length, mixed @act, string @msg = null)
-- _assert_empty(mixed @object, string @msg = null)
-- _assert_not_empty(mixed @object, string @msg = null)
-- _assert_type(string @type, mixed @object, string @msg = null)
-- _assert_proc_throw(string @classType, string @proc_name, string @msg = null)
-- _assert_closure_throw(string @classType, closure @lymda, string @msg = null)
-- _assert_proc_does_not_throw(string @proc_name, string @msg = null)
-- _assert_closure_does_not_throw(closure @lymda, string @msg = null)
-- _assert_key_exist(string @key, array @array, string @msg = null)
-- _assert_key_not_exist(string @key, array @array, string @msg = null)
+- _assert_true(boolean bool, [mixed msg])
+- _assert_false(boolean bool, [mixed msg])
+- _assert_null(mixed object, [mixed msg])
+- _assert_not_null(mixed object, [mixed msg])
+- _assert_equals(mixed exp, mixed act, [mixed msg])
+- _assert_not_equals(mixed arg1, mixed arg2, [mixed msg])
+- _assert_size(int size, array arr, [mixed msg])
+- _assert_length(int length, mixed act, [mixed msg])
+- _assert_empty(mixed object, [mixed msg])
+- _assert_not_empty(mixed object, [mixed msg])
+- _assert_type(string type, mixed object, [mixed msg])
+- _assert_proc_throw(string classType, string proc_name, [mixed msg])
+- _assert_closure_throw(string classType, closure lymda, [mixed msg])
+- _assert_proc_does_not_throw(string proc_name, [mixed msg])
+- _assert_closure_does_not_throw(closure [mixed msg]lymda, [mixed msg])
+- _assert_key_exist(string key, array array, [mixed msg])
+- _assert_key_not_exist(string key, array array, [mixed msg])
 
 ### Supporting Procedures
 
-- _print(mixed @msg)
-- _println(mixed @msg)
-- _sleep(int @seconds)
+- _print([mixed msg])
+- _println([mixed msg])
+- _sleep(int seconds)
 - _skip_test()
-- _assert_time_assert(int @seconds)
-- _assert_time_proc(int @seconds)
+- _assert_time_assert(int seconds)
+- _assert_time_proc(int seconds)
 - _assert_restart_time()
 - _assert_restart_time_all()
 
