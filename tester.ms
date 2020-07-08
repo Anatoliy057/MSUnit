@@ -172,14 +172,14 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 int @lcount_tests = 0
                 int @lcount_failures = 0
                 int @lcount_skipped = 0
-                string_append(@builder, '\n\n######################################################\n')
+                string_append(@builder, '\n\n###########################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
                 foreach(@test: @info in @tests) {
                     @count_tests++
                     @lcount_tests++
-                    string_append(@builder, '\n------------------------------------------------------\n')
+                    string_append(@builder, '\n-----------------------------------------------------------\n')
                     if (@info['skipped']) {
                         @count_skipped++
                         @lcount_skipped++
@@ -209,14 +209,14 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '\n')
                     }
                 }
-                string_append(@builder, '\n******************************************************\n')
+                string_append(@builder, '\n***********************************************************\n')
                 string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped\n")   
             }
-            string_append(@builder, '\n')
+            string_append(@builder, '\n===========================================================\n')
             string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         } else {
             foreach(@script: @tests in @result) {
-                string_append(@builder, '\n\n######################################################\n')
+                string_append(@builder, '\n\n###########################################################\n')
                 string_append(@builder, 'Script: ')
                 string_append(@builder, @script)
                 string_append(@builder, '\n')
@@ -226,7 +226,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 foreach(@test: @info in @tests) {
                     @count_tests++
                     @lcount_tests++
-                    string_append(@builder, '\n------------------------------------------------------\n')
+                    string_append(@builder, '\n-----------------------------------------------------------\n')
                     if (@info['skipped']) {
                         @count_skipped++
                         @lcount_skipped++
@@ -261,10 +261,10 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                         string_append(@builder, '\n')  
                     }
                 }
-                string_append(@builder, '\n******************************************************\n')
+                string_append(@builder, '\n***********************************************************\n')
                 string_append(@builder, "Tests run: @lcount_tests, Failures: @lcount_failures, Skipped: @lcount_skipped\n")   
             }
-            string_append(@builder, '\n')
+            string_append(@builder, '\n===========================================================\n')
             string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         }
         string_append(@builder, '\n')

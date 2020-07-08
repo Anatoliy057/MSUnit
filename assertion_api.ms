@@ -197,7 +197,7 @@ proc _private_assert_successful(@log) {
     @log['successful'] = true
 }
 
-proc _private_assert_eq(@exp, @act, int @stack, string @msg) {
+proc _private_assert_eq(@exp, @act, int @stack, mixed @msg) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@exp == @act) {
@@ -207,7 +207,7 @@ proc _private_assert_eq(@exp, @act, int @stack, string @msg) {
     }
 }
 
-proc _private_assert_not_eq(@arg1, @arg2, int @stack, string @msg) {
+proc _private_assert_not_eq(@arg1, @arg2, int @stack, mixed @msg) {
     @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@arg1 != @arg2) {
@@ -217,7 +217,7 @@ proc _private_assert_not_eq(@arg1, @arg2, int @stack, string @msg) {
     }
 }
 
-proc _private_assert_fail(@log, @mode, int @stack, array @args = array(), string @msg) {
+proc _private_assert_fail(@log, @mode, int @stack, array @args = array(), mixed @msg) {
     @builder = _unit_log_init_self()
     // _unit_log_set_trace(@builder, array_filter(get_stack_trace(), closure(@key, @val) {
     //     return(@val['id'][..8] != '_assert_' || @val['id'][..16] != '_private_assert_')
