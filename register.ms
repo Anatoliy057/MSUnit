@@ -51,15 +51,14 @@ proc _unit_register_module(string @id, string @folder, string @groups, array @ou
         tests: @folder,
         outs: @outs,
         run: closure(string @arg, array @setting) {
-            @root = import('org.cadabra.msunit.path')
-            include("@root\\statics.ms")
-            include("@root\\resourse.ms")
-            include("@root\\message.ms")
-            include("@root\\log_builder.ms")
-            include("@root\\commands.ms")
-            include("@root\\tester.ms")
-            include("@root\\assertion_api.ms")
-            include("@root\\runner.ms")
+            include('statics.ms')
+            include('resourse.ms')
+            include('message.ms')
+            include('log_builder.ms')
+            include('commands.ms')
+            include('tester.ms')
+            include('assertion_api.ms')
+            include('runner.ms')
             _unit_run(@arg, @setting)
         }
     )

@@ -1,5 +1,4 @@
 include('register.ms')
-export('org.cadabra.msunit.path', get_absolute_path(''))
 
 proc _unit_init_module() {
 

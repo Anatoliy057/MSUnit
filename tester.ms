@@ -75,7 +75,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                 @lymda_before,
                 @e['classType'],
                 @e['message'],
-                _util_parse_stack_trace(1, @e['stackTrace'], 1)
+                string(_util_parse_stack_trace(1, @e['stackTrace'], 1))
             ), false)
             die()
         }
@@ -90,7 +90,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
             @name_thread = @test.':'.@proc_test
             @motitor = _package_unit_syn_set(@name_thread)
             @name_thread = _package_unit_static_to_unit_thread(@name_thread)
-            x_tracked_new_thread(@name_thread, closure() {
+            x_new_thread(@name_thread, closure() {
                 @res['time'] = -nano_time()
                 try {
                     @before_each = null

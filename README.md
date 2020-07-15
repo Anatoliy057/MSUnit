@@ -75,21 +75,23 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 
 ### Assertions
 
+- `_assert_true_obj(Booleanish @o, [mixed @msg])`
+- `_assert_false_obj(Booleanish @o, [mixed @msg])`
 - `_assert_true(boolean bool, [mixed msg])`
 - `_assert_false(boolean bool, [mixed msg])`
 - `_assert_null(mixed object, [mixed msg])`
 - `_assert_not_null(mixed object, [mixed msg])`
 - `_assert_equals(mixed exp, mixed act, [mixed msg])`
 - `_assert_not_equals(mixed arg1, mixed arg2, [mixed msg])`
-- `_assert_size(int size, array arr, [mixed msg])`
+- `_assert_size(int size, Sizeable arr, [mixed msg])`
 - `_assert_length(int length, mixed act, [mixed msg])`
 - `_assert_empty(mixed object, [mixed msg])`
 - `_assert_not_empty(mixed object, [mixed msg])`
-- `_assert_type(string type, mixed object, [mixed msg])`
-- `_assert_proc_throw(string classType, string proc_name, [mixed msg])`
-- `_assert_closure_throw(string classType, closure lymda, [mixed msg])`
+- `_assert_type(ClassType type, mixed object, [mixed msg])`
+- `_assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
+- `_assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
 - `_assert_proc_does_not_throw(string proc_name, [mixed msg])`
-- `_assert_closure_does_not_throw(closure [mixed msg]lymda, [mixed msg])`
+- `_assert_closure_does_not_throw(closure lymda, [mixed msg])`
 - `_assert_key_exist(string key, array array, [mixed msg])`
 - `_assert_key_not_exist(string key, array array, [mixed msg])`
 
@@ -109,8 +111,7 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 ## Recuired
 
 - Extensions:
-  - [CHFiles](https://letsbuild.net/jenkins/job/CHFiles/)
-  - [CHThreads](https://github.com/Community-Cadabra-Project/CHThreads)
+  - [CHCadabra](https://github.com/Community-Cadabra-Project/CHCadabra)
 
 - Libraries:
   - [MSUtil](https://github.com/Community-Cadabra-Project/MSUtil)

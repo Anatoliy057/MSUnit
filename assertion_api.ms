@@ -55,7 +55,7 @@ proc _skip_test() {
     die()
 }
 
-proc _assert_true_obj(mixed @o, mixed @msg = null) {
+proc _assert_true_obj(Booleanish @o, mixed @msg = null) {
    @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@o) {
@@ -65,7 +65,7 @@ proc _assert_true_obj(mixed @o, mixed @msg = null) {
     }
 }
 
-proc _assert_false_obj(mixed @o, mixed @msg = null) {
+proc _assert_false_obj(Booleanish @o, mixed @msg = null) {
    @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (!@o) {
@@ -99,7 +99,7 @@ proc _assert_not_equals(mixed @arg1, mixed @arg2, mixed @msg = null) {
     _private_assert_not_eq(@arg1, @arg2, 1, @msg)
 }
 
-proc _assert_size(int @size, array @arr, mixed @msg = null) {
+proc _assert_size(int @size, Sizeable @arr, mixed @msg = null) {
     _private_assert_eq(@size, array_size(@arr), 1, @msg)
 }
 
@@ -115,7 +115,7 @@ proc _assert_not_empty(mixed @object, mixed @msg = null) {
     _private_assert_not_eq(0, length(@object), 1, @msg)
 }
 
-proc _assert_type(string @type, mixed @object, mixed @msg = null) {
+proc _assert_type(ClassType @type, mixed @object, mixed @msg = null) {
     _private_assert_eq(@type, typeof(@object), 1, @msg)
 }
 
@@ -133,7 +133,7 @@ proc _assert_key_not_exist(string @key, array @array, mixed @msg = null) {
     _private_assert_eq(false, array_index_exists(@array, @key), 1, @msg)
 }
 
-proc _assert_proc_throw(string @classType, string @proc_name, mixed @msg = null) {
+proc _assert_proc_throw(ClassType @type, string @proc_name, mixed @msg = null) {
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -144,10 +144,10 @@ proc _assert_proc_throw(string @classType, string @proc_name, mixed @msg = null)
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@classType, @act_type, 1, @msg)
+    _private_assert_eq(@type, @act_type, 1, @msg)
 }
 
-proc _assert_closure_throw(string @classType, closure @lymda, mixed @msg = null) {
+proc _assert_closure_throw(ClassType @type, closure @lymda, mixed @msg = null) {
     @args = null
     @act_type = null
     if (array_size(@arguments) > 2) {
@@ -158,7 +158,7 @@ proc _assert_closure_throw(string @classType, closure @lymda, mixed @msg = null)
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@classType, @act_type, 1, @msg)
+    _private_assert_eq(@type, @act_type, 1, @msg)
 }
 
 proc _assert_proc_does_not_throw(string @proc_name, mixed @msg = null) {
