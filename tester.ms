@@ -140,15 +140,15 @@ proc _private_unit_tester_sort_procs(@procs, @setting) {
     foreach(@proc in @procs) {
         @len = length(@setting['pref_test_proc'])
         if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
-            array_push(@sorted_procs['tests'], @proc)
+            @sorted_procs['tests'][] = @proc
         } else {
             @len = length(@setting['pref_before_proc'])
             if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_before_proc']) {
-                array_push(@sorted_procs['before_each'], @proc)
+                @sorted_procs['before_each'][] = @proc
             } else {
                 @len = length(@setting['pref_test_init_proc'])
                 if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_test_init_proc']) {
-                    array_push(@sorted_procs['before_all'], @proc)
+                    @sorted_procs['before_all'][] = @proc
                 }
             }
         }

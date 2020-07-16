@@ -55,7 +55,7 @@ proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @
 
     foreach(@file: @str_group in _util_properties_to_map(@prop)) {
         if (_util_array_some_contains(split(@del_groups, @str_group), @groups)) {
-            array_push(@tests, @file)
+            @tests[] = @file
         }
     }
     _package_unit_tester(@tests, @path_to_test, @setting, @out)
@@ -72,7 +72,7 @@ proc _package_unit_start_test(@path_to_test, @path_to_groups, @setting, @groups,
 
     foreach(@file: @str_group in _util_properties_to_map(@prop)) {
         if (_util_array_some_contains(split(@del_groups, @str_group), @groups)) {
-            array_push(@tests, @file)
+            @tests[] = @file
         }
     }
 
