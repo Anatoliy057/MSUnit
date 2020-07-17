@@ -12,7 +12,7 @@
 @UNIT_SETTING = array(
     'assert_timeout' : 5,
     'proc_timeout' : 10,
-    'number_threads' : 4,
+    'number_threads' : 6,
     'pref_test_proc' : '_test',
     'pref_before_proc' : '_before_each',
     'pref_test_init_proc' : '_before_all'    

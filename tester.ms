@@ -1,4 +1,4 @@
-proc _package_unit_tester(@tests, @path_to_test, @setting, @out) {
+proc _package_unit_tester(@tests, @path_to_test, @setting, @outs) {
     include('synchron.ms')
     include('environment.ms')
     @task_ex = _util_tasker_init_self('org.cadabra.msunit.tester-thread', @setting['number_threads'], 1, false)
@@ -7,10 +7,13 @@ proc _package_unit_tester(@tests, @path_to_test, @setting, @out) {
         _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
     }
     @size = _util_tasker_size_waiting(@task_ex)
+    @time = -nano_time()
     _util_tasker_start(@task_ex)
     while(_util_tasker_complited(@task_ex) != @size) {}
     _util_tasker_stop(@task_ex)
-    _private_unit_tester_log_result(@setting, @result, @out)
+    @time += nano_time()
+    @time /= 1000000000
+    _private_unit_tester_log_result(@setting, @result, @time, @outs)
 }
 
 proc _private_unit_tester_add_test(string @test, string @path_to_test, array @setting, array @result, array @task_ex) {
@@ -156,7 +159,7 @@ proc _private_unit_tester_sort_procs(@procs, @setting) {
     return(@sorted_procs)
 }
 
-proc _private_unit_tester_log_result(@setting, @result, @outs) {
+proc _private_unit_tester_log_result(@setting, @result, @time, @outs) {
     foreach(@out in @outs) {
         int @count_tests = 0
         int @count_failures = 0
@@ -213,7 +216,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped\n")   
             }
             string_append(@builder, '\n===========================================================\n')
-            string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
+            string_append(@builder, "Global statistics. Time: @time, Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         } else {
             foreach(@script: @tests in @result) {
                 string_append(@builder, '\n\n###########################################################\n')
@@ -265,7 +268,7 @@ proc _private_unit_tester_log_result(@setting, @result, @outs) {
                 string_append(@builder, "Tests run: @lcount_tests, Failures: @lcount_failures, Skipped: @lcount_skipped\n")   
             }
             string_append(@builder, '\n===========================================================\n')
-            string_append(@builder, "Global statistics. Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
+            string_append(@builder, "Global statistics. Time: @time, Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
         }
         string_append(@builder, '\n')
         execute(string(@builder), @out['write'])
