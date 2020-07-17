@@ -15,5 +15,7 @@
     'number_threads' : 6,
     'pref_test_proc' : '_test',
     'pref_before_proc' : '_before_each',
-    'pref_test_init_proc' : '_before_all'    
+    'pref_test_init_proc' : '_before_all',
+    'pref_after_proc' : '_after_each',
+    'pref_test_end_proc' : '_after_all'    
 )

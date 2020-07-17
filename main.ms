@@ -29,6 +29,7 @@ proc _unit_init_module() {
                 @module = _package_unit_get_constants()['modules'][@arguments[2][0]][]
                 execute(array_implode(@arguments[2][1..], ' '), @module, @module['run'])
             }
+            console('MSUnit: Current threads (should be empty): '.dump_keys_threads(), false)
         }
     ))
 }

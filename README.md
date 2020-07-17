@@ -32,17 +32,25 @@ _unit_register_module(
 
 Put your test scripts in a "folder". Test scripts may contain only procedures, which are of three types:
 
-- Before all \[prefix=`_unit_before_all`\]
+- Before all \[prefix=`_before_all`\]
 
   The procedure is performed before all tests. May be only one in script.
 
-- Before each \[prefix=`_unit_before_each`\]
+- Before each \[prefix=`_before_each`\]
 
   The procedure is performed before each tests. May be only one in script.
 
-- Test \[prefix=`_unit_test`\]
+- Test \[prefix=`_test`\]
 
   The procedure is test.
+
+- After all \[prefix=`_after_all`\]
+
+  The procedure is performed after all tests. May be only one in script.
+
+- After each \[prefix=`_after_each`\]
+
+  The procedure is performed after each tests. May be only one in script.
 
 The names of the procedures can only match if they are in different scripts.
 
