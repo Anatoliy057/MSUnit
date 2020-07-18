@@ -4,51 +4,28 @@ array proc _package_unit_get_constants() {
 
 export('org.cadabra.msunit.register', array(modules: array()))
 
-proc _unit_register_module_fast(string @id, string @folder) {
-    if (!is_dir(@folder)) {
-        console(
-            "[FATAL] This is not a directory: @folder\n"
-            ."In _unit_register_module_fast()",
-            , false
-        )
-        die()
-    }
-    @conts = _package_unit_get_constants()
-    @path_to_log = @folder.'\\logs'
-    @conts['modules'][@id] = array(
-        id: @id,
-        setting_tests: @folder.'\\tests.properties',
-        tests: @folder,
-        outs: _unit_get_default_outs(@path_to_log),
-        run: closure(string @arg, array @setting) {
-            @root = import('org.cadabra.msunit.path')
-            include("@root\\statics.ms")
-            include("@root\\resourse.ms")
-            include("@root\\message.ms")
-            include("@root\\log_builder.ms")
-            include("@root\\commands.ms")
-            include("@root\\tester.ms")
-            include("@root\\assertion_api.ms")
-            include("@root\\runner.ms")
-            _unit_run(@arg, @setting)
-        }
-    )
-}
+proc _unit_register_module(array @args) {
 
-proc _unit_register_module(string @id, string @folder, string @groups, array @outs) {
+    string @id = @args['id']
+    string @folder = @args['folder']
     if (!is_dir(@folder)) {
         console(
-            "[FATAL] This is not a directory: @folder\n"
-            ."In _unit_register_module()",
+            "[FATAL] This is not a directory: @folder"
+            ." In _unit_register_module()",
             , false
         )
         die()
     }
+    string @groups =if (array_index_exists(@args, 'groups'), @args['groups'], @folder.'\\tests.properties')
+    string @filter = if(array_index_exists(@args, 'filter'), @args['filter'], null)
+    array @outs = if(array_index_exists(@args, 'outs'), @args['outs'], @args['outs'] = _unit_get_default_outs(@folder.'\\logs'))
+
     @conts = _package_unit_get_constants()
     @conts['modules'][@id] = array(
         id: @id,
         setting_tests: @groups,
         tests: @folder,
+        filter: @filter,
         outs: @outs,
         run: closure(string @arg, array @setting) {
             include('statics.ms')

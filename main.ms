@@ -2,12 +2,12 @@ include('register.ms')
 
 proc _unit_init_module() {
 
-    _unit_register_module(
-        'msunit',
-        get_absolute_path('msunit/tests'),
-        get_absolute_path('msunit/tests.properties'),
-        _unit_get_default_outs(get_absolute_path('msunit/logs'))
-    )
+    _unit_register_module(associative_array(
+        id: 'msunit',
+        folder: get_absolute_path('msunit/tests'),
+        groups: get_absolute_path('msunit/tests.properties'),
+        outs: _unit_get_default_outs(get_absolute_path('msunit/logs'))
+    ))
 
     register_command('unit', array(
     'description': 'Unit module control',

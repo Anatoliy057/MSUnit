@@ -3,20 +3,30 @@ proc _package_unit_tester(@tests, @path_to_test, @setting, @outs) {
     include('environment.ms')
     @task_ex = _util_tasker_init_self('org.cadabra.msunit.tester-thread', @setting['number_threads'], 1, false)
     @result = _unit_env_global_get()
+    @count_tests = 0
+    export('org.cadabra.msunit.tester.count', 0)
     foreach(@test in @tests) {
-        _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
+        @count_tests += _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
     }
     @size = _util_tasker_size_waiting(@task_ex)
     @time = -nano_time()
     _util_tasker_start(@task_ex)
-    while(_util_tasker_complited(@task_ex) != @size) {}
+    @cur = 0
+    console('0 %', false)
+    while(_util_tasker_complited(@task_ex) != @size) {
+        if ((@n = import('org.cadabra.msunit.tester.count')) != @cur) {
+            @cur = @n
+            int @percent = integer((@n/@count_tests)*100)
+            console("@percent %", false)
+        }
+    }
     _util_tasker_stop(@task_ex)
     @time += nano_time()
     @time /= 1000000000
     _private_unit_tester_log_result(@setting, @result, @time, @outs)
 }
 
-proc _private_unit_tester_add_test(string @test, string @path_to_test, array @setting, array @result, array @task_ex) {
+int proc _private_unit_tester_add_test(string @test, string @path_to_test, array @setting, array @result, array @task_ex) {
     @path = @path_to_test.'\\'.replace(@test, '.', '\\').'.ms'
     @procs = array()
     if (file_exists(@path)) {
@@ -34,6 +44,7 @@ proc _private_unit_tester_add_test(string @test, string @path_to_test, array @se
     }
     @task = _private_unit_tester_init_task(@test, @sorted_procs, @setting, @result)
     _util_tasker_add(@task_ex, @task)
+    return(array_size(@sorted_procs['tests']))
 }
 
 proc _private_unit_tester_sep_procs(string @script, array @procs, array @setting) {
@@ -162,6 +173,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
             })
             while (x_thread_is_alive(@name_thread)) {}
             _util_clear_interval(@id_interval)
+            _private_unit_tester_count_plus()
         }
         try {
             call_proc(@lymda_after_all)
@@ -213,6 +225,12 @@ proc _private_unit_tester_sort_procs(@procs, @setting) {
         }
     }
     return(@sorted_procs)
+}
+
+proc _private_unit_tester_count_plus() {
+    //synchronized('org.cadabra.msunit.tester.count') {
+        export('org.cadabra.msunit.tester.count', import('org.cadabra.msunit.tester.count') + 1)
+    //}
 }
 
 proc _private_unit_tester_log_result(@setting, @result, @time, @outs) {

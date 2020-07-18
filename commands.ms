@@ -2,10 +2,10 @@ proc _package_unit_commands_get() {
     return(import('org.cadabra.msunit.commands'))
 }
 
-proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, string @def_value, string @group_del) {
+proc _package_unit_create_setting(string @path_to_groups, string @filter, string @path_to_test, string @def_value, string @group_del) {
     console('MSUnit: creating '.@path_to_groups.' ...', false)
     _util_make_file(@path_to_groups)
-    @files = array_sort(_util_get_all_scripts(@path_to_test), 'STRING')
+    @files = array_sort(_util_get_all_scripts(@path_to_test, @filter), 'STRING')
     @prop = _util_properties_init_self()
     foreach(@file in @files) {
         @file = replace(@file[cslice(length(@path_to_test) + 1, -1)], '.ms', '')
@@ -22,14 +22,14 @@ proc _package_unit_create_setting(string @path_to_groups, string @path_to_test, 
     console('MSUnit: '.@path_to_groups.' created', false)
 }
 
-proc _package_unit_update_setting(string @path_to_groups, string @path_to_test, string @def_value, string @group_del) {
+proc _package_unit_update_setting(string @path_to_groups, string @filter, string @path_to_test, string @def_value, string @group_del) {
     console('MSUnit: updating '.@path_to_groups.'...', false)
     if (!file_exists(@path_to_groups)) {
         console(_package_unit_msg_module_log('setting_groups_not_found', @path_to_groups), false)
     }
     @prop = _util_properties_init_self()
     _util_properties_parse_string(@prop, read(@path_to_groups))
-    @files = array_sort(_util_get_all_scripts(@path_to_test), 'STRING')
+    @files = array_sort(_util_get_all_scripts(@path_to_test, @filter), 'STRING')
     for (@i = 0, @i < array_size(@files), @i++) {
         @file = @files[@i]
         @file = replace(@file[cslice(length(@path_to_test) + 1, -1)], '.ms', '')
@@ -52,7 +52,6 @@ proc _package_unit_run_test(@path_to_test, @path_to_groups, @setting, @groups, @
     }
     _util_properties_parse_string(@prop, read(@path_to_groups))
     @tests = array()
-
     foreach(@file: @str_group in _util_properties_to_map(@prop)) {
         if (_util_array_some_contains(split(@del_groups, @str_group), @groups)) {
             @tests[] = @file
@@ -69,14 +68,13 @@ proc _package_unit_start_test(@path_to_test, @path_to_groups, @setting, @groups,
     }
     _util_properties_parse_string(@prop, read(@path_to_groups))
     @tests = array()
-
     foreach(@file: @str_group in _util_properties_to_map(@prop)) {
         if (_util_array_some_contains(split(@del_groups, @str_group), @groups)) {
             @tests[] = @file
         }
     }
 
-    _package_unit_tester(@tests, @setting, @out)
+    _package_unit_tester(@tests, @path_to_test, @setting, @out)
 }
 
 
@@ -93,9 +91,9 @@ proc _package_unit_commands_init(@setting) {
         @UNIT_COMMAND_INIT,
         closure() {
             if (array_size(@arguments[0][0]) > 0) {
-                _package_unit_create_setting(@setting['setting_tests'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
-                _package_unit_create_setting(@setting['setting_tests'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
+                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
         }
     )
@@ -105,9 +103,9 @@ proc _package_unit_commands_init(@setting) {
         @UNIT_COMMAND_UPDATE,
         closure() {
             if (array_size(@arguments[0][0]) > 0) {
-                _package_unit_update_setting(@setting['setting_tests'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+                _package_unit_update_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
-                _package_unit_update_setting(@setting['setting_tests'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
+                _package_unit_update_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
         }
     )
