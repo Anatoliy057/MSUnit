@@ -36,11 +36,11 @@ int proc _private_unit_tester_add_test(string @test, string @path_to_test, array
         @procs = _util_array_minus(@new_procs, @old_procs)
     } else {
         console(_package_unit_msg_module_log('script_not_found', @test), false)
-        return()
+        return(0)
     }
     @sorted_procs = _private_unit_tester_sep_procs(@test, @procs, @setting)
     if (@sorted_procs == null) {
-        return()
+        return(0)
     }
     @task = _private_unit_tester_init_task(@test, @sorted_procs, @setting, @result)
     _util_tasker_add(@task_ex, @task)
@@ -129,10 +129,17 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                     @before_each = null
                     @return = null
                     @before_each = call_proc(@lymda_before_each)
+                    @args = array()
+                    if (@before_all) {
+                        @args[] = @before_all
+                    }
+                    if (@before_each) {
+                        @args[] = @before_each
+                    }
                     if (@lymda_after_each == '_package_unit_undef_proc') {
-                        call_proc(@proc_test, @before_all, @before_each)
+                        call_proc_array(@proc_test, @args)
                     } else {
-                        @return = call_proc(@proc_test, @before_all, @before_each)
+                        @return = call_proc(@proc_test, @args)
                         call_proc(@lymda_after_each, @return)
                     }
                 } catch(Exception @e) {

@@ -76,121 +76,101 @@ proc _assert_false_obj(Booleanish @o, mixed @msg = null) {
 }
 
 proc _assert_true(boolean @bool, mixed @msg = null) {
-    _private_assert_eq(true, @bool, 1, @msg)
+    _private_assert_eq(true, @bool, 2, @msg)
 }
 
 proc _assert_false(boolean @bool, mixed @msg = null) {
-    _private_assert_eq(false, @bool, 1, @msg)
+    _private_assert_eq(false, @bool, 2, @msg)
 }
 
 proc _assert_null(mixed @object, mixed @msg = null) {
-    _private_assert_eq(null, @object, 1, @msg)
+    _private_assert_eq(null, @object, 2, @msg)
 }
 
 proc _assert_not_null(mixed @object, mixed @msg = null) {
-    _private_assert_not_eq(null, @object, 1, @msg)
+    _private_assert_not_eq(null, @object, 2, @msg)
 }
 
 proc _assert_equals(mixed @exp, mixed @act, mixed @msg = null) {
-    _private_assert_eq(@exp, @act, 1, @msg)
+    _private_assert_eq(@exp, @act, 2, @msg)
 }
 
 proc _assert_not_equals(mixed @arg1, mixed @arg2, mixed @msg = null) {
-    _private_assert_not_eq(@arg1, @arg2, 1, @msg)
+    _private_assert_not_eq(@arg1, @arg2, 2, @msg)
 }
 
 proc _assert_size(int @size, Sizeable @arr, mixed @msg = null) {
-    _private_assert_eq(@size, array_size(@arr), 1, @msg)
+    _private_assert_eq(@size, array_size(@arr), 2, @msg)
 }
 
 proc _assert_length(int @length, mixed @act, mixed @msg = null) {
-    _private_assert_eq(@length, length(@act), 1, @msg)
+    _private_assert_eq(@length, length(@act), 2, @msg)
 }
 
 proc _assert_empty(mixed @object, mixed @msg = null) {
-    _private_assert_eq(0, length(@object), 1, @msg)
+    _private_assert_eq(0, length(@object), 2, @msg)
 }
 
 proc _assert_not_empty(mixed @object, mixed @msg = null) {
-    _private_assert_not_eq(0, length(@object), 1, @msg)
+    _private_assert_not_eq(0, length(@object), 2, @msg)
 }
 
 proc _assert_type(ClassType @type, mixed @object, mixed @msg = null) {
-    _private_assert_eq(@type, typeof(@object), 1, @msg)
+    _private_assert_eq(@type, typeof(@object), 2, @msg)
 }
 
 proc _assert_key_exist(string @key, array @array, mixed @msg = null) {
     if (!is_associative(@array)) {
         throw(CastException, 'array not associative')
     }
-    _private_assert_eq(true, array_index_exists(@array, @key), 1, @msg)
+    _private_assert_eq(true, array_index_exists(@array, @key), 2, @msg)
 }
 
 proc _assert_key_not_exist(string @key, array @array, mixed @msg = null) {
     if (!is_associative(@array)) {
         throw(CastException, 'array not associative')
     }
-    _private_assert_eq(false, array_index_exists(@array, @key), 1, @msg)
+    _private_assert_eq(false, array_index_exists(@array, @key), 2, @msg)
+}
+
+proc _assert_proc_array_throw(ClassType @type, string @proc_name, array @args, mixed @msg = null) {
+    @act_type = null
+    try {
+        call_proc_array(@proc_name, @args)
+    } catch (Exception @e) {
+        @act_type = @e['classType']
+    }
+    _private_assert_eq(@type, @act_type, 2, @msg)
+}
+
+proc _assert_execute_array_throw(ClassType @type, closure @lymda, array @args, mixed @msg = null) {
+    @act_type = null
+    try {
+        execute_array(@args, @lymda)
+    } catch (Exception @e) {
+        @act_type = @e['classType']
+    }
+    _private_assert_eq(@type, @act_type, 2, @msg)
 }
 
 proc _assert_proc_throw(ClassType @type, string @proc_name, mixed @msg = null) {
-    @args = null
     @act_type = null
-    if (array_size(@arguments) > 2) {
-        @args = @arguments[2..]
-    }
     try {
-        call_proc(@proc_name, @args)
+        call_proc(@proc_name)
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@type, @act_type, 1, @msg)
+    _private_assert_eq(@type, @act_type, 2, @msg)
 }
 
-proc _assert_closure_throw(ClassType @type, closure @lymda, mixed @msg = null) {
-    @args = null
+proc _assert_execute_throw(ClassType @type, closure @lymda, mixed @msg = null) {
     @act_type = null
-    if (array_size(@arguments) > 2) {
-        @args = @arguments[2..]
-    }
     try {
-        execute(@args, @lymda)
+        execute(@lymda)
     } catch (Exception @e) {
         @act_type = @e['classType']
     }
-    _private_assert_eq(@type, @act_type, 1, @msg)
-}
-
-proc _assert_proc_does_not_throw(string @proc_name, mixed @msg = null) {
-    @log = _unit_env_cur()
-    _private_assert_restart_time(@log)
-    @args = null
-    @act_type = null
-    if (array_size(@arguments) > 2) {
-        @args = @arguments[2..]
-    }
-    try {
-        call_proc(@proc_name, @args)
-    } catch (Exception @e) {
-        _private_assert_fail(@log, 'throw', 1, array(@e['classType']), @msg)
-    }
-    _private_assert_successful(@log)
-}
-
-proc _assert_closure_does_not_throw(closure @lymda, mixed @msg = null) {
-    @log = _unit_env_cur()
-    _private_assert_restart_time(@log)
-    @args = null
-    @act_type = null
-    if (array_size(@arguments) > 2) {
-        @args = @arguments[2..]
-    }
-    try {
-        execute(@args, @lymda)
-    } catch (Exception @e) {
-        _private_assert_fail(@log, 'throw', 1, array(@e['classType']), @msg)
-    }
-    _private_assert_successful(@log)
+    _private_assert_eq(@type, @act_type, 2, @msg)
 }
 
 proc _private_assert_successful(@log) {

@@ -11,7 +11,3 @@ proc _test_simular() {
     _print('Test 2')
     return(null)
 }
-
-proc _after_each() {
-
-}

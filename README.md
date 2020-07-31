@@ -105,9 +105,9 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 - `_assert_not_empty(mixed object, [mixed msg])`
 - `_assert_type(ClassType type, mixed object, [mixed msg])`
 - `_assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
-- `_assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
-- `_assert_proc_does_not_throw(string proc_name, [mixed msg])`
-- `_assert_closure_does_not_throw(closure lymda, [mixed msg])`
+- `_assert_execute_throw(ClassType type, closure lymda, [mixed msg])`
+- `_assert_proc_array_throw(ClassType @type, string @proc_name, array @args, [mixed @msg]) {`
+- `_assert_execute_array_throw(ClassType @type, closure @lymda, array @args, [mixed @msg]) {`
 - `_assert_key_exist(string key, array array, [mixed msg])`
 - `_assert_key_not_exist(string key, array array, [mixed msg])`
 
