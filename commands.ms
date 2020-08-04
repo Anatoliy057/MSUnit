@@ -90,8 +90,8 @@ proc _package_unit_commands_init(@setting) {
         @commander,
         @UNIT_COMMAND_INIT,
         closure() {
-            if (array_size(@arguments[0][0]) > 0) {
-                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+            if (array_size(@arguments[0]) > 0) {
+                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
                 _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
@@ -102,8 +102,8 @@ proc _package_unit_commands_init(@setting) {
         @commander,
         @UNIT_COMMAND_UPDATE,
         closure() {
-            if (array_size(@arguments[0][0]) > 0) {
-                _package_unit_update_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0][0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
+            if (array_size(@arguments[0]) > 0) {
+                _package_unit_update_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0], @UNIT_GROUP_DEL), @UNIT_GROUP_DEL)
             } else {
                 _package_unit_update_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @UNIT_DEFAULT_GROUP, @UNIT_GROUP_DEL)
             }
@@ -114,7 +114,7 @@ proc _package_unit_commands_init(@setting) {
         @commander,
         @UNIT_COMMAND_START,
         closure() {
-            _package_unit_start_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
+            _package_unit_start_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0], @UNIT_GROUP_DEL, @setting['outs'])
         }
     )
 
@@ -122,7 +122,7 @@ proc _package_unit_commands_init(@setting) {
         @commander,
         @UNIT_COMMAND_RUN,
         closure() {
-            _package_unit_run_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0][0], @UNIT_GROUP_DEL, @setting['outs'])
+            _package_unit_run_test(@setting['tests'], @setting['setting_tests'], @UNIT_SETTING, @arguments[0], @UNIT_GROUP_DEL, @setting['outs'])
         }
     )
 

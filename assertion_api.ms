@@ -16,6 +16,15 @@ proc _sleep(int @seconds) {
     }
 }
 
+proc _assert_time(int @seconds) {
+    @log = _unit_env_cur()
+    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
+    synchronized(@monitor) {
+        @log['assert_timeout'] = @seconds
+        @log['proc_timeout'] = @seconds
+    }
+}
+
 proc _assert_time_assert(int @seconds) {
     @log = _unit_env_cur()
     @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())

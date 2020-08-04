@@ -128,7 +128,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                 try {
                     @before_each = null
                     @return = null
-                    @before_each = call_proc(@lymda_before_each)
+                    @before_each = call_proc(@lymda_before_each, @proc_test)
                     @args = array()
                     if (@before_all) {
                         @args[] = @before_all
@@ -178,7 +178,9 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                     }
                 }
             })
-            while (x_thread_is_alive(@name_thread)) {}
+            while (x_thread_is_alive(@name_thread)) {
+                x_thread_join(@name_thread)
+            }
             _util_clear_interval(@id_interval)
             _private_unit_tester_count_plus()
         }
