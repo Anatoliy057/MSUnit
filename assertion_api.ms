@@ -1,4 +1,8 @@
-proc _print(mixed @msg = '') {
+proc _x_safe(closure @lymda) {
+    x_safe_execute(@lymda)
+}
+
+proc _print(mixed @msg) {
     @log = _unit_env_cur()
     string_append(@log['user_log'], @msg)
 }
@@ -22,6 +26,17 @@ proc _assert_time(int @seconds) {
     synchronized(@monitor) {
         @log['assert_timeout'] = @seconds
         @log['proc_timeout'] = @seconds
+    }
+}
+
+proc _assert_time_limit(number @successful_time, number @attention_time) {
+    @log = _unit_env_cur()
+    @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
+    synchronized(@monitor) {
+        @log['limit_time'] = array(
+            'successful': @successful_time,
+            'attention': @attention_time
+        )
     }
 }
 
@@ -215,7 +230,7 @@ proc _private_assert_fail(@log, @mode, int @stack, array @args = array(), mixed 
     _unit_log_set_trace(@builder, @trace[cslice(@stack, array_size(@trace)-2)])
     _unit_log_set_def_cause(@builder, 'assert_fail')
     _unit_log_set_type_msg(@builder, @mode, @args)
-    @log['user_message'] = @msg
+    @log['message'] = @msg
     @log['test_log'] = _unit_log_build(@builder)
     @log['successful'] = false
     die()

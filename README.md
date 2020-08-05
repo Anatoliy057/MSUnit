@@ -10,35 +10,51 @@ To connect the module, just connect main.ms and call procedure: `_unit_init_modu
 
 Register the module for which you want to write tests using procedures:
 
-- ```
-  _unit_register_module(associative_array(
-      id: string, 
-      folder: string, 
-      [groups: string = @folder.'\\tests.properties'], 
-      [filter: string = null],
-      [outs: array<out> = _unit_get_default_outs(@folder.'\\logs')]
-  ))
-  ```
+```ms
+_unit_register_module(associative_array(
+    id: string,
+    root: string,
+    [tests: string = @root.'\\tests']
+    [localPackages: string  = @root.'\\localPackages\\main.ms']
+    [resource: string = @root.'\\resource']
+    [groups: string = @root.'\\tests.properties'],
+    [filter: string = null],
+    [outs: array<out> = _unit_get_default_outs(@root.'\\logs')]
+))
+```
+
+### Keys
+
+- **id** - unique identifier for pluggable tests
+- **root** - Main path to all parts required for MSUnit to work
+- **tests** - Local path to tests
+- **localPackages** - Local path to script, that runs before running tests
+- **resource** - Local path to resource, that are available by calling a procedure `_unit_resource('folder.file.yml')`
+- **groups** - Local path to map "test - groups"
+- **filter** - folders and scripts containing filter are not considered scripts
+- **outs** - log output objects
+
+Only root should contain the full path, the rest are local from it!
 
 You can use the default log output methods:
 
-- proc `_unit_get_default_outs(string path_to_log)`
+- proc `_unit_get_default_outs(string path_to_log, [array filters = array('message', 'test_log', 'user_log')])`
 
 For example:
 
 ```ms
 _unit_register_module(associative_array(
     id: 'unit',
-    folder: get_absolute_path('test'),
-    groups: get_absolute_path('tests.properties'),
-    outs: _unit_get_default_outs(get_absolute_path('logs')),
+    root: get_absolute_path('test'),
+    groups: 'tests.properties',
+    outs: _unit_get_default_outs(get_absolute_path('logs'), array('test_log')),
     filter: '-ignore'
 ))
 ```
 
 >For details see [register.ms](register.ms)
 
-Put your test scripts in a "folder". Test scripts may contain only procedures, which are of three types:
+Put your test scripts in a "root". Test scripts may contain only procedures, which are of three types:
 
 - Before all \[prefix=`_before_all`\]
 
@@ -72,7 +88,7 @@ After running the tests themselves with the command:
 
 Test logs will be displayed in the console and in the file "path_to_log" if you used `_unit_get_default_outs()`.
 
-Some options can be changed in the [constants.ms](constants.ms) script.
+Some options can be changed in the setting.yml script.
 
 ***
 
@@ -91,8 +107,8 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 
 ### Assertions
 
-- `_assert_true_obj(Booleanish @o, [mixed @msg])`
-- `_assert_false_obj(Booleanish @o, [mixed @msg])`
+- `_assert_true_obj(Booleanish o, [mixed msg])`
+- `_assert_false_obj(Booleanish o, [mixed msg])`
 - `_assert_true(boolean bool, [mixed msg])`
 - `_assert_false(boolean bool, [mixed msg])`
 - `_assert_null(mixed object, [mixed msg])`
@@ -106,14 +122,14 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 - `_assert_type(ClassType type, mixed object, [mixed msg])`
 - `_assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
 - `_assert_execute_throw(ClassType type, closure lymda, [mixed msg])`
-- `_assert_proc_array_throw(ClassType @type, string @proc_name, array @args, [mixed @msg])`
-- `_assert_execute_array_throw(ClassType @type, closure @lymda, array @args, [mixed @msg])`
+- `_assert_proc_array_throw(ClassType type, string proc_name, array args, [mixed msg])`
+- `_assert_execute_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
 - `_assert_key_exist(string key, array array, [mixed msg])`
 - `_assert_key_not_exist(string key, array array, [mixed msg])`
 
 ### Supporting Procedures
 
-- `_print([mixed msg])`
+- `_print(mixed msg)`
 - `_println([mixed msg])`
 - `_sleep(int seconds)`
 - `_skip_test()`
@@ -121,6 +137,9 @@ Some options can be changed in the [constants.ms](constants.ms) script.
 - `_assert_time_proc(int seconds)`
 - `_assert_restart_time()`
 - `_assert_restart_time_all()`
+- `_assert_time(int seconds)`
+- `_assert_time_limit(number successful_time, number attention_time)`
+- `_x_safe(closure lymda)`
 
 ***
 

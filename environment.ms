@@ -10,13 +10,14 @@ proc _unit_env_get(array @id) {
 proc _unit_env_init_cur(array @log, array @setting) {
     @log['user_log'] = res_create_resource('STRING_BUILDER')
     @log['test_log'] = ''
-    @log['user_message'] = null
+    @log['message'] = null
     @log['successful'] = true
     @log['skipped'] = false
     @log['time_assert'] = @setting['assert_timeout']
     @log['time_proc'] = @setting['proc_timeout']
     @log['assert_timeout'] = @setting['assert_timeout']
     @log['proc_timeout'] = @setting['proc_timeout']
+    @log['limit_time'] = @setting['limit_time']
 }
 
 proc _unit_env_global_get() {

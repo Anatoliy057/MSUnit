@@ -1,12 +1,23 @@
-proc _package_unit_tester(@tests, @path_to_test, @setting, @outs) {
+proc _package_unit_tester(@tests, @module, @setting, @outs) {
     include('synchron.ms')
     include('environment.ms')
-    @task_ex = _util_tasker_init_self('org.cadabra.msunit.tester-thread', @setting['number_threads'], 1, false)
+    @task_ex = _util_tasker_init_self('org.cadabra.msunit.tester-takser', @setting['number_threads'], 1, false)
     @result = _unit_env_global_get()
     @count_tests = 0
     export('org.cadabra.msunit.tester.count', 0)
+
+    _unit_resource_init(@module['resource'])
+    _util_make_file(@module['localPackages'], '\\', 3)
+    try {
+        include(@module['localPackages'])
+    } catch(Error @e) {
+        console('[MSUNIT] Exception when connecting local scripts. Termination of tests.', false)
+        console(_util_parse_exception(@e))
+        return()
+    }
+
     foreach(@test in @tests) {
-        @count_tests += _private_unit_tester_add_test(@test, @path_to_test, @setting, @result, @task_ex)
+        @count_tests += _private_unit_tester_add_test(@test, @module['tests'], @setting, @result, @task_ex)
     }
     @size = _util_tasker_size_waiting(@task_ex)
     @time = -nano_time()
@@ -139,7 +150,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                     if (@lymda_after_each == '_package_unit_undef_proc') {
                         call_proc_array(@proc_test, @args)
                     } else {
-                        @return = call_proc(@proc_test, @args)
+                        @return = call_proc_array(@proc_test, @args)
                         call_proc(@lymda_after_each, @return)
                     }
                 } catch(Exception @e) {
@@ -247,113 +258,139 @@ proc _private_unit_tester_log_result(@setting, @result, @time, @outs) {
         int @count_tests = 0
         int @count_failures = 0
         int @count_skipped = 0
-        if (!@out['enable'], continue())
         @builder = res_create_resource('STRING_BUILDER')
         string_append(@builder, '\n[TIME] ')
         string_append(@builder, '['.@setting['name_module'].'] ')
         string_append(@builder,  simple_date('yyyy.MM.dd \'at\' HH:mm:ss'))
         string_append(@builder, '\n')
-        if (@out['short'] == true) {
-            foreach(@script: @tests in @result) {
-                int @lcount_tests = 0
-                int @lcount_failures = 0
-                int @lcount_skipped = 0
-                string_append(@builder, '\n\n###########################################################\n')
-                string_append(@builder, 'Script: ')
-                string_append(@builder, @script)
-                string_append(@builder, '\n')
-                foreach(@test: @info in @tests) {
-                    @count_tests++
-                    @lcount_tests++
-                    string_append(@builder, '\n-----------------------------------------------------------\n')
-                    if (@info['skipped']) {
-                        @count_skipped++
-                        @lcount_skipped++
-                        string_append(@builder, '# ')
-                        string_append(@builder, 'Test: ')
-                        string_append(@builder, @test)
-                        string_append(@builder, ' - skipped\n')
-                        continue()
-                    } else if (@info['successful']) {
-                        string_append(@builder, '+ ')
-                    } else {
-                        @count_failures++
-                        @lcount_failures++
-                        string_append(@builder, '- ')
-                    }
+        foreach(@script: @tests in @result) {
+            string_append(@builder, color(@setting['colors']['script']))
+            string_append(@builder, '\n\n###########################################################\n')
+            string_append(@builder, 'Script: ')
+            string_append(@builder, color('UNDERLINE'))
+            string_append(@builder, @script)
+            string_append(@builder, color('PLAIN_WHITE'))
+            string_append(@builder, '\n')
+            string_append(@builder, color(@setting['colors']['default']))
+            int @lcount_tests = 0
+            int @lcount_failures = 0
+            int @lcount_skipped = 0
+            foreach(@test: @info in @tests) {
+                @count_tests++
+                @lcount_tests++
+                string_append(@builder, color(@setting['colors']['test']))
+                string_append(@builder, '\n-----------------------------------------------------------\n')
+                if (@info['skipped']) {
+                    @count_skipped++
+                    @lcount_skipped++
+                    string_append(@builder, color(@setting['colors']['test_skip']))
+                    string_append(@builder, '### ')
+                    string_append(@builder, color(@setting['colors']['default']))
                     string_append(@builder, 'Test: ')
+                    string_append(@builder, color('ITALIC'))
+                    string_append(@builder, color(@setting['colors']['test']))
                     string_append(@builder, @test)
-                    string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
-                    if (@info['user_message'] != null) {
-                        string_append(@builder, 'Message: ')
-                        string_append(@builder, @info['user_message'])
-                        string_append(@builder, '\n')
-                    }
-                    @user_log = string(@info['user_log'])
-                    if (@user_log != '') {
-                        string_append(@builder, @user_log)
-                        string_append(@builder, '\n')
-                    }
+                    string_append(@builder, color('PLAIN_WHITE'))
+                    string_append(@builder, color(@setting['colors']['default']))
+                    string_append(@builder, ' - skipped\n')
+                    continue()
+                } else if (@info['successful']) {
+                    string_append(@builder, color(@setting['colors']['test_successful']))
+                    string_append(@builder, '+++ ')
+                    string_append(@builder, color(@setting['colors']['default']))
+                } else {
+                    @count_failures++
+                    @lcount_failures++
+                    string_append(@builder, color(@setting['colors']['test_fail']))
+                    string_append(@builder, '--- ')
+                    string_append(@builder, color(@setting['colors']['default']))
                 }
-                string_append(@builder, '\n***********************************************************\n')
-                string_append(@builder, "Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped\n")   
-            }
-            string_append(@builder, '\n===========================================================\n')
-            string_append(@builder, "Global statistics. Time: @time, Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
-        } else {
-            foreach(@script: @tests in @result) {
-                string_append(@builder, '\n\n###########################################################\n')
-                string_append(@builder, 'Script: ')
-                string_append(@builder, @script)
+                string_append(@builder, 'Test: ')
+                string_append(@builder, color('ITALIC'))
+                string_append(@builder, color(@setting['colors']['test']))
+                string_append(@builder, @test)
+                string_append(@builder, color('PLAIN_WHITE'))
+                string_append(@builder, color(@setting['colors']['default']))
+                string_append(@builder, ', time: ')
+                if (@info['limit_time']['successful'] >= @info['time']) {
+                    string_append(@builder, color(@setting['colors']['time_successful']))
+                } else if (@info['limit_time']['attention'] >= @info['time']) {
+                    string_append(@builder, color(@setting['colors']['time_attention']))
+                } else {
+                    string_append(@builder, color(@setting['colors']['time_fail']))
+                }
+                string_append(@builder, @info['time'])
                 string_append(@builder, '\n')
-                int @lcount_tests = 0
-                int @lcount_failures = 0
-                int @lcount_skipped = 0
-                foreach(@test: @info in @tests) {
-                    @count_tests++
-                    @lcount_tests++
-                    string_append(@builder, '\n-----------------------------------------------------------\n')
-                    if (@info['skipped']) {
-                        @count_skipped++
-                        @lcount_skipped++
-                        string_append(@builder, '# ')
-                        string_append(@builder, 'Test: ')
-                        string_append(@builder, @test)
-                        string_append(@builder, ' - skipped\n')
-                        continue()
-                    } else if (@info['successful']) {
-                        string_append(@builder, '+ ')
-                    } else {
-                        @count_failures++
-                        @lcount_failures++
-                        string_append(@builder, '- ')
-                    }
-                    string_append(@builder, 'Test: ')
-                    string_append(@builder, @test)
-                    string_append(@builder, sprintf(' - status: %s, time %f.\n', @info['successful'], @info['time']))
-                    if (@info['user_message'] != null) {
-                        string_append(@builder, 'Message: ')
-                        string_append(@builder, string(@info['user_message']))
-                        string_append(@builder, '\n')
-                    }
+                string_append(@builder, color(@setting['colors']['default']))
+                if (@info['message'] != null && array_contains(@out['filters'], 'message')) {
+                    string_append(@builder, color(@setting['colors']['message']))
+                    string_append(@builder, 'Message: ')
+                    string_append(@builder, string(@info['message']))
+                    string_append(@builder, '\n')
+                    string_append(@builder, color(@setting['colors']['default']))
+                }
+                if (array_contains(@out['filters'], 'user_log')) {
                     @user_log = string(@info['user_log'])
                     if (@user_log != '') {
+                        string_append(@builder, color(@setting['colors']['user_log']))
                         string_append(@builder, '\n')
                         string_append(@builder, @user_log)
                         string_append(@builder, '\n')
-                    }
-                    if (!@info['successful']) {
-                        string_append(@builder, @info['test_log'])
-                        string_append(@builder, '\n')  
+                        string_append(@builder, color(@setting['colors']['default']))
                     }
                 }
-                string_append(@builder, '\n***********************************************************\n')
-                string_append(@builder, "Tests run: @lcount_tests, Failures: @lcount_failures, Skipped: @lcount_skipped\n")   
+                if (!@info['successful'] && array_contains(@out['filters'], 'test_log')) {
+                    string_append(@builder, color(@setting['colors']['test_log']))
+                    string_append(@builder, @info['test_log'])
+                    string_append(@builder, '\n')
+                    string_append(@builder, color(@setting['colors']['default']))
+                }
             }
-            string_append(@builder, '\n===========================================================\n')
-            string_append(@builder, "Global statistics. Time: @time, Tests run: @count_tests, Failures: @count_failures, Skipped: @count_skipped")   
+            string_append(@builder, '\n***********************************************************\n')
+            _unit_tester_log_color_statistics(@lcount_tests, @lcount_failures, @lcount_skipped, @builder, @setting)  
         }
-        string_append(@builder, '\n')
+        string_append(@builder, '\n===========================================================\n')
+        string_append(@builder, "Global statistics. Time: @time, ")
+        _unit_tester_log_color_statistics(@count_tests, @count_failures, @count_skipped, @builder, @setting)  
         execute(string(@builder), @out['write'])
     }
+}
+
+proc _unit_tester_log_color_statistics(int @tests, int @failures, int @skipped, @builder, @setting) {
+    if (@tests != 0) {
+        string_append(@builder, color(@setting['colors']['test']))
+        string_append(@builder, 'Tests run: ')
+        string_append(@builder, @tests)
+        string_append(@builder, color(@setting['colors']['default']))
+    } else {
+        string_append(@builder, color(@setting['colors']['test_fail']))
+        string_append(@builder, 'Tests run: ')
+        string_append(@builder, @tests)
+        string_append(@builder, color(@setting['colors']['default']))
+    }
+    string_append(@builder, ', ')
+    if (@failures == 0) {
+        string_append(@builder, color(@setting['colors']['test_successful']))
+        string_append(@builder, 'Failures: ')
+        string_append(@builder, @failures)
+        string_append(@builder, color(@setting['colors']['default']))
+    } else {
+        string_append(@builder, color(@setting['colors']['test_fail']))
+        string_append(@builder, 'Failures: ')
+        string_append(@builder, @failures)
+        string_append(@builder, color(@setting['colors']['default']))
+    }
+    string_append(@builder, ', ')
+    if (@skipped == 0) {
+        string_append(@builder, color(@setting['colors']['test']))
+        string_append(@builder, 'Skipped: ')
+        string_append(@builder, @skipped)
+        string_append(@builder, color(@setting['colors']['default']))
+    } else {
+        string_append(@builder, color(@setting['colors']['test_skip']))
+        string_append(@builder, 'Skipped: ')
+        string_append(@builder, @skipped)
+        string_append(@builder, color(@setting['colors']['default']))
+    }
+    string_append(@builder, '\n')   
 }

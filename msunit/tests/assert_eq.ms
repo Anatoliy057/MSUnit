@@ -1,6 +1,5 @@
 proc _test_eq_0() {
     _assert_equals(array(1, 2, 3), array(1, 2, 3))
-    _print('SUCCESSFUL')
 }
 
 proc _test_eq_1() {
@@ -9,7 +8,6 @@ proc _test_eq_1() {
 
 proc _test_not_eq_0() {
     _assert_not_equals(array(1, 2, 3), array(1, 2, 4))
-    _print('SUCCESSFUL')
 }
 
 proc _test_not_eq_1() {

@@ -1,6 +1,5 @@
 proc _test_empty_0() {
     _assert_empty(array())
-    _print('SUCCESSFUL')
 }
 
 proc _test_empty_1() {
@@ -15,7 +14,6 @@ proc _test_not_empty_0() {
     _assert_not_empty(array(1))
     _assert_not_empty('123')
     _assert_not_empty(null)
-    _print('SUCCESSFUL')
 }
 
 proc _test_not_empty_2() {

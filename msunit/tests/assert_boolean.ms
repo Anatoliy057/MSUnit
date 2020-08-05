@@ -1,6 +1,5 @@
 proc _test_true_0() {
     _assert_true(1 == 1, 'Wow!')
-    _print('SUCCESSFUL')
 }
 
 proc _test_true_1() {
@@ -9,7 +8,6 @@ proc _test_true_1() {
 
 proc _test_false_0() {
     _assert_false(1 == 2)
-    _print('SUCCESSFUL')
 }
 
 proc _test_false_1() {

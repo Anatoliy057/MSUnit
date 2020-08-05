@@ -7,11 +7,13 @@ proc _before_each() {
 }
 
 proc _test1(@a, @b) {
+    _println(@arguments)
     _assert_equals('Hello World!', "@a @b")
     return('Goodbye!')
 }
 
 proc _test2(@a, @b) {
+    _println(@arguments)
     _assert_equals('Hello World!', "@a @b")
     return('Goodbye!')
 }

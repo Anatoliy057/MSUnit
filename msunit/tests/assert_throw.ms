@@ -4,7 +4,6 @@ proc _test_throw_1() {
     }
     _assert_execute_throw(IOException, @test)
     _assert_proc_throw(IOException, '_throw_IOException')
-    _print('SUCCESSFUL')
 }
 
 proc _test_throw_2() {

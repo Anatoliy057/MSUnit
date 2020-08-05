@@ -1,12 +1,11 @@
+include('constants.ms')
 include('register.ms')
 
 proc _unit_init_module() {
 
     _unit_register_module(associative_array(
         id: 'msunit',
-        folder: get_absolute_path('msunit/tests'),
-        groups: get_absolute_path('msunit/tests.properties'),
-        outs: _unit_get_default_outs(get_absolute_path('msunit/logs'))
+        root: get_absolute_path('msunit'),
     ))
 
     register_command('unit', array(
@@ -14,8 +13,8 @@ proc _unit_init_module() {
     'usage': '/unit',
     'aliases':array('unit', 'test'),
     'executor': closure() {
-        @args = @arguments
-        x_new_thread('(MSUNIT) Main thread', closure() {
+            x_thread_join('(MSUNIT) Tester thread')
+            @args = @arguments
             if (array_size(@args[2]) == 0) {
                 console('MSUnit: [FATAL] no arguments', false)
                 die()
@@ -26,12 +25,10 @@ proc _unit_init_module() {
             }
             if (array_size(@args[2]) == 1) {
                 @module = _package_unit_get_constants()['modules'][@args[2][0]][]
-                execute('-update all -run all', @module, @module['run'])
+                execute(import('org.cadabra.msunit.setting')['default_commands'], @module, @module['run'])
             } else {
                 @module = _package_unit_get_constants()['modules'][@args[2][0]][]
                 execute(array_implode(@args[2][1..], ' '), @module, @module['run'])
             }
-        }
-    ))
-    })
+    }))
 }

@@ -4,7 +4,9 @@ proc _package_unit_syn_get(@key) {
 
 proc _package_unit_syn_set(string @key) {
     @monitor =  'unit_synchron_'.@key
-    import('org.cadabra.msunit.syn')[@key] = @monitor
+    synchronized('org.cadabra.msunit.syn') {
+        import('org.cadabra.msunit.syn')[@key] = @monitor
+    }
     return(@monitor)
 }
 
