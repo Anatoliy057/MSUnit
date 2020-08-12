@@ -114,6 +114,7 @@ Some options can be changed in the setting.yml script.
 - `_assert_null(mixed object, [mixed msg])`
 - `_assert_not_null(mixed object, [mixed msg])`
 - `_assert_equals(mixed exp, mixed act, [mixed msg])`
+- `_assert_ref_eq(mixed val1, mixed val2, [mixed msg])`
 - `_assert_not_equals(mixed arg1, mixed arg2, [mixed msg])`
 - `_assert_size(int size, Sizeable arr, [mixed msg])`
 - `_assert_length(int length, mixed act, [mixed msg])`

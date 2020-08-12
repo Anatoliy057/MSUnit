@@ -32,12 +32,10 @@ proc _assert_time(int @seconds) {
 proc _assert_time_limit(number @successful_time, number @attention_time) {
     @log = _unit_env_cur()
     @monitor = _package_unit_syn_get(_package_unit_static_get_name_thread())
-    synchronized(@monitor) {
-        @log['limit_time'] = array(
-            'successful': @successful_time,
-            'attention': @attention_time
-        )
-    }
+    @log['limit_time'] = array(
+        'successful': @successful_time,
+        'attention': @attention_time
+    )
 }
 
 proc _assert_time_assert(int @seconds) {
@@ -79,23 +77,33 @@ proc _skip_test() {
     die()
 }
 
+proc _assert_ref_eq(mixed @val1, mixed @val2, mixed @msg = null) {
+    @log = _unit_env_cur()
+    _private_assert_restart_time(@log)
+    if (ref_equals(@val1, @val2)) {
+        _private_assert_successful(@log)
+    } else {
+        _private_assert_fail(@log, 'diff', 2, array('the same reference', 'not'), @msg)
+    }
+}
+
 proc _assert_true_obj(Booleanish @o, mixed @msg = null) {
-   @log = _unit_env_cur()
+    @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (@o) {
         _private_assert_successful(@log)
     } else {
-        _private_assert_fail(@log, 'diff', @stack + 1, array(@o, 'object'), @msg)
+        _private_assert_fail(@log, 'diff', 2, array(@o, 'true'), @msg)
     }
 }
 
 proc _assert_false_obj(Booleanish @o, mixed @msg = null) {
-   @log = _unit_env_cur()
+    @log = _unit_env_cur()
     _private_assert_restart_time(@log)
     if (!@o) {
         _private_assert_successful(@log)
     } else {
-        _private_assert_fail(@log, 'diff', @stack + 1, array(@o, 'not object'), @msg)
+        _private_assert_fail(@log, 'diff', 2, array(@o, 'false'), @msg)
     }
 }
 
