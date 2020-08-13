@@ -1,6 +1,6 @@
 proc _unit_resource_init(@root) {
 
-    _util_make_folder(@root, '\\', 3)
+    _util_make_folder(@root, _util_sdn(), _util_ign())
 
     proc _init_paths(string @id, string @path, array @model) {
         if (is_file(@path)) {
@@ -8,7 +8,7 @@ proc _unit_resource_init(@root) {
         }
         @files = list_files(@path)
         foreach(@file in @files) {
-            @full_path = @path.'\\'.@file
+            @full_path = @path._util_sdn().@file
             @key = if (@id, "@id.@file", @file)
             @model[@key] = @full_path
             _init_paths(@key, @full_path, @model)

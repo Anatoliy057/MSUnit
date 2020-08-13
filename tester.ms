@@ -7,7 +7,7 @@ proc _package_unit_tester(@tests, @module, @setting, @outs) {
     export('org.cadabra.msunit.tester.count', 0)
 
     _unit_resource_init(@module['resource'])
-    _util_make_file(@module['localPackages'], '\\', 3)
+    _util_make_file(@module['localPackages'], _util_sdn(), _util_ign())
     try {
         include(@module['localPackages'])
     } catch(Error @e) {
@@ -38,7 +38,7 @@ proc _package_unit_tester(@tests, @module, @setting, @outs) {
 }
 
 int proc _private_unit_tester_add_test(string @test, string @path_to_test, array @setting, array @result, array @task_ex) {
-    @path = @path_to_test.'\\'.replace(@test, '.', '\\').'.ms'
+    @path = @path_to_test._util_sdn().replace(@test, '.', _util_sdn()).'.ms'
     @procs = array()
     if (file_exists(@path)) {
         @old_procs = get_procedures()

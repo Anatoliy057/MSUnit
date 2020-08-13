@@ -4,13 +4,13 @@ proc _package_unit_commands_get() {
 
 proc _package_unit_create_setting(string @path_to_groups, string @filter, string @path_to_test, string @def_value, string @group_del) {
     console('MSUnit: creating '.@path_to_groups.' ...', false)
-    _util_make_file(@path_to_groups)
+    _util_make_file(@path_to_groups, _util_sdn(), _util_ign())
     @files = array_sort(_util_get_all_scripts(@path_to_test, @filter), 'STRING')
     @prop = _util_properties_init_self()
     foreach(@file in @files) {
         @file = replace(@file[cslice(length(@path_to_test) + 1, -1)], '.ms', '')
         @file_group = @file
-        @file = replace(@file, '\\', '.')
+        @file = replace(@file, _util_sdn(), '.')
         _util_properties_push(
             @prop,
             @file,
@@ -34,7 +34,7 @@ proc _package_unit_update_setting(string @path_to_groups, string @filter, string
         @file = @files[@i]
         @file = replace(@file[cslice(length(@path_to_test) + 1, -1)], '.ms', '')
         @file_group = @file
-        @file = replace(@file, '\\', '.')
+        @file = replace(@file, _util_sdn(), '.')
         if (!_util_properties_contains(@prop, @file), _util_properties_push(@prop, @file, @def_value.@group_del.@file_group))
     }
     write_file(@path_to_groups, _util_properties_to_string(@prop), 'OVERWRITE')

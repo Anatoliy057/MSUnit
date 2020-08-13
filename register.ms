@@ -16,12 +16,12 @@ proc _unit_register_module(array @args) {
         )
         die()
     }
-    string @tests = if(array_index_exists(@args, 'tests'), @root.'\\'.@args['tests'], @root.'\\tests')
-    string @groups = if(array_index_exists(@args, 'groups'), @root.'\\'.@args['groups'], @root.'\\tests.properties')
+    string @tests = if(array_index_exists(@args, 'tests'), @root._util_sdn().@args['tests'], @root._util_sdn().'tests')
+    string @groups = if(array_index_exists(@args, 'groups'), @root._util_sdn().@args['groups'], @root._util_sdn().'tests.properties')
     string @filter = if(array_index_exists(@args, 'filter'), @args['filter'], null)
-    array @outs = if(array_index_exists(@args, 'outs'), @args['outs'], @args['outs'] = _unit_get_default_outs(@root.'\\logs'))
-    string @resource = if(array_index_exists(@args, 'resource'), @root.'\\'.@args['resource'], @root.'\\resource')
-    string @localPackages = if (array_index_exists(@args, 'localPackages'), @root.'\\'.@args['localPackages'].'\\main.ms', @root.'\\localPackages\\main.ms')
+    array @outs = if(array_index_exists(@args, 'outs'), @args['outs'], @args['outs'] = _unit_get_default_outs(@root._util_sdn().'logs'))
+    string @resource = if(array_index_exists(@args, 'resource'), @root._util_sdn().@args['resource'], @root._util_sdn().'resource')
+    string @localPackages = if (array_index_exists(@args, 'localPackages'), @root._util_sdn().@args['localPackages']._util_sdn().'main.ms', @root._util_sdn().'localPackages'._util_sdn().'main.ms')
 
     @conts = _package_unit_get_constants()
     @conts['modules'][@id] = array(
@@ -47,7 +47,10 @@ proc _unit_register_module(array @args) {
     )
 }
 
-array proc _unit_get_default_outs(string @path_to_log, array @filters = array('message', 'test_log', 'user_log'), int @ignore_for_permission = 3) {
+array proc _unit_get_default_outs(string @path_to_log, array @filters = array('message', 'test_log', 'user_log'), int @ignore_for_permission = -1) {
+    if (@ignore_for_permission < 0) {
+        @ignore_for_permission = _util_ign()
+    }
     return(
         array(
             array(
@@ -59,9 +62,9 @@ array proc _unit_get_default_outs(string @path_to_log, array @filters = array('m
             array(
                 'filters' : @filters,
                 'write' : closure(@text) {
-                    @path_to_log_file = @path_to_log.'\\'.simple_date('yyyy.MM.dd').'.txt'
+                    @path_to_log_file = @path_to_log._util_sdn().simple_date('yyyy.MM.dd').'.txt'
                     if (!file_exists(@path_to_log_file)) {
-                        _util_make_file(@path_to_log_file, '\\', @ignore_for_permission)
+                        _util_make_file(@path_to_log_file, _util_sdn(), @ignore_for_permission)
                     }
                     write_file(@path_to_log_file, @text, 'APPEND')
                 }

@@ -14,12 +14,12 @@ Register the module for which you want to write tests using procedures:
 _unit_register_module(associative_array(
     id: string,
     root: string,
-    [tests: string = @root.'\\tests']
-    [localPackages: string  = @root.'\\localPackages\\main.ms']
-    [resource: string = @root.'\\resource']
-    [groups: string = @root.'\\tests.properties'],
+    [tests: string = @root._util_sdn().'tests']
+    [localPackages: string  = @root._util_sdn().'localPackages\\main.ms']
+    [resource: string = @root._util_sdn().'resource']
+    [groups: string = @root._util_sdn().'tests.properties'],
     [filter: string = null],
-    [outs: array<out> = _unit_get_default_outs(@root.'\\logs')]
+    [outs: array<out> = _unit_get_default_outs(@root._util_sdn().'logs')]
 ))
 ```
 
