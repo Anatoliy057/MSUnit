@@ -10,8 +10,9 @@
         "collision_proc_after_each": "[ERROR] syntax error in script: '%s'. Method '%s* should be the only one. 'Found functions: '%s'. Ignored this script",
         "collision_proc_after_all": "[ERROR] syntax error in script: '%s'. Method '%s*' should be the only one. Found functions: '%s'. Ignored this script",
         "procs_test_not_found": "[ERROR] not found tests '%s' in script: '%s'. Ignored this script",
-        "error_before_all": "[ERROR] %s throw exception: %s\n%s\n%s\nIgnored this script",
-        "error_before_each": "[ERROR] %s throw exception: %s\n%s\n%s\nIgnored this script"
+        "error_before_all": "[ERROR] _before_all throw exception: %s\n%s\n%s\nIgnored this script",
+        "error_before_each": "[ERROR] %s throw exception: %s\n%s\n%s\nIgnored this script",
+        "error_after_all": "[ERROR] _after_all throw exception: %s\n%s\n%s\nIgnored this script"
     },
     "test_log" : {
         "cause" : {

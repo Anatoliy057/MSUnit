@@ -111,17 +111,28 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
             @lymda_after_each = @sorted_procs['after_each'][0]
         }
 
+        @res = associative_array()
+        @res['time'] = -nano_time() 
         try {
             @before_all = call_proc(@lymda_before_all)
         } catch (Exception @e) {
-            console(_package_unit_msg_module_log(
-                'error_before_all',
-                @lymda_before_all,
-                @e['classType'],
-                @e['message'],
-                string(_util_parse_stack_trace(1, @e['stackTrace'], 1))
-            ), false)
-            die()
+            @exception = array()
+            _unit_env_init_cur(@res, @setting)
+            if (array_size(@e['stackTrace']) == 1) {
+                @builder = _unit_log_init_self()
+                _unit_log_set_def_cause(@builder, 'no_return')
+                @res['test_log'] = _unit_log_build(@builder)
+                @res['successful'] = false
+            } else {
+                @exception['classType'] = @e['classType']
+                @exception['message'] = @e['message']
+                @exception['stackTrace'] = @e['stackTrace'][..-2]
+                @res['successful'] = false
+                @res['test_log'] = _package_unit_log_unex_throw(@exception)
+            }
+            @result[@test]['_before_all'] = @res
+        } finally {
+            @res['time'] += nano_time() 
         }
         for(@i = 0, @i < array_size(@tests), @i ++) {
             @proc_test = @tests[@i]
@@ -195,17 +206,21 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
             _util_clear_interval(@id_interval)
             _private_unit_tester_count_plus()
         }
+        @res = associative_array()
         try {
+            @res['time'] = -nano_time()
             call_proc(@lymda_after_all)
         } catch (Exception @e) {
-            console(_package_unit_msg_module_log(
-                'error_after_all',
-                @lymda_after_all,
-                @e['classType'],
-                @e['message'],
-                string(_util_parse_stack_trace(1, @e['stackTrace'], 1))
-            ), false)
-            die()
+            @exception = array()
+            _unit_env_init_cur(@res, @setting)
+            @exception['classType'] = @e['classType']
+            @exception['message'] = @e['message']
+            @exception['stackTrace'] = @e['stackTrace'][..-2]
+            @res['successful'] = false
+            @res['test_log'] = _package_unit_log_unex_throw(@exception)
+            @result[@test]['_after_all'] = @res
+        } finally {
+            @res['time'] += nano_time()
         }
     }
     return(@runnable)
