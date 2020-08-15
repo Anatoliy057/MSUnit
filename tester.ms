@@ -7,7 +7,7 @@ proc _package_unit_tester(@tests, @module, @setting, @outs) {
     export('org.cadabra.msunit.tester.count', 0)
 
     _unit_resource_init(@module['resource'])
-    _util_make_file(@module['localPackages'], _util_sdn(), _util_ign())
+    _util_make_file(@module['localPackages'], -2)
     try {
         include(@module['localPackages'])
     } catch(Error @e) {

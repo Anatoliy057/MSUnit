@@ -47,26 +47,23 @@ proc _unit_register_module(array @args) {
     )
 }
 
-array proc _unit_get_default_outs(string @path_to_log, array @filters = array('message', 'test_log', 'user_log'), int @ignore_for_permission = -1) {
-    if (@ignore_for_permission < 0) {
-        @ignore_for_permission = _util_ign()
-    }
+array proc _unit_get_default_outs(string @path_to_log, array @filters = array('message', 'test_log', 'user_log')) {
     return(
         array(
             array(
                 'filters' : @filters,
                 'write' : closure(@text) {
-                    console(@text, false)
+                    console(colorize(@text), false)
                 }
             ),
             array(
                 'filters' : @filters,
                 'write' : closure(@text) {
-                    @path_to_log_file = @path_to_log._util_sdn().simple_date('yyyy.MM.dd').'.txt'
+                    @path_to_log_file = @path_to_log._util_sdn().simple_date('yyyy.MM.dd').'.log'
                     if (!file_exists(@path_to_log_file)) {
-                        _util_make_file(@path_to_log_file, _util_sdn(), @ignore_for_permission)
+                        _util_make_file(@path_to_log_file, -3)
                     }
-                    write_file(@path_to_log_file, @text, 'APPEND')
+                    write_file(@path_to_log_file, strip_colors(@text), 'APPEND')
                 }
             )
         )
