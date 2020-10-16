@@ -131,6 +131,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                 @res['test_log'] = _package_unit_log_unex_throw(@exception)
             }
             @result[@test]['_before_all'] = @res
+            @before_all = null
         } finally {
             @res['time'] += nano_time() 
         }

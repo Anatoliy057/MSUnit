@@ -22,6 +22,12 @@ proc _unit_register_module(array @args) {
     array @outs = if(array_index_exists(@args, 'outs'), @args['outs'], @args['outs'] = _unit_get_default_outs(@root._util_sdn().'logs'))
     string @resource = if(array_index_exists(@args, 'resource'), @root._util_sdn().@args['resource'], @root._util_sdn().'resource')
     string @localPackages = if (array_index_exists(@args, 'localPackages'), @root._util_sdn().@args['localPackages']._util_sdn().'main.ms', @root._util_sdn().'localPackages'._util_sdn().'main.ms')
+    int @ignore = if (array_index_exists(@args, 'ignore'), @args['ignore'], 0)
+
+    _util_make_file(@localPackages, @ignore)
+    _util_make_folder(@tests, @ignore)
+    _util_make_folder(@resource, @ignore)
+    _util_make_file(@groups, @ignore)
 
     @conts = _package_unit_get_constants()
     @conts['modules'][@id] = array(

@@ -11,7 +11,7 @@ proc _unit_init_module() {
     register_command('unit', array(
     'description': 'MSUnit module control',
     'usage': '/unit',
-    'aliases':array('unit', 'test'),
+    'aliases':array('unit'),
     'executor': closure() {
             x_thread_join('(MSUNIT) Tester thread')
             @args = @arguments

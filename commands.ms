@@ -97,7 +97,8 @@ proc _package_unit_commands_init(@setting) {
             if (array_size(@arguments[0]) > 0) {
                 _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], array_implode(@arguments[0], @global_setting['props']['delimiter']), @global_setting['props']['delimiter'])
             } else {
-                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @global_setting['props']['defualt_group'], @global_setting['props']['delimiter'])
+                console(@global_setting)
+                _package_unit_create_setting(@setting['setting_tests'], @setting['filter'], @setting['tests'], @global_setting['props']['default_group'], @global_setting['props']['delimiter'])
             }
         }
     )
