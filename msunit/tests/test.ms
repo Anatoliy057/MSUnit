@@ -3,13 +3,13 @@ proc _test_user_log() {
     _println('ln')
 }
 
-proc _test_localPackages() {
+proc _test_util() {
     _assert_true(_from_local_packages())
 }
 
-proc _test_resource() {
-    @file = read(_unit_resource('file.txt'))
-    @folder_file = read(_unit_resource('folder.file.txt'))
+proc _test_resources() {
+    @file = read(_unit_get_resource('file.txt'))
+    @folder_file = read(_unit_get_resource('folder.file.txt'))
     _assert_equals(@file, @folder_file)
 }
 

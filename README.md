@@ -15,8 +15,8 @@ _unit_register_module(associative_array(
     id: string,
     root: string,
     [tests: string = @root._util_sdn().'tests']
-    [localPackages: string  = @root._util_sdn().'localPackages\\main.ms']
-    [resource: string = @root._util_sdn().'resource']
+    [util: string  = @root._util_sdn().'util\\main.ms']
+    [resources: string = @root._util_sdn().'resources']
     [groups: string = @root._util_sdn().'tests.properties'],
     [filter: string = null],
     [outs: array<out> = _unit_get_default_outs(@root._util_sdn().'logs')]
@@ -28,8 +28,8 @@ _unit_register_module(associative_array(
 - **id** - unique identifier for pluggable tests
 - **root** - Main path to all parts required for MSUnit to work
 - **tests** - Local path to tests
-- **localPackages** - Local path to script, that runs before running tests
-- **resource** - Local path to resource, that are available by calling a procedure `_unit_resource('folder.file.yml')`
+- **util** - Local path to script, that runs before running tests
+- **resources** - Local path to resources, that are available by calling a procedure `_unit_get_resource('folder.file.yml')`
 - **groups** - Local path to map "test - groups"
 - **filter** - folders and scripts containing filter are not considered scripts
 - **outs** - log output objects

@@ -6,6 +6,7 @@ proc _unit_init_module() {
     _unit_register_module(associative_array(
         id: 'msunit',
         root: get_absolute_path('msunit'),
+        ignore: array_size(split(_util_sdn(), get_absolute_path('msunit')))
     ))
 
     register_command('unit', array(

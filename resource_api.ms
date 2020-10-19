@@ -1,4 +1,4 @@
-proc _unit_resource_init(@root) {
+proc _unit_resources_init(@root) {
 
     _util_make_folder(@root, -2)
 
@@ -20,7 +20,7 @@ proc _unit_resource_init(@root) {
     export('org.cadabra.msunit.resource_api', @model)
 }
 
-string proc _unit_resource(string @path) {
+string proc _unit_get_resource(string @path) {
     @model = import('org.cadabra.msunit.resource_api')
     if (!array_index_exists(@model, @path)) {
         throw(IllegalArgumentException, "Unknown resource: @path")

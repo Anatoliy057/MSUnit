@@ -45,7 +45,7 @@ proc _package_unit_run_test(@module, @setting, @groups) {
     console('MSUnit: recompiling tests...', false)
     x_recompile_includes(@module['tests'])
     console('MSUnit: recompiling local packages...', false)
-    x_recompile_includes(@module['localPackages'])
+    x_recompile_includes(@module['util'])
     console('MSUnit: finished recompile...', false)
     console('MSUnit: starting tests...', false)
     @prop = _util_properties_init_self()

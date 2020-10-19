@@ -20,13 +20,13 @@ proc _unit_register_module(array @args) {
     string @groups = if(array_index_exists(@args, 'groups'), @root._util_sdn().@args['groups'], @root._util_sdn().'tests.properties')
     string @filter = if(array_index_exists(@args, 'filter'), @args['filter'], null)
     array @outs = if(array_index_exists(@args, 'outs'), @args['outs'], @args['outs'] = _unit_get_default_outs(@root._util_sdn().'logs'))
-    string @resource = if(array_index_exists(@args, 'resource'), @root._util_sdn().@args['resource'], @root._util_sdn().'resource')
-    string @localPackages = if (array_index_exists(@args, 'localPackages'), @root._util_sdn().@args['localPackages']._util_sdn().'main.ms', @root._util_sdn().'localPackages'._util_sdn().'main.ms')
+    string @resources = if(array_index_exists(@args, 'resources'), @root._util_sdn().@args['resources'], @root._util_sdn().'resources')
+    string @util = if (array_index_exists(@args, 'util'), @root._util_sdn().@args['util']._util_sdn().'main.ms', @root._util_sdn().'util'._util_sdn().'main.ms')
     int @ignore = if (array_index_exists(@args, 'ignore'), @args['ignore'], 0)
 
-    _util_make_file(@localPackages, @ignore)
+    _util_make_file(@util, @ignore)
     _util_make_folder(@tests, @ignore)
-    _util_make_folder(@resource, @ignore)
+    _util_make_folder(@resources, @ignore)
     _util_make_file(@groups, @ignore)
 
     @conts = _package_unit_get_constants()
@@ -36,8 +36,8 @@ proc _unit_register_module(array @args) {
         tests: @tests,
         filter: @filter,
         out: @outs,
-        resource: @resource,
-        localPackages: @localPackages,
+        resources: @resources,
+        util: @util,
         run: closure(string @arg, array @setting) {
             include('statics.ms')
             include('resourse.ms')
