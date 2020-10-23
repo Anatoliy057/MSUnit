@@ -1,7 +1,5 @@
 proc _unit_resources_init(@root) {
 
-    _util_make_folder(@root, -2)
-
     proc _init_paths(string @id, string @path, array @model) {
         if (is_file(@path)) {
             return()
