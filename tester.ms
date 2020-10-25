@@ -59,23 +59,32 @@ int proc _private_unit_tester_add_test(string @test, string @path_to_test, array
 
 proc _private_unit_tester_sep_procs(string @script, array @procs, array @setting) {
     @sorted_procs = _private_unit_tester_sort_procs(@procs, @setting)
+    boolean @successful_check = true
     if (array_size(@sorted_procs['before_each']) > 1) {
         console(_package_unit_msg_module_log('collision_proc_before_each', @script, @setting['pref_before_proc'], @sorted_procs['before_each']), false)
-        return(null)
-    } else if (array_size(@sorted_procs['before_all']) > 1) {
-        console(_package_unit_msg_module_log('collision_proc_before_all', @script, @setting['pref_test_init_proc'], @sorted_procs['before_all']), false)
-        return(null)
-    } else if (array_size(@sorted_procs['after_each']) > 1) {
-        console(_package_unit_msg_module_log('collision_proc_after_each', @script, @setting['pref_after_proc'], @sorted_procs['after_each']), false)
-        return(null)
-    } else if (array_size(@sorted_procs['after_all']) > 1) {
-        console(_package_unit_msg_module_log('collision_proc_after_all', @script, @setting['pref_test_end_proc'], @sorted_procs['after_all']), false)
-        return(null)
-    } else if (array_size(@sorted_procs['tests']) == 0) {
-        console(_package_unit_msg_module_log('procs_test_not_found', @setting['pref_test_proc'], @script), false)
-        return(null)
+        @successful_check = false
     }
-    return(@sorted_procs)
+    if (array_size(@sorted_procs['before_all']) > 1) {
+        console(_package_unit_msg_module_log('collision_proc_before_all', @script, @setting['pref_test_init_proc'], @sorted_procs['before_all']), false)
+        @successful_check = false
+    }
+    if (array_size(@sorted_procs['no_args_after_each']) > 1) {
+        console(_package_unit_msg_module_log('collision_proc_no_args_after_each', @script, @setting['pref_no_args_after_proc'], @sorted_procs['no_args_after_each']), false)
+        @successful_check = false
+    }
+    if (array_size(@sorted_procs['after_each']) > 1) {
+        console(_package_unit_msg_module_log('collision_proc_after_each', @script, @setting['pref_after_proc'], @sorted_procs['after_each']), false)
+        @successful_check = false
+    }
+    if (array_size(@sorted_procs['after_all']) > 1) {
+        console(_package_unit_msg_module_log('collision_proc_after_all', @script, @setting['pref_test_end_proc'], @sorted_procs['after_all']), false)
+        @successful_check = false
+    }
+    if (array_size(@sorted_procs['tests']) == 0) {
+        console(_package_unit_msg_module_log('procs_test_not_found', @setting['pref_test_proc'], @script), false)
+        @successful_check = false
+    }
+    return(if (@successful_check, @sorted_procs, null))
 }
 
 proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting, @result) {
@@ -85,6 +94,7 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
         string @lymda_before_each
         string @lymda_after_all
         string @lymda_after_each
+        string @lymda_no_args_after_each
         mixed @before_all
 
         @tests = @sorted_procs['tests']
@@ -108,6 +118,11 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
             @lymda_after_each = '_package_unit_undef_proc'
         } else {
             @lymda_after_each = @sorted_procs['after_each'][0]
+        }
+        if (@sorted_procs['no_args_after_each'] == null || array_size(@sorted_procs['no_args_after_each']) == 0) {
+            @lymda_no_args_after_each = '_package_unit_undef_proc'
+        } else {
+            @lymda_no_args_after_each = @sorted_procs['no_args_after_each'][0]
         }
 
         @res = associative_array()
@@ -163,6 +178,9 @@ proc _private_unit_tester_init_task(string @test, array @sorted_procs, @setting,
                     } else {
                         @return = call_proc_array(@proc_test, @args)
                         call_proc(@lymda_after_each, @return)
+                    }
+                    if (@lymda_after_each != '_package_unit_undef_proc') {
+                        call_proc(@lymda_no_args_after_each)
                     }
                 } catch(Exception @e) {
                     @exception = array()
@@ -233,6 +251,7 @@ proc _private_unit_tester_sort_procs(@procs, @setting) {
     @sorted_procs['before_all'] = array()
     @sorted_procs['after_each'] = array()
     @sorted_procs['after_all'] = array()
+    @sorted_procs['no_args_after_each'] = array()
     foreach(@proc in @procs) {
         @len = length(@setting['pref_test_proc'])
         if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_test_proc']) {
@@ -253,6 +272,11 @@ proc _private_unit_tester_sort_procs(@procs, @setting) {
                         @len = length(@setting['pref_after_proc'])
                         if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_after_proc']) {
                             @sorted_procs['after_each'][] = @proc
+                        } else {
+                            @len = length(@setting['pref_no_args_after_proc'])
+                            if (length(@proc) >= @len && @proc[cslice(0, @len-1)] == @setting['pref_no_args_after_proc']) {
+                                @sorted_procs['no_args_after_each'][] = @proc
+                            }
                         }
                     }
                 }

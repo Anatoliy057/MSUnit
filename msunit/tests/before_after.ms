@@ -18,6 +18,10 @@ proc _test2(@a, @b) {
     return('Goodbye!')
 }
 
+proc _no_args_after_each() {
+    _assert_empty(@arguments)
+}
+
 proc _after_each(@c) {
     _assert_equals('Goodbye!', @c)
 }

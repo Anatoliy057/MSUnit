@@ -74,6 +74,10 @@ Put your test scripts in a "root". Test scripts may contain only procedures, whi
 
 - After each \[prefix=`_after_each`\]
 
+  The procedure is performed after each tests. Requires all tests in the file to return something. May be only one in script.
+
+- After each \[prefix=`_no_args_after_each`\]
+
   The procedure is performed after each tests. May be only one in script.
 
 The names of the procedures can only match if they are in different scripts.

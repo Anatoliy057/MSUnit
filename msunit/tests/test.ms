@@ -4,7 +4,7 @@ proc _test_user_log() {
 }
 
 proc _test_util() {
-    _assert_true(_from_local_packages())
+    _assert_true(_from_util())
 }
 
 proc _test_resources() {

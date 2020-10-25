@@ -41,13 +41,14 @@ execute(closure() {
         'pref_before_proc' : '_before_each',
         'pref_test_init_proc' : '_before_all',
         'pref_after_proc' : '_after_each',
+        'pref_no_args_after_proc': '_no_args_after_each',
         'pref_test_end_proc' : '_after_all',
         'colors': @colors,  
         'limit_time': @limit_time  
     )
 
     @setting = associative_array(
-        version: 1,
+        version: 2,
         commands: array(
             init: @init,
             run: @run,
@@ -80,7 +81,7 @@ execute(closure() {
                     continue()
                 }
                 if (is_array(@value)) {
-                    @bool = @bool && _equals_construct(@data[@key], @value, if (@path, "@path.@key", @key))
+                    @bool = @bool && _equals_construct(@data[@key], @value, if (@path, "@path.@key", @key), @strict)
                 }
             }
             return(@bool)
