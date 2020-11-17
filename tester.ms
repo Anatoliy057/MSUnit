@@ -6,9 +6,9 @@ proc _package_unit_tester(@tests, @module, @setting, @outs) {
     @count_tests = 0
     export('org.cadabra.msunit.tester.count', 0)
     _unit_resources_init(@module['resources'])
-    _util_make_file(@module['util'], -2)
+    _util_make_file(@module['util'].'main.ms', -2)
     try {
-        include(@module['util'])
+        include(@module['util'].'main.ms')
     } catch(Error @e) {
         console('[MSUNIT] Exception when connecting local scripts. Termination of tests.', false)
         console(_util_parse_exception(@e))
