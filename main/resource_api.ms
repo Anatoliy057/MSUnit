@@ -19,7 +19,7 @@ proc _unit_resources_init(@root) {
 }
 
 string proc _unit_get_resource(string @path) {
-    @model = import('org.cadabra.msunit.resource_api')
+    @model = import('org.cadabra.msunit.resources')['root']
     if (!array_index_exists(@model, @path)) {
         throw(IllegalArgumentException, "Unknown resource: @path")
     }
