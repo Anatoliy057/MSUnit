@@ -1,5 +1,5 @@
 array proc _msunit_import_runners() {
-    return(import('org.cadabra.msunit.modules'))
+    return(import(_msunit_get_class('Register')))
 }
 
 proc _unit_register_module(array @settings) {
@@ -64,18 +64,16 @@ proc _unit_register_module(array @settings) {
     }
 }
 
-array proc _msunit_get_outs(string @path_to_log, string @root, array @filters = array('message', 'test_log', 'user_log')) {
+array proc _msunit_get_outs(string @path_to_log, string @root, array @filters = array()) {
     return(
         array(
-            array(
-                'filters' : @filters,
-                'write' : closure(@text) {
+            _msunit_new_out(
+                closure(@text) {
                     console(colorize(@text), false)
                 }
             ),
-            array(
-                'filters' : @filters,
-                'write' : closure(@text) {
+            _msunit_new_out(
+                closure(@text) {
                     @path_to_log_file = "@path_to_log/".simple_date('yyyy.MM.dd').'.log'
                     if (!file_exists(@path_to_log_file)) {
                         _util_make_file(@path_to_log_file, @root)
@@ -87,4 +85,6 @@ array proc _msunit_get_outs(string @path_to_log, string @root, array @filters = 
     )
 }
 
-export('org.cadabra.msunit.modules', associative_array())
+execute(closure() {
+    export(_msunit_get_class('Register'), associative_array())
+})

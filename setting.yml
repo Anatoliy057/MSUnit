@@ -1,0 +1,17 @@
+commands: {init: init, run: run, start: start, update: update}
+props: {default_group: all, delimiter: '|'}
+tests:
+  assert_timeout: 5
+  colors: {default: GRAY, message: YELLOW, script: WHITE, test: WHITE, test_fail: RED,
+    test_log: DARK_RED, test_skip: YELLOW, test_successful: GREEN, time_attention: YELLOW,
+    time_fail: RED, time_successful: GREEN, user_log: GRAY}
+  limit_time: {attention: 0.5, successful: 0.1}
+  number_threads: 6
+  pref_after_proc: _after_each
+  pref_before_proc: _before_each
+  pref_no_args_after_proc: _no_args_after_each
+  pref_test_end_proc: _after_all
+  pref_test_init_proc: _before_all
+  pref_test_proc: _test
+  proc_timeout: 10
+version: 2

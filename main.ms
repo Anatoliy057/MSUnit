@@ -1,6 +1,2 @@
-execute(closure() {
-    export(
-        'org.cadabra.msunit.resource_path',
-        file_resolve('./resources')
-    )
-})
+include('__settings__.ms')
+include('__include__.ms')
