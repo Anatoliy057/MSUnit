@@ -5,20 +5,18 @@ array proc _msunit_get_script_validator() {
 _msunit_include_add(closure() {
     array @validator = associative_array()
 
-    @validator['valid'] = closure(@m, @self, string @script, array @procs, array @setting) {
-        @filter = _msunit_get_filter()
-
+    @validator['valid'] = closure(@m, @self, string @script, array @procs) {
         @message = _msunit_get_validation_message()
 
         array @messages = array()
 
-        @tests = _method('getTests', @filter, @procs, @setting)
-        @beforeEach = _method('getBeforeEach', @filter, @procs, @setting)
-        @beforeAll = _method('getBeforeAll', @filter, @procs, @setting)
-        @afterEach = _method('getAfterEach', @filter, @procs, @setting)
-        @afterAll = _method('getafterAll', @filter, @procs, @setting)
-        @afterEachWithoutArgs = _method('getAfterEachWithoutArgs', @filter, @procs, @setting)
-        @afterAllWithoutArgs = _method('getAfterAllWithoutArgs', @filter, @procs, @setting)
+        @tests = @procs['getTests']
+        @beforeEach = @procs['getBeforeEach']
+        @beforeAll = @procs['getBeforeAll']
+        @afterEach = @procs['getAfterEach']
+        @afterAll = @procs['getafterAll']
+        @afterEachWithoutArgs = @procs['getAfterEachWithoutArgs']
+        @afterAllWithoutArgs = @procs['getAfterAllWithoutArgs']
 
         @messages[] = _method('validTests', @self, @script, @tests, @procs, @message)
         @messages[] = _method('validBeforeEach', @self, @script, @beforeEach, @message)

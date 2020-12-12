@@ -41,10 +41,10 @@ proc _unit_register_module(array @settings) {
         @module_settings['ignore_match'] = null
     }
 
-    if (array_index_exists(@settings, 'test_settings')) {
-        @module_settings['test_settings'] = @settings['test_settings']
+    if (array_index_exists(@settings, 'test_groups')) {
+        @module_settings['test_groups'] = @root.'/'.@settings['test_groups']
     } else {
-        @module_settings['test_settings'] = "@root/settings.prop"
+        @module_settings['test_groups'] = "@root/settings.prop"
     }
 
     if (array_index_exists(@settings, 'outs')) {

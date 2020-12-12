@@ -5,6 +5,20 @@ array proc _msunit_get_test() {
 _msunit_include_add(closure() {
     array @filterProcs = associative_array()
 
+    @filterProcs['filterProcs'] = closure(@m, @self, array @procs, array @setting) {
+        @filteredProcs = associative_array()
+
+        @filteredProcs['tests'] = _method('getTests', @self, @procs, @setting)
+        @filteredProcs['beforeEach'] = _method('getBeforeEach', @self, @procs, @setting)
+        @filteredProcs['beforeAll'] = _method('getBeforeAll', @self, @procs, @setting)
+        @filteredProcs['afterEach'] = _method('getAfterEach', @self, @procs, @setting)
+        @filteredProcs['afterAll'] = _method('getafterAll', @self, @procs, @setting)
+        @filteredProcs['afterEachWithoutArgs'] = _method('getAfterEachWithoutArgs', @self, @procs, @setting)
+        @filteredProcs['afterAllWithoutArgs'] = _method('getAfterAllWithoutArgs', @self, @procs, @setting)
+    
+        return(@filteredProcs)
+    }
+
     @filterProcs['filter'] = closure(@m, @self, array @procs, string @filter) {
         return(array_filter(@procs, closure(@key, @value) {
             return(reg_count(@filter, @value) != 0)
