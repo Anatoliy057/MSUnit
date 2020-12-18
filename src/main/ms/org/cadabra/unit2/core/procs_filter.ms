@@ -1,5 +1,5 @@
 array proc _msunit_get_test() {
-    import(_msunit_get_class('TestEntity'))
+    import(_msunit_get_class('ProcsFilter'))
 }
 
 _msunit_include_add(closure() {
@@ -17,12 +17,6 @@ _msunit_include_add(closure() {
         @filteredProcs['afterAllWithoutArgs'] = _method('getAfterAllWithoutArgs', @self, @procs, @setting)
     
         return(@filteredProcs)
-    }
-
-    @filterProcs['filter'] = closure(@m, @self, array @procs, string @filter) {
-        return(array_filter(@procs, closure(@key, @value) {
-            return(reg_count(@filter, @value) != 0)
-        }))
     }
 
     @filterProcs['getTests'] = closure(@m, @self, array @procs, array @setting) {
@@ -65,6 +59,12 @@ _msunit_include_add(closure() {
         @filter = @setting['script']['afterAllWithoutArgs']
 
         return(_method('filter', @self, @procs, @filter))
+    }
+
+    @filterProcs['filter'] = closure(@m, @self, array @procs, string @filter) {
+        return(array_filter(@procs, closure(@key, @value) {
+            return(reg_count(@filter, @value) != 0)
+        }))
     }
 
     _msunit_register_class('ProcsFilter', @filter)

@@ -118,5 +118,5 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('ScriptValidator', @filter)
+    _msunit_register_class('ScriptValidator', @validator)
 })

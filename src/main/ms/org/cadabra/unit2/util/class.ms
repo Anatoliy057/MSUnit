@@ -32,6 +32,12 @@ proc _msunit_register_class(string @className, array @attributes, int @stackTrac
     export(@class, @attributes)
 }
 
+proc _msunit_static_method(string @method, string @class) {
+    @object = _msunit_import_class(@class)
+    @arguments[1] = @object
+    return(_method_array(@arguments))
+}
+
 proc _msunit_import_class(string @className) {
     import(_msunit_get_class(@className))
 }
