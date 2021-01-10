@@ -1,7 +1,3 @@
-array proc _msunit_import_runners() {
-    return(import(_msunit_get_class('Register')))
-}
-
 proc _unit_register_module(array @settings) {
 
     array @module_settings = _msunit_load_resource('setting.yml')
@@ -9,46 +5,50 @@ proc _unit_register_module(array @settings) {
     string @root
     string @id
 
-    if (array_index_exists(@settings, 'id')) {
+    if (_key_in(@settings, 'id')) {
         @module_settings['id'] = @settings['id']
         @id = @settings['id']
     } else {
         throw(NotFoundException, 'You must specify the "id"')
     }
 
-    if (array_index_exists(@settings, 'root')) {
+    if (_key_in(@settings, 'root')) {
         @module_settings['root'] = @settings['root']
         @root = @settings['root']
     } else {
         throw(NotFoundException, 'You must specify the "root"')
     }
 
-    if (array_index_exists(@settings, 'root_tests')) {
+    if (_key_in(@settings, 'root_tests')) {
         @module_settings['root_tests'] = @settings['root_tests']
     } else {
         @module_settings['root_tests'] = "@root/tests"
     }
 
-    if (array_index_exists(@settings, 'root_resources')) {
+    if (_key_in(@settings, 'root_resources')) {
         @module_settings['root_resources'] = @settings['root_resources']
     } else {
         @module_settings['root_resources'] = "@root/resources"
     }
 
-    if (array_index_exists(@settings, 'ignore_match')) {
+    if (_key_in(@settings, 'ignore_match')) {
         @module_settings['ignore_match'] = @settings['ignore_match']
     } else {
         @module_settings['ignore_match'] = null
     }
 
-    if (array_index_exists(@settings, 'test_groups')) {
+    if (_key_in(@settings, 'test_groups')) {
         @module_settings['test_groups'] = @root.'/'.@settings['test_groups']
     } else {
         @module_settings['test_groups'] = "@root/settings.prop"
     }
 
-    if (array_index_exists(@settings, 'outs')) {
-        @module_settings['outs'] = @settings['outs']
+    if (_key_in(@settings, 'outs')) {
+        @outs = array()
+        foreach(@out in @settings['outs']) {
+            @outs[] = _msunit_new_out(@out)
+        }
+        @module_settings['outs'] = @outs
     } else {
         @module_settings['outs'] = _msunit_get_outs("@root/logs")
     }
@@ -84,7 +84,3 @@ array proc _msunit_get_outs(string @path_to_log, string @root, array @filters = 
         )
     )
 }
-
-execute(closure() {
-    export(_msunit_get_class('Register'), associative_array())
-})

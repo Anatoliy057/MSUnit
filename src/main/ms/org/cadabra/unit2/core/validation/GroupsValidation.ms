@@ -12,14 +12,14 @@ _msunit_include_add(closure() {
         @not = @self['moduleSetting']['groups']['not']
         @in = @self['moduleSetting']['groups']['in']
 
-        @pattern = "[\\w\\.]*[@not|@in]?\\w+"
+        @pattern = "^([@not@int](([\\w+-]+$)|([:][\\w+-]+$)|([\\w+-]+[:][\\w+-]+$)))|(([\\w+-]+$)|([:][\\w+-]+$)|([\\w+-]+[:][\\w+-]+$))"
 
         foreach(@arg in @args) {
             if(!_reg_like(@pattern, @arg)) {
                 @messages[] = _method(
                     'error',
                     @message,
-                    "The specified group '@group' does not match the expression @pattern"
+                    "The specified group '@group' does not match the expression"
                 )
             }
         }
