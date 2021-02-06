@@ -79,7 +79,6 @@ _msunit_include_add(closure() {
         }
 
         @self['filter'] = @filter
-        console(@filter)
     }
 
     @attributes['isChosenTest'] = closure(@m, @self, string @script, string @test) {

@@ -299,7 +299,7 @@ proc _assert_proc_throw(ClassType @type, string @proc, mixed @msg = null) {
     }
 }
 
-proc _assert_execute_throw(ClassType @type, closure @lymda, mixed @msg = null) {
+proc _assert_closure_throw(ClassType @type, closure @lymda, mixed @msg = null) {
     @exceptionType = null
     try {
         @lymda()

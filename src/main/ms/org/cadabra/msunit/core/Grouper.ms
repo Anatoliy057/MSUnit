@@ -8,6 +8,9 @@ array proc _msunit_new_grouper(array @groupsScriptMap, array @testsScriptMap, ar
     @testsGroupMap = associative_array()
     foreach(@formatScript: @groups in @groupsScriptMap) {
         @groupsScriptMap[@formatScript][] = @formatScript
+        if (!_key_in(@testsScriptMap, @formatScript)) {
+            continue()
+        }
         @testsGroupMap[@formatScript] = @testsScriptMap[@formatScript]
         foreach(@group in @groups) {
             if (!_key_in(@testsGroupMap, @group)) {
@@ -62,11 +65,19 @@ _msunit_include_add(closure() {
 
     @attributes['getGroupsScript'] = closure(@m, @self, string @script) {
         @formatScript = _method('formatScript', @self, @script)
-        return(@self['groupsScriptMap'][@formatScript])
+        if(_key_in(@self['groupsScriptMap'], @formatScript)) {
+            return(@self['groupsScriptMap'][@formatScript])
+        } else {
+            return(array())
+        }
     }
 
     @attributes['getScriptsGroup'] = closure(@m, @self, string @group) {
-        return(@self['scriptsGroupMap'][@group])
+        if(_key_in(@self['scriptsGroupMap'], @group)) {
+            return(@self['scriptsGroupMap'][@group])
+        } else {
+            return(array())
+        }
     }
 
     @attributes['getScripts'] = closure(@m, @self) {
@@ -78,7 +89,11 @@ _msunit_include_add(closure() {
     }
 
     @attributes['getTestsGroup'] = closure(@m, @self, string @group) {
-        return(@self['testsGroupMap'][@group])
+        if(_key_in(@self['testsGroupMap'], @group)) {
+            return(@self['testsGroupMap'][@group])
+        } else {
+            return(array())
+        }
     }
 
     @attributes['getCompletions'] = closure(@m, @self) {

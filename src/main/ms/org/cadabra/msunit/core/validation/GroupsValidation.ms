@@ -95,7 +95,7 @@ _msunit_include_add(closure() {
                 @messages[] = _method(
                     'warn',
                     @messager,
-                    "No such @scriptGroup script found"
+                    "No such '@scriptGroup' script found"
                 )
             }
 
@@ -103,7 +103,7 @@ _msunit_include_add(closure() {
                 @messages[] = _method(
                     'fatal',
                     @messager,
-                    "The script name cannot contain file separators at @scriptGroup. Instead of them there should be '.'"
+                    "The script name cannot contain file separators at '@scriptGroup'. Instead of them there should be '.'"
                 )
             }
 
@@ -116,7 +116,7 @@ _msunit_include_add(closure() {
                 @messages[] = _method(
                     'fatal',
                     @messager,
-                    "Groups at script @scriptGroup must be array (not associative)"
+                    "Groups at script '@scriptGroup' must be array (not associative)"
                 )
                 
                 continue()        
@@ -133,21 +133,21 @@ _msunit_include_add(closure() {
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be @expect, but @group at script @script"
+                "Group must be '@expect', but '@group' at script '@script'"
             )
         
         } else if(_contains(@scripts, @group)) {
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be different from script names at script @script"
+                "Group must be different from script names at script '@script'"
             )
         
         } else if(!_reg_like('\\w+', @group)) {
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be like '\\w+' at script @script"
+                "Group must be like '\\w+' at script '@script'"
             )
         }
     }

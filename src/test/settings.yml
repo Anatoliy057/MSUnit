@@ -27,7 +27,7 @@ assert_type-test:
 - assert
 before_after-test:
 - all
-folder1.test-test:
-- all
-test-test:
+hello: [
+  ]
+other-test:
 - all

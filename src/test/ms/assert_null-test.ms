@@ -1,15 +1,15 @@
-proc _test_null_0() {
-    _assert_null(import('null'))
+proc _test_assertNull_successfully() {
+    _assert_null(null)
 }
 
-proc _test_null_1() {
+proc _test_assertNull_fail() {
     _assert_null(array(), 'SUCCESSFUL')
 }
 
-proc _test_not_null_0() {
+proc _test_assertNotNull_successfully() {
     _assert_not_null(array())
 }
 
-proc _test_not_null_1() {
+proc _test_assertNotNull_fail() {
     _assert_not_null(null, 'SUCCESSFUL')
 }

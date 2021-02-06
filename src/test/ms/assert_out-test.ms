@@ -1,9 +1,9 @@
-proc _test_assert_out() {
+proc _test_assertOut_fail() {
     //_skip_test()
     sleep(100)
 }
 
-proc _test_proc_out() {
+proc _test_testOut_fail() {
     //_skip_test()
     while(true) {
         sleep(1)
