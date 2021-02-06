@@ -74,7 +74,7 @@ _msunit_include_add(closure() {
         @self['grouper'] = @grouper
     }
 
-    proc _msunit_build_task(@self, string @script, string @trimScript, array @groups, array @testFilter, array @scriptResult) {
+    proc _msunit_build_task(@self, string @script, string @trimScript, array @testFilter, array @scriptResult) {
         @oldProcs = get_procedures()
         include(@script)
         @newProcs = get_procedures()
@@ -129,7 +129,8 @@ _msunit_include_add(closure() {
 
             @tests = @filteredProcs['tests']
             foreach(@test in @tests) {
-                if (!_method('isTestProc', @testFilter, @groups, @test)) {
+                @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
+                if (!_method('isChosenTest', @testFilter, @formatScript, @test)) {
                     continue()
                 }
                 
@@ -212,12 +213,11 @@ _msunit_include_add(closure() {
 
         @messager = _msunit_get_validation_messager()
         @groupsValidator = _msunit_get_groups_validator()
-        @messages = _method('validUserGroups', @groupsValidator, @userGroups, @options)
-
-        @testFilter = _msunit_new_test_filter(@options)
-        _method('compile', @testFilter, @userGroups, @options)
-
+        @messages = _method('validUserGroups', @groupsValidator, @userGroups, @grouper, @options)
         _method('log', @self, @messages, @messager, @caller)
+
+        @testFilter = _msunit_new_test_filter(@options, @grouper)
+        _method('compile', @testFilter, @userGroups, @options)
         
         //Marker procedure
         proc _unit() {}
@@ -227,14 +227,10 @@ _msunit_include_add(closure() {
         @runner = _msunit_tasker_init_self('MSUnit script runner', @options['core']['threads'], 1, false)
         @states = associative_array()
         foreach(@trimScript in @trimScripts) {
-            @groups = _method('getScriptGroups', @grouper, @trimScript)
             @script = file_resolve("@rootTests/@trimScript")
-
-            if(_method('isTestGroup', @testFilter, @groups)) {
-                @scriptState = associative_array()
-                @states[@trimScript] = @scriptState
-                _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @trimScript, @groups, @testFilter, @scriptState))
-            }
+            @scriptState = associative_array()
+            @states[@trimScript] = @scriptState
+            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @trimScript, @testFilter, @scriptState))
         }
 
         _msunit_set_environment(@moduleSetting, @states)
@@ -266,9 +262,11 @@ _msunit_include_add(closure() {
         int @countSkipped = 0
         
         @builder = res_create_resource('STRING_BUILDER')
+        string_append(@builder, '\r                                                                ')
         string_append(@builder, '\n[TIME] ')
         string_append(@builder, "[@id] ")
         string_append(@builder,  simple_date('yyyy.MM.dd \'at\' HH:mm:ss'))
+        string_append(@builder, '\n')
         string_append(@builder, '\n')
         foreach(@script: @tests in @states) {
             if(_is_empty(@tests)) {
@@ -278,7 +276,7 @@ _msunit_include_add(closure() {
             @formatScript = _msunit_static_method('formatScript', 'Grouper', @script)
 
             string_append(@builder, color(@colors['script']))
-            string_append(@builder, '\n###########################################################\n')
+            string_append(@builder, '\r###########################################################\n')
             string_append(@builder, 'Script: ')
             string_append(@builder, color('UNDERLINE'))
             string_append(@builder, @formatScript)
@@ -383,18 +381,18 @@ _msunit_include_add(closure() {
             string_append(@builder, '\n***********************************************************\n')
 
             _method('logStatistics', @self, @lcountTests, @lcountFailures, @lcountSkipped, @builder, @colors)  
-            
+            string_append(@builder, '\n')
+
             _method('log', @logger, string(@builder), @caller)
             
             @builder = res_create_resource('STRING_BUILDER')
-            string_append(@builder, '\n')
             
             @countTests += @lcountTests
             @countFailures += @lcountFailures
             @countSkipped += @lcountSkipped
         }
 
-        string_append(@builder, '\n===========================================================\n')
+        string_append(@builder, '\r===========================================================\n')
 
         if (!_is_empty(@failedTests)) {
             string_append(@builder, '\n')

@@ -11,7 +11,8 @@ _msunit_include_add(closure() {
 
     @app['test'] = closure(@m, @self, string @id, string @caller, array @commandArguments) {
         if(!_key_in(@self['testers'], @id)) {
-            throw(IndexOverflowException, "That module '@id' not register")
+            msg(color('DARK_RED')."That module '@id' not register")
+            die()
         }
 
         x_thread_join(@THREAD_NAME)
@@ -43,7 +44,7 @@ _msunit_include_add(closure() {
     @app['registerCommand'] = closure(@m, @self) {
         register_command('unit', array(
             'description': 'MSUnit module control',
-            'usage': '/unit module [groups...]',
+            'usage': '/unit <module> [groups...]',
             'aliases':array('unit'),
             'executor': closure(@alias, @caller, @args) {
                 if(_size(@args) == 0) {

@@ -13,4 +13,3 @@ proc _init_msunit() {
         root: file_resolve('src/test'),
     ))
 }
-

@@ -1,50 +1,56 @@
-array proc _msunit_new_grouper(array @settingGroups, array @originTestsMap, array @options) {
+array proc _msunit_new_grouper(array @groupsScriptMap, array @testsScriptMap, array @options) {
     array @self = associative_array()
 
     foreach(@key: @attr in _msunit_get_class('Grouper')) {
         @self[@key] = @attr
     }
 
-    @testsMap = associative_array()
-    foreach(@formatScript: @groups in @settingGroups) {
-        @testsMap[@formatScript] = @originTestsMap[@formatScript]
+    @testsGroupMap = associative_array()
+    foreach(@formatScript: @groups in @groupsScriptMap) {
+        @groupsScriptMap[@formatScript][] = @formatScript
+        @testsGroupMap[@formatScript] = @testsScriptMap[@formatScript]
         foreach(@group in @groups) {
-            if (!_key_in(@testsMap, @group)) {
-                @testsMap[@group] = array()
+            if (!_key_in(@testsGroupMap, @group)) {
+                @testsGroupMap[@group] = array()
             }
             
-            @procs = array_filter(@originTestsMap[@formatScript], closure(@i, @p) {
-                return(!_contains(@testsMap[@group], @p))
+            @procs = array_filter(@testsScriptMap[@formatScript], closure(@i, @p) {
+                return(!_contains(@testsGroupMap[@group], @p))
             })
             
-            array_push_all(@testsMap[@group], @procs)
+            array_push_all(@testsGroupMap[@group], @procs)
         }
     }
 
-    @self['settingGroups'] = @settingGroups
-    @self['testsMap'] = @testsMap
-    @self['originTestsMap'] = @originTestsMap
+    @scriptsGroupMap = associative_array()
+    foreach(@script: @groups in @groupsScriptMap) {
+        foreach(@group in @groups) {
+            if(!_key_in(@scriptsGroupMap, @group)) {
+                @scriptsGroupMap[@group] = array_keys(
+                    array_filter(@groupsScriptMap, closure(@s, @gps) {
+                        return(array_contains(@gps, @group))
+                    })
+                )
+            }
+        }
+        @scriptsGroupMap[@script] = array(@script)
+    }
+
+    @self['groupsScriptMap'] = @groupsScriptMap
+    @self['scriptsGroupMap'] = @scriptsGroupMap
+    @self['testsGroupMap'] = @testsGroupMap
 
     @completions = array()
     @not = @options['groups']['not']
-    @test = @options['groups']['separator']
-    foreach(@group: @procs in @testsMap) {
+    @separator = @options['groups']['separator']
+    foreach(@group: @procs in @testsGroupMap) {
         foreach(@proc in @procs) {
             @completions[] = @group
             @completions[] = @not.@group
-            @completions[] = @group.@test.@proc
-            @completions[] = @not.@group.@test.@proc
+            @completions[] = @group.@separator.@proc
+            @completions[] = @not.@group.@separator.@proc
         }
     }
-
-    @allTests = array()
-    @testsMap = @self['originTestsMap']
-    foreach(@script: @tests in @testsMap) {
-        array_push_all(@allTests, array_filter(@tests, closure(@i, @t) {return(!_contains(@allTests, @t))}))
-    }
-    
-    array_push_all(@completions, array_map(@allTests, closure(@t) {return(@test.@t)}))
-    array_push_all(@completions, array_map(@allTests, closure(@t) {return(@not.@test.@t)}))
 
     @self['completions'] = @completions
 
@@ -54,12 +60,25 @@ array proc _msunit_new_grouper(array @settingGroups, array @originTestsMap, arra
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['getScriptGroups'] = closure(@m, @self, string @script) {
+    @attributes['getGroupsScript'] = closure(@m, @self, string @script) {
         @formatScript = _method('formatScript', @self, @script)
-        @settingGroups = @self['settingGroups']
-        @groups = _get(@settingGroups, @formatScript)[]
-        @groups[] = @formatScript
-        return(@groups)
+        return(@self['groupsScriptMap'][@formatScript])
+    }
+
+    @attributes['getScriptsGroup'] = closure(@m, @self, string @group) {
+        return(@self['scriptsGroupMap'][@group])
+    }
+
+    @attributes['getScripts'] = closure(@m, @self) {
+        return(array_keys(@self['groupsScriptMap']))
+    }
+
+    @attributes['getGroups'] = closure(@m, @self) {
+        return(array_keys(@self['testsGroupMap']))
+    }
+
+    @attributes['getTestsGroup'] = closure(@m, @self, string @group) {
+        return(@self['testsGroupMap'][@group])
     }
 
     @attributes['getCompletions'] = closure(@m, @self) {

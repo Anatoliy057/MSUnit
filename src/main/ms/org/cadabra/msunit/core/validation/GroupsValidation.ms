@@ -24,22 +24,58 @@ _msunit_include_add(closure() {
         return(@updatedSettingGroups)
     }
 
-    @validator['validUserGroups'] = closure(@m, @self, array @userGroups, array @options) {
+    @validator['validUserGroups'] = closure(@m, @self, array @userGroups, array @grouper, array @options) {
         @not = @options['groups']['not']
+        @separator = @options['groups']['separator']
         @messager = _msunit_get_validation_messager()
         array @messages = array()
 
-        foreach(@group in @userGroups) {
-            if(
-                !_reg_like('^['.@not.']?[\\-\\_\\w]+$', @group)
-                && !_reg_like('^['.@not.']?[\\-\\_\\w]+:[\\-\\_\\w]+$', @group)
-                && !_reg_like('^['.@not.']?:[\\-\\_\\w]+$', @group)
-            ) {
+        @groups = _method('getGroups', @grouper)
+        @pattern = '^['.@not.']?[\\.\\-\\_\\w]+('.@separator.'[\\_\\w]+)?$'
+
+        foreach(@userGroup in @userGroups) {
+            if (!_reg_like(@pattern, @userGroup)) {
                 @messages[] = _method(
                     'fatal',
                     @messager,
-                    "The specified group '@group' does not match the expression"
+                    "The specified argument '@userGroup' does not match the @pattern"
                 )
+                continue()
+            }
+
+            @userGroup = replace(@userGroup, @not, '')
+
+            if(string_contains(@userGroup, @separator)) {
+                @splitted = split(@separator, @userGroup)
+                @group = @splitted[0]
+                @test = @splitted[1]
+
+                if (!_contains(@groups, @group)) {
+                    @messages[] = _method(
+                        'fatal',
+                        @messager,
+                        "The specified group '@userGroup' not exists"
+                    )
+                    continue()
+                }
+                
+                @tests = _method('getTestsGroup', @grouper, @group)
+                if (!_contains(@tests, @test)) {
+                    @messages[] = _method(
+                        'fatal',
+                        @messager,
+                        "The specified test '@test' not exists in group '@group'"
+                    )
+                }
+            
+            } else {
+                if (!_contains(@groups, @userGroup)) {
+                    @messages[] = _method(
+                        'fatal',
+                        @messager,
+                        "The specified group '@userGroup' not exists"
+                    )
+                }
             }
         }
 
