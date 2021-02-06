@@ -1,0 +1,31 @@
+--- 
+core: 
+  threads: 4
+groups: 
+  not: '!'
+  separator: ':'
+log: 
+  colors:
+    info: WHITE
+    default: GRAY
+    message: YELLOW
+    script: WHITE
+    test: WHITE
+    testFail: RED
+    testLog: DARK_RED
+    testSkip: YELLOW
+    testSuccessful: GREEN
+    timeAttention: YELLOW
+    timeSuccessful: GREEN
+    userLog: GRAY
+module: {}
+test: 
+  attentionTime: 1000000000
+  testTimeout: 10
+  procs: 
+    afterEach: ^_after_each.*
+    beforeEach: ^_before_each.*
+    beforeAll: ^_before_all.*
+    afterAll: ^_after_all.*
+    test: ^_test.*
+  assertTimeout: 5

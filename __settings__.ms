@@ -1,10 +1,12 @@
 execute(closure() {
-    @root = file_resolve('./src/main/ms')
-    @rootResourse = file_resolve('./src/main/resourse')
-
-    export('MSUNIT', associative_array(
-        root: @root,
-        rootResourse: @rootResourse
+    export('org.cadabra.msunit', associative_array(
+        //constants
+        ROOT: file_resolve('./src/main/ms'),
+        ROOT_RESOURSE: file_resolve('./src/main/resources'),
+        TEST_API: file_resolve('src/main/ms/org/cadabra/msunit/api/test/api.ms'),
+        
+        //storages
+        modules: array(),
     ))
 })
 

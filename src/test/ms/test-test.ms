@@ -9,18 +9,8 @@ proc _test_util() {
 
 proc _test_resources() {
     @file = read(_unit_get_resource('file.txt'))
-    @folder_file = read(_unit_get_resource('folder.file.txt'))
-    _assert_equals(@file, @folder_file)
-}
-
-proc _test_time_limit_1() {
-    _assert_time_limit(0, 100)
-    _print('Yellow time')
-}
-
-proc _test_time_limit_2() {
-    _assert_time_limit(0, 0)
-    _print('Red time')
+    @folderFile = read(_unit_get_resource('folder/file.txt'))
+    _assert_equals(@file, @folderFile)
 }
 
 proc _test_skip() {

@@ -4,10 +4,10 @@ void proc _msunit_include_add(closure @include) {
 
 void proc _msunit_include_all() {
     foreach(@include in import('org.cadabra.msunit.__include__')) {
-        execute(@include)
+        execute_current(@include)
     }
 }
 
-include_dir('src/main')
+export('org.cadabra.msunit.__include__', array())
 
-_msunit_include_all()
+include_dir('src/main', true)
