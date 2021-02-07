@@ -5,6 +5,8 @@ array proc _msunit_get_groups_validator() {
 _msunit_include_add(closure() {
     array @validator = associative_array()
 
+    @validator['patternGroup'] = '[\\.\\_\\-\\w]+'
+
     @validator['updateSettingGroups'] = closure(@m, @self, @settingGroups, array @scripts) {
         @updatedSettingGroups = array()
 
@@ -99,11 +101,12 @@ _msunit_include_add(closure() {
                 )
             }
 
-            if(_reg_like(@scriptGroup, '[\\\\/]')) {
+            @pattern = @self['patternGroup']
+            if(!_reg_like(@pattern, @scriptGroup)) {
                 @messages[] = _method(
                     'fatal',
                     @messager,
-                    "The script name cannot contain file separators at '@scriptGroup'. Instead of them there should be '.'"
+                    "The script-key '@scriptGroup' does not match the @pattern"
                 )
             }
 
@@ -116,7 +119,7 @@ _msunit_include_add(closure() {
                 @messages[] = _method(
                     'fatal',
                     @messager,
-                    "Groups at script '@scriptGroup' must be array (not associative)"
+                    "Groups '@group' must be array (not associative) at @scriptGroup"
                 )
                 
                 continue()        
@@ -126,28 +129,29 @@ _msunit_include_add(closure() {
         return(@messages)
     }
 
-    @validator['validGroup'] = closure(@m, @self, array @messager, array @messages, string @group, string @script, array @scripts) {
+    @validator['validGroup'] = closure(@m, @self, array @messager, array @messages, @group, string @script, array @scripts) {
+        @pattern = @self['patternGroup']
         if (!is_string(@group)) {
             @actually = typeof(@group)
             @expect = typeof('')
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be '@expect', but '@group' at script '@script'"
+                "Group '@group' must be @expect, but @actually at @script"
             )
         
         } else if(_contains(@scripts, @group)) {
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be different from script names at script '@script'"
+                "Group '@group' must be different from script-groups at @script"
             )
         
-        } else if(!_reg_like('\\w+', @group)) {
+        } else if(!_reg_like(@pattern, @group)) {
             @messages[] = _method(
                 'fatal',
                 @messager,
-                "Group must be like '\\w+' at script '@script'"
+                "Group '@group' does not match the @pattern at @script"
             )
         }
     }

@@ -21,6 +21,7 @@ _msunit_include_add(closure() {
         @caller = '~console'
         @moduleSetting = @self['moduleSetting']
         @options = @self['options']
+        @id = @self['id']
 
         @messager = _msunit_get_validation_messager()
         @messages = array()
@@ -67,11 +68,21 @@ _msunit_include_add(closure() {
             @messages[] = _method('fatal', @messager, "Improperly formatted YML setting groups at @pathToSettingGroups")
         }
 
-        _method('log', @self, @messages, @messager, @caller)
+        try {
+            _method('log', @self, @messages, @messager, @caller)
+        } catch(Exception @e) {
+            throw(Exception, "A fatal occurred during the initialization of module tests '@id', see the logs")
+        }
         
         @self['trimScripts'] = @trimScripts
         @grouper = _msunit_new_grouper(@updatedSettingGroups, @testsMap, @options)
         @self['grouper'] = @grouper
+
+        @countTests = 0
+        foreach(@formatScript: @tests in @testsMap) {
+            @countTests += array_size(@tests)
+        }
+        @self['countTests'] = @countTests
     }
 
     proc _msunit_build_task(@self, string @script, string @trimScript, array @testFilter, array @scriptResult) {
@@ -181,6 +192,8 @@ _msunit_include_add(closure() {
 
                     x_thread_join(@nameThread, 1000)
                 }
+
+                @self['countFinishedTests'] += 1;
             }
 
             @time = -nano_time()
@@ -208,13 +221,19 @@ _msunit_include_add(closure() {
         @moduleSetting = @self['moduleSetting']
         @rootTests = @self['moduleSetting']['rootTests']
         @options = @self['options']
+        @countThreads = @options['core']['threads']
         @trimScripts = @self['trimScripts']
         @grouper = @self['grouper']
+        @countTests = @self['countTests']
 
         @messager = _msunit_get_validation_messager()
         @groupsValidator = _msunit_get_groups_validator()
         @messages = _method('validUserGroups', @groupsValidator, @userGroups, @grouper, @options)
-        _method('log', @self, @messages, @messager, @caller)
+        try {
+            _method('log', @self, @messages, @messager, @caller)
+        } catch(Exception @e) {
+            return()
+        }
 
         @testFilter = _msunit_new_test_filter(@options, @grouper)
         _method('compile', @testFilter, @userGroups, @options)
@@ -224,7 +243,7 @@ _msunit_include_add(closure() {
         include(_msunit_import_test_api())
         include(@moduleSetting['extension'])
 
-        @runner = _msunit_tasker_init_self('MSUnit script runner', @options['core']['threads'], 1, false)
+        @runner = _msunit_tasker_init_self('MSUnit script runner', @countThreads, 1, false)
         @states = associative_array()
         foreach(@trimScript in @trimScripts) {
             @script = file_resolve("@rootTests/@trimScript")
@@ -233,13 +252,32 @@ _msunit_include_add(closure() {
             _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @trimScript, @testFilter, @scriptState))
         }
 
+        @self['countFinishedTests'] = 0
         _msunit_set_environment(@moduleSetting, @states)
         @time = -nano_time()
         _msunit_tasker_start(@runner)
 
         @size = _msunit_tasker_size_waiting(@runner)
+        @prevCount = 0
         while(_msunit_tasker_complited(@runner) != @size) {
-
+            @curretnCount = @self['countFinishedTests']
+            if(@curretnCount != @prevCount) {
+                @statusBar = res_create_resource('STRING_BUILDER', 50)
+                @percent = integer(100 * @curretnCount / @countTests)
+                @loadProgress = integer(@percent/2)
+                for(@i = 0, @i < @loadProgress, @i++, string_append(@statusBar, '#'))
+                for(@i = @loadProgress, @i < 50, @i++, string_append(@statusBar, ' '))
+                @color
+                if(@percent < 25) {
+                    @color = color('DARK_RED')
+                } if (@percent < 75) {
+                    @color = color('YELLOW')
+                } else {
+                    @color = color('GREEN')
+                }
+                print("\r@color @percent% [@statusBar] @curretnCount/@countTests")
+                @prevCount = @curretnCount
+            }
         }
         
         @time += nano_time()
@@ -451,16 +489,17 @@ _msunit_include_add(closure() {
 
     @attributes['log'] = closure(@m, @self, array @messages, array @messager, string @caller) {
         @logger = @self['logger']
+        @id = @self['id']
         @codeFatal = _method('getStatusCode', @messager, 'fatal')
         @valid = true
         foreach(@msg in @messages) {
             @codeMessage = _method('getStatusCode', @messager, @msg['status'])
-            _method('log', @logger, _method('format', @messager, @msg), @caller)
+            _method('log', @logger, _method('format', @messager, @msg, @id), @caller)
             @valid = @valid && @codeFatal != @codeMessage
         }
 
         if(!@valid) {
-            throw(Exception, 'A fatal occurred during the initialization of module tests, see the logs')
+            throw(Exception, 'A fatal error')
         }
     }
 

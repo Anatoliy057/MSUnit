@@ -16,7 +16,7 @@ _msunit_include_add(closure() {
         @afterEach = @procs['afterEach']
         @afterAll = @procs['afterAll']
 
-        @msg = _method('validTests', @self, @script, @tests, @procs, @messager)
+        @msg = _method('validTests', @self, @script, @tests, @messager)
         if(@msg != null) {
             @messages[] = @msg
         }

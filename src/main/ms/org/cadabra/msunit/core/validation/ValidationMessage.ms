@@ -53,13 +53,18 @@ _msunit_include_add(closure() {
         ))
     }
 
-    @messager['format'] = closure(@m, @self, array @msgObject) {
+    @messager['format'] = closure(@m, @self, array @msgObject, string @id = null) {
         @status = to_upper(@msgObject['status'])
         @message = @msgObject['message']
         @c = _method('getColorStatus', @self, @msgObject['status'])
         @cg = color('GRAY')
-
-        return("@c[@status]@cg @message")
+        
+        if(@id == null) {
+            return("@c[MSUnit/@status]@cg @message")
+        
+        } else {
+            return("@c[MSUnit @id/@status]@cg @message")
+        }
     }
 
     _msunit_register_class('ValidationMessage', @messager)
