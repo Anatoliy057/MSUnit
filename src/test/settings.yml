@@ -1,0 +1,31 @@
+assert_boolean-test:
+- all
+- assert
+assert_booleanish-test:
+- all
+- assert
+assert_capacity-test:
+- all
+- assert
+assert_empty-test:
+- all
+- assert
+assert_eq-test:
+- all
+- assert
+assert_null-test:
+- all
+- assert
+assert_out-test:
+- all
+- assert
+assert_throw-test:
+- all
+- assert
+assert_type-test:
+- all
+- assert
+before_after-test:
+- all
+other-test:
+- all

@@ -1,113 +1,167 @@
-# Command Helper Scripts: Unit
+# MethodScript Unit
 
->Unit test library.
+## Getting started
 
-***
+Four things need to be done to run tests
 
-## Using
+1. Init MSUnit
+2. Register the folder (hereinafter referred to as the module), which will contain the tests
+3. Write the tests
+4. Enter command to run
 
-To connect the module, just connect main.ms and call procedure: `_unit_init_module()` after all includes.
+### **Initializtion MSUnit**
 
-Register the module for which you want to write tests using procedures:
+First include the main.ms script, then call the _init_msunit procedure
+
+Like this:
+```ms
+// your includes
+include('unit/main.ms')
+// your includes
+
+_init_msunit()
+```
+
+> **Attention**: the tests will contain the environment that was at the time of the procedure call *_init_msunit*
+
+### **Registration**
+
+Registration is done in one procedure:
 
 ```ms
-_unit_register_module(associative_array(
-    id: string,
-    root: string,
-    [tests: string = @root._util_sdn().'tests']
-    [util: string  = @root._util_sdn().'util\\main.ms']
-    [resources: string = @root._util_sdn().'resources']
-    [groups: string = @root._util_sdn().'tests.properties'],
-    [filter: string = null],
-    [outs: array<out> = _unit_get_default_outs(@root._util_sdn().'logs')]
+_msunit_register_module(array(
+  id: test,
+  root: file_resolve('root')
 ))
 ```
 
-### Keys
+- **id** - unique module name
+- **root** - existing path to module
 
-- **id** - unique identifier for pluggable tests
-- **root** - Main path to all parts required for MSUnit to work
-- **tests** - Local path to tests
-- **util** - Local path to script, that runs before running tests
-- **resources** - Local path to resources, that are available by calling a procedure `_unit_get_resource('folder.file.yml')`
-- **groups** - Local path to map "test - groups"
-- **filter** - folders and scripts containing filter are not considered scripts
-- **outs** - log output objects
+After recompile the following file structure is obtained:
 
-Only root should contain the full path, the rest are local from it!
-
-You can use the default log output methods:
-
-- proc `_unit_get_default_outs(string path_to_log, [array filters = array('message', 'test_log', 'user_log')])`
-
-For example:
-
-```ms
-_unit_register_module(associative_array(
-    id: 'unit',
-    root: get_absolute_path('test'),
-    groups: 'tests.properties',
-    outs: _unit_get_default_outs(get_absolute_path('logs'), array('test_log')),
-    filter: '-ignore'
-))
+```
+/root
+  /extension
+    /main.ms
+  /ms
+  /resources
+  /setting.yml
 ```
 
->For details see [register.ms](register.ms)
+### **Tests**
 
-Put your test scripts in a "root". Test scripts may contain only procedures, which are of three types:
+Test scripts must be in the ms folder and their names must end with '-test.ms'. The names of the tests themselves (procedures) must begin with _test.
 
-- Before all \[prefix=`_before_all`\]
+Example
+```ms
+# ms/test-test.ms
 
-  The procedure is performed before all tests. May be only one in script.
+proc _test_mytest() {
+    _assert_equals(1, 1)
+}
+```
 
-- Before each \[prefix=`_before_each`\]
+In addition to the tests themselves, there are auxiliary procedures such as: *_before_each*, *_after_all*, e.t.c.
 
-  The procedure is performed before each tests. May be only one in script.
+See in section [auxiliary procedures](#Auxiliary%20procedures)
 
-- Test \[prefix=`_test`\]
+### **Command to run**
 
-  The procedure is test.
+To run the tests, just enter the `msunit test` command, where 'msunit' is name command and test is id module of tests.
 
-- After all \[prefix=`_after_all`\]
+Also, after the ID of the module, you can choose the group of tests you want to test, it can be either several scripts or one test! Groups can be selected and excluded by the "!" at the beginning of the group name, like `!group`. For a specific test, you need to specify the script group in which it is located and the script itself, separated by a colon: `group:_test_mytest`, they can also be excluded. For the most part, enabling exclusion of groups works like set mathematics where the element of set is the test.
 
-  The procedure is performed after all tests. May be only one in script.
+After running the tests for the first time, something like this appeared in setting.yml:
+```yml
+test-test: [
+  ]
+```
+Keys are the formatted names of scripts (replace / to . and remove .ms extension) and values is groups that indicate in command. Keys are also groups, only they include one test - themselves.
 
-- After each \[prefix=`_after_each`\]
+Examples:
+```yml
+test-test:
+  - all
+  - test
+util-test:
+  - all
+  - util
+logger-test:
+  - util
+  - all
+  - log
+```
 
-  The procedure is performed after each tests. Requires all tests in the file to return something. May be only one in script.
+- `unit test` - all tests
+- `unit test all` - all tests
+- `unit test util` - logger-test.ms, util-test.ms
+- `unit test util test` - all tests
+- `unit test !test` - logger-test.ms, util-test.ms
+- `unit test util !log` - util-test.ms
+- `unit test util !all` - no tests
+- `unit test !all test` - test-test.ms
+- `unit test test:_test_mytest` - test-test.ms : {_test_mytest}
+- `unit test test:_test_mytest, test:_test_secondtest` - test-test.ms : {_test_mytest, _test_secondtest}
+- `unit test !test-test:_test_mytest` - all tests except test-test.ms : {_test_mytest}
+- `unit test !all:_test_mytest` - all tests except _test_mytest
 
-- After each \[prefix=`_no_args_after_each`\]
+## Auxiliary procedures
 
-  The procedure is performed after each tests. May be only one in script.
+### **_before_all(testName)**
 
-The names of the procedures can only match if they are in different scripts.
+Default pattern: *\_before\_all.\**
 
-Before starting the tests, you need to initialize the settings with the command:
+Runs one time before all tests
 
->unit \<module\> -init
+The return value is passed to the all tests as the first argument
 
-After running the tests themselves with the command:
+### **_before_each(testName)**
 
->unit \<module\>
+Default pattern: *\_before\_each.\**
 
-Test logs will be displayed in the console and in the file "path_to_log" if you used `_unit_get_default_outs()`.
+Runs every time before tests
 
-Some options can be changed in the setting.yml script.
+Accepts test name and the return value is passed to the test as the second argument
 
-***
+### **_after_all()**
+
+Default pattern: *\_after\_all.\**
+
+Runs one time after all tests
+
+### **_after_each(testName, returnTest)**
+
+Default pattern: *\_before\_each.\**
+
+Runs every time after tests
+
+Accepts test name and the value returned by the test
 
 ## API
 
-### Commands
+### Registration
 
-- unit \<module\> <-command> \<args=all\> <-command> \<args\>...
+```ms
+_msunit_register_module(array(
+  id: test,
+  root: file_resolve('root')
+  [tests: string],
+  [extension: string],
+  [resources: string],
+  [setting_groups: string],
+  [outs: array]
+), @options)
+```
 
-  - test \<args\> - Runs the groups of tests indicated in \<args\>
-  - init \<args=all\> - Creates configuration file of groups of tests, giving them the default group specified in the arguments.
-  - update \<args=all\> - Updates the configuration file of groups of tests (leaving the previous settings), giving new tests the default group specified in the arguments.
-  - run \<args\> - Recompiles and runs the groups of tests indicated in \<args\>.
-
-> Default command: unit \<module\> -> unit \<module\> -update all -run all
+- **id** - Unique identifier for pluggable tests
+- **root** - Main path to all parts required for MSUnit to work
+- **tests** - Local path to tests, by default *"root/ms"*
+- **extension** - Local path to scripts, that runs before running tests, by default *"root/extension"*
+- **resources** - Local path to resources, by default *"root/resources"*
+- **setting_groups** - Local path to yml file map "test: [groups...]", by default *"root/setting.yml"*
+- **outs** - array of loggers, taken from `_msunit_get_outs` by default
+- **@options** - array of options, see [default](src/main/resources/setting.yml)
 
 ### Assertions
 
@@ -120,15 +174,15 @@ Some options can be changed in the setting.yml script.
 - `_assert_equals(mixed exp, mixed act, [mixed msg])`
 - `_assert_ref_eq(mixed val1, mixed val2, [mixed msg])`
 - `_assert_not_equals(mixed arg1, mixed arg2, [mixed msg])`
-- `_assert_size(int size, Sizeable arr, [mixed msg])`
+- `_assert_size(int size, array arr, [mixed msg])`
 - `_assert_length(int length, mixed act, [mixed msg])`
 - `_assert_empty(mixed object, [mixed msg])`
 - `_assert_not_empty(mixed object, [mixed msg])`
 - `_assert_type(ClassType type, mixed object, [mixed msg])`
 - `_assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
-- `_assert_execute_throw(ClassType type, closure lymda, [mixed msg])`
+- `_assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
 - `_assert_proc_array_throw(ClassType type, string proc_name, array args, [mixed msg])`
-- `_assert_execute_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
+- `_assert_closure_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
 - `_assert_key_exist(string key, array array, [mixed msg])`
 - `_assert_key_not_exist(string key, array array, [mixed msg])`
 
@@ -136,14 +190,12 @@ Some options can be changed in the setting.yml script.
 
 - `_print(mixed msg)`
 - `_println([mixed msg])`
-- `_sleep(int seconds)`
+- `_sleep(number seconds)`
 - `_skip_test()`
-- `_assert_time_assert(int seconds)`
-- `_assert_time_proc(int seconds)`
-- `_assert_restart_time()`
-- `_assert_restart_time_all()`
 - `_assert_time(int seconds)`
-- `_assert_time_limit(number successful_time, number attention_time)`
+- `_test_time(int seconds)`
+- `_attension_time(int seconds)`
+- `_restart_assert_time()`
 - `_x_safe(closure lymda)`
 
 ***
@@ -151,7 +203,4 @@ Some options can be changed in the setting.yml script.
 ## Recuired
 
 - Extensions:
-  - [CHCadabra](https://github.com/Community-Cadabra-Project/CHCadabra)
-
-- Libraries:
-  - [MSUtil](https://github.com/Community-Cadabra-Project/MSUtil)
+  - [CHUnit](https://github.com/Anatoliy057/CHUnit)

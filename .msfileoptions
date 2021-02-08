@@ -1,5 +1,5 @@
 author: Udartsev Anatoliy;
 strict;
-requiredExtensions: chcadabra, chfiles;
+requiredExtensions: chunit, chfiles;
 description: MethodScript module for writing unit tests;
 compilerOptions: UltraStrict;
