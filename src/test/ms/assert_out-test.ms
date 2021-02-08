@@ -10,3 +10,8 @@ proc _test_testOut_fail() {
         _assert_true(true)
     }
 }
+
+proc _test_sleep_successfully() {
+    _skip_test()
+    _sleep(16)
+}

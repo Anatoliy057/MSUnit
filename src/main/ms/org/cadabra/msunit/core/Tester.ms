@@ -176,7 +176,7 @@ _msunit_include_add(closure() {
                 x_thread_join(@nameThread, 1000)
                 while(x_thread_is_alive(@nameThread)) {
                     @statusTime = ''
-                    synchronized(@nameThread) {
+                    synchronized(@state) {
                         @state['assertTime'] -= 1
                         @state['testTime'] -= 1
 

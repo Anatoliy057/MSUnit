@@ -17,8 +17,9 @@ proc _println(mixed @msg = '') {
     string_append(@userLog, '\n')
 }
 
-proc _sleep(int @seconds) {
-    synchronized(x_get_current_thread()) {
+proc _sleep(number @seconds) {
+    @state = _get_state_test()
+    synchronized(@state) {
         sleep(@seconds)
     }
 }
@@ -361,7 +362,7 @@ proc _assert_fail(string @testMessage, array @stackTrace, mixed @msg) {
 
 proc _restart_assert_time(@log) {
     @state = _get_state_test()
-    synchronized(x_get_current_thread()) {
+    synchronized(@state) {
         @state['assertTime'] = @state['ASSERT_TIME']
     }
 }
