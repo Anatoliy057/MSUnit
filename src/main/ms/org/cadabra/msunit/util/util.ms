@@ -34,7 +34,7 @@ string proc _msutil_parse_stack_trace(array @stackTrace) {
     return(string(@builder))
 }
 
-void proc _msunit_make_file(string @fullpath, string @root = '') {
+void proc _msunit_make_file(string @fullpath, string @root) {
     if (file_exists(@fullpath)) {
         return()
     }
@@ -51,7 +51,7 @@ void proc _msunit_make_file(string @fullpath, string @root = '') {
 	create_file(file_resolve(@fullpath))
 }
 
-void proc _msunit_make_folder(string @fullpath, string @root = '') {
+void proc _msunit_make_folder(string @fullpath, string @root) {
     if (file_exists(@fullpath)) {
         return()
     }
@@ -68,7 +68,7 @@ void proc _msunit_make_folders(array @folders, string @root) {
         string_append(@builder, '/')
 
         @path = file_resolve(string(@builder))
-		if(!string_starts_with(@path, @root) && !file_exists(@path)){
+		if(!string_starts_with(@root, @path) && !file_exists(@path)){
 			create_dir(@path)
 		}
 	}

@@ -59,11 +59,11 @@ proc _msunit_register_module(array @settings, array @options = null) {
     @moduleSetting['settingGroups'] = file_resolve(@moduleSetting['settingGroups'])
     @moduleSetting['extension'] = file_resolve(@moduleSetting['extension'])
 
-    _msunit_make_folder(@moduleSetting['rootTests'])
-    _msunit_make_folder(@moduleSetting['rootResources'])
-    _msunit_make_file(@moduleSetting['extension'])
+    _msunit_make_folder(@moduleSetting['rootTests'], @root)
+    _msunit_make_folder(@moduleSetting['rootResources'], @root)
+    _msunit_make_file(@moduleSetting['extension'], @root)
     if(!file_exists(@moduleSetting['settingGroups'])) {
-        _msunit_make_file(@moduleSetting['settingGroups'])
+        _msunit_make_file(@moduleSetting['settingGroups'], @root)
         write_file(@moduleSetting['settingGroups'], yml_encode(associative_array()))
     }
 
@@ -83,7 +83,7 @@ proc _msunit_register_module(array @settings, array @options = null) {
         @moduleSetting['outs'] = @outs
 
     } else {
-        @moduleSetting['outs'] = _msunit_get_outs("@root/logs")
+        @moduleSetting['outs'] = _msunit_get_outs(@root)
     }
 
     _msunit_replace_in_array(@defaultOptions, @options)
@@ -102,7 +102,7 @@ proc _msunit_register_module(array @settings, array @options = null) {
     }
 }
 
-array proc _msunit_get_outs(string @pathToLog) {
+array proc _msunit_get_outs(string @root) {
     return(
         array(
             _msunit_new_out(
@@ -117,9 +117,9 @@ array proc _msunit_get_outs(string @pathToLog) {
             ),
             _msunit_new_out(
                 closure(@text) {
-                    @pathToLog = file_resolve("@pathToLog/".simple_date('yyyy.MM.dd').'.log')
+                    @pathToLog = file_resolve("@root/logs/".simple_date('yyyy.MM.dd').'.log')
                     if (!file_exists(@pathToLog)) {
-                        _msunit_make_file(@pathToLog)
+                        _msunit_make_file(@pathToLog, @root)
                     }
                     
                     write_file(@pathToLog, strip_colors(@text), 'APPEND')

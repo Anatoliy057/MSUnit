@@ -109,7 +109,7 @@ proc _msunit_tasker_complited(@self) {
     return(@self['countComplited'])
 }
 
-proc _msunit_tasker_init_self(@id, @canRunTasks, @delay, boolean @start) {
+proc _msunit_tasker_init_self(string @id, int @canRunTasks, number @delay, boolean @start) {
     @self = array()
     @self['tasks'] = array()
     @self['id'] = @id

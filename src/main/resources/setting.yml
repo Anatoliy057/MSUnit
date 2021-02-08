@@ -1,6 +1,7 @@
 --- 
 core: 
   threads: 4
+  delay: 0.01
 groups: 
   not: '!'
   separator: ':'

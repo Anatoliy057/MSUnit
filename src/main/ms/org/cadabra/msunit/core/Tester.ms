@@ -222,6 +222,7 @@ _msunit_include_add(closure() {
         @rootTests = @self['moduleSetting']['rootTests']
         @options = @self['options']
         @countThreads = @options['core']['threads']
+        @delay = @options['core']['delay']
         @trimScripts = @self['trimScripts']
         @grouper = @self['grouper']
         @countTests = @self['countTests']
@@ -243,7 +244,7 @@ _msunit_include_add(closure() {
         include(_msunit_import_test_api())
         include(@moduleSetting['extension'])
 
-        @runner = _msunit_tasker_init_self('MSUnit script runner', @countThreads, 1, false)
+        @runner = _msunit_tasker_init_self('MSUnit script runner', @countThreads, @delay, false)
         @states = associative_array()
         foreach(@trimScript in @trimScripts) {
             @script = file_resolve("@rootTests/@trimScript")
@@ -265,17 +266,24 @@ _msunit_include_add(closure() {
                 @statusBar = res_create_resource('STRING_BUILDER', 50)
                 @percent = integer(100 * @curretnCount / @countTests)
                 @loadProgress = integer(@percent/2)
+                
                 for(@i = 0, @i < @loadProgress, @i++, string_append(@statusBar, '#'))
+                
                 for(@i = @loadProgress, @i < 50, @i++, string_append(@statusBar, ' '))
+                
                 @color
                 if(@percent < 25) {
                     @color = color('DARK_RED')
+                
                 } if (@percent < 75) {
                     @color = color('YELLOW')
+                
                 } else {
                     @color = color('GREEN')
                 }
+                
                 print("\r@color @percent% [@statusBar] @curretnCount/@countTests")
+                
                 @prevCount = @curretnCount
             }
         }
