@@ -47,13 +47,6 @@ proc _msunit_array_minus() {_msunit_unsupported()}
 proc _msunit_get_procs() {_msunit_unsupported()}
 proc _method() {_msunit_unsupported()}
 proc _method_array() {_msunit_unsupported()}
-proc _get_else() {_msunit_unsupported()}
-proc _get() {_msunit_unsupported()}
-proc _key_in() {_msunit_unsupported()}
-proc _contains() {_msunit_unsupported()}
-proc _size() {_msunit_unsupported()}
-proc _is_empty() {_msunit_unsupported()}
-proc _is_blank() {_msunit_unsupported()}
 proc _reg_like() {_msunit_unsupported()}
 proc _msunit_void() {_msunit_unsupported()}
 

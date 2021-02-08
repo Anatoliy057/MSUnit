@@ -205,7 +205,7 @@ proc _assert_key_exist(string @key, array @array, mixed @msg = null) {
         throw(CastException, 'Array not associative')
     }
     
-    if (!_key_in(@array, @key)) {
+    if (!array_index_exists(@array, @key)) {
         @stackTrace = get_stack_trace()
         _assert_custom_fail("Key '@key' not contains in ".array_keys(@array), @stackTrace, @msg)
     
@@ -219,7 +219,7 @@ proc _assert_key_not_exist(string @key, array @array, mixed @msg = null) {
         throw(CastException, 'Array not associative')
     }
     
-    if (_key_in(@array, @key)) {
+    if (array_index_exists(@array, @key)) {
         @stackTrace = get_stack_trace()
         _assert_custom_fail("Key '@key' contains in ".array_keys(@array), @stackTrace, @msg)
     

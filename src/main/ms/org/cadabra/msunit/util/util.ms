@@ -141,36 +141,8 @@ proc _method_array(array @args) {
     return(execute_array(@args, @args[1][@args[0]]))
 }
 
-proc _get_else(array @a, @index, @else) {
-    return(array_get(@a, @index, @else))
-}
-
-proc _get(array @a, @index) {
-    return(array_get(@a, @index, null))
-}
-
-boolean proc _key_in(array @array, string @key) {
-    return(array_index_exists(@array, @key))
-}
-
-boolean proc _contains(array @array, @value) {
-    return(array_contains(@array, @value))
-}
-
-int proc _size(array @array) {
-    return(array_size(@array))
-}
-
-boolean proc _is_empty(array @array) {
-    return(array_size(@array) == 0)
-}
-
-boolean proc _is_blank(string @string) {
-    return(length(@string) == 0)
-}
-
 boolean proc _reg_like(string @pattern, string @subject) {
-    return(_is_blank(reg_replace(@pattern, '', @subject)))
+    return(length(reg_replace(@pattern, '', @subject)) == 0)
 }
 
 proc _msunit_void() {}

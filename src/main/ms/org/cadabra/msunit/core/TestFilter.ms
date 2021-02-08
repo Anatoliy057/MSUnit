@@ -31,7 +31,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['compile'] = closure(@m, @self, array @userGroups) {
-        if (_is_empty(@userGroups)) {
+        if (array_size(@userGroups) == 0) {
             @self['filter'] = null
             return()
         }

@@ -8,17 +8,17 @@ array proc _msunit_new_grouper(array @groupsScriptMap, array @testsScriptMap, ar
     @testsGroupMap = associative_array()
     foreach(@formatScript: @groups in @groupsScriptMap) {
         @groupsScriptMap[@formatScript][] = @formatScript
-        if (!_key_in(@testsScriptMap, @formatScript)) {
+        if (!array_index_exists(@testsScriptMap, @formatScript)) {
             continue()
         }
         @testsGroupMap[@formatScript] = @testsScriptMap[@formatScript]
         foreach(@group in @groups) {
-            if (!_key_in(@testsGroupMap, @group)) {
+            if (!array_index_exists(@testsGroupMap, @group)) {
                 @testsGroupMap[@group] = array()
             }
             
             @procs = array_filter(@testsScriptMap[@formatScript], closure(@i, @p) {
-                return(!_contains(@testsGroupMap[@group], @p))
+                return(!array_contains(@testsGroupMap[@group], @p))
             })
             
             array_push_all(@testsGroupMap[@group], @procs)
@@ -28,7 +28,7 @@ array proc _msunit_new_grouper(array @groupsScriptMap, array @testsScriptMap, ar
     @scriptsGroupMap = associative_array()
     foreach(@script: @groups in @groupsScriptMap) {
         foreach(@group in @groups) {
-            if(!_key_in(@scriptsGroupMap, @group)) {
+            if(!array_index_exists(@scriptsGroupMap, @group)) {
                 @scriptsGroupMap[@group] = array_keys(
                     array_filter(@groupsScriptMap, closure(@s, @gps) {
                         return(array_contains(@gps, @group))
@@ -65,7 +65,7 @@ _msunit_include_add(closure() {
 
     @attributes['getGroupsScript'] = closure(@m, @self, string @script) {
         @formatScript = _method('formatScript', @self, @script)
-        if(_key_in(@self['groupsScriptMap'], @formatScript)) {
+        if(array_index_exists(@self['groupsScriptMap'], @formatScript)) {
             return(@self['groupsScriptMap'][@formatScript])
         } else {
             return(array())
@@ -73,7 +73,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['getScriptsGroup'] = closure(@m, @self, string @group) {
-        if(_key_in(@self['scriptsGroupMap'], @group)) {
+        if(array_index_exists(@self['scriptsGroupMap'], @group)) {
             return(@self['scriptsGroupMap'][@group])
         } else {
             return(array())
@@ -89,7 +89,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['getTestsGroup'] = closure(@m, @self, string @group) {
-        if(_key_in(@self['testsGroupMap'], @group)) {
+        if(array_index_exists(@self['testsGroupMap'], @group)) {
             return(@self['testsGroupMap'][@group])
         } else {
             return(array())

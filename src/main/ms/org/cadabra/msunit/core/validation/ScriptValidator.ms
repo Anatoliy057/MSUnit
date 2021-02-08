@@ -39,7 +39,7 @@ _msunit_include_add(closure() {
     }
 
     @validator['validTests'] = closure(@m, @self, string @script, array @tests, array @messager) {
-        if (_is_empty(@tests)) {
+        if (array_size(@tests) == 0) {
             return(_method(
                 'warn',
                 @messager,
@@ -52,7 +52,7 @@ _msunit_include_add(closure() {
     }
 
     @validator['validBeforeEach'] = closure(@m, @self, string @script, array @beforeEach, array @messager) {
-        if (_size(@beforeEach) > 1) {
+        if (array_size(@beforeEach) > 1) {
             return(_method(
                 'fatal',
                 @messager,
@@ -65,7 +65,7 @@ _msunit_include_add(closure() {
     }
 
     @validator['validBeforeEach'] = closure(@m, @self, string @script, array @beforeAll, array @messager) {
-        if (_size(@beforeAll) > 1) {
+        if (array_size(@beforeAll) > 1) {
             return(_method(
                 'fatal',
                 @messager,
@@ -78,7 +78,7 @@ _msunit_include_add(closure() {
     }
 
     @validator['validAfterEach'] = closure(@m, @self, string @script, array @afterEach, array @messager) { 
-        if (_size(@afterEach) > 1) {
+        if (array_size(@afterEach) > 1) {
             return(_method(
                 'fatal',
                 @messager,
@@ -91,7 +91,7 @@ _msunit_include_add(closure() {
     }
 
     @validator['validAfterAll'] = closure(@m, @self, string @script, array @afterAll, array @messager) {
-        if (_size(@afterAll) > 1) {
+        if (array_size(@afterAll) > 1) {
             return(_method(
                 'fatal',
                 @messager,

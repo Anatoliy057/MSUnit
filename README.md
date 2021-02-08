@@ -138,6 +138,8 @@ Runs every time after tests
 
 Accepts test name and the value returned by the test
 
+***
+
 ## API
 
 ### Registration
@@ -197,6 +199,11 @@ _msunit_register_module(array(
 - `_attension_time(int seconds)`
 - `_restart_assert_time()`
 - `_x_safe(closure lymda)`
+
+# Environment 
+
+- [**Procedures**](__procedures__.ms)
+- Exports reg match **'org\\.cadabra\\.msunit.*'**
 
 ***
 

@@ -25,8 +25,7 @@ _msunit_include_add(closure() {
 
         @messager = _msunit_get_validation_messager()
         @messages = array()
-        @logger = _msunit_new_logger()
-        _method('setOuts', @logger, @moduleSetting['outs'])
+        @logger = _msunit_new_logger(@moduleSetting['outs'])
         @self['logger'] = @logger
 
         // Load and filter scripts of tests
@@ -103,19 +102,19 @@ _msunit_include_add(closure() {
             string @procAfterAll = '_msunit_void'
             string @procAfterEach = '_msunit_void'
 
-            if (!_is_empty(@filteredProcs['beforeAll'])) {
+            if (array_size(@filteredProcs['beforeAll']) != 0) {
                 @procBeforeAll = @filteredProcs['beforeAll'][0]
             }
 
-            if (!_is_empty(@filteredProcs['beforeEach'])) {
+            if (array_size(@filteredProcs['beforeEach']) != 0) {
                 @procBeforeEach = @filteredProcs['beforeEach'][0]
             }
 
-            if (!_is_empty(@filteredProcs['afterAll'])) {
+            if (array_size(@filteredProcs['afterAll']) != 0) {
                 @procAfterAll = @filteredProcs['afterAll'][0]
             }
 
-            if (!_is_empty(@filteredProcs['afterEach'])) {
+            if (array_size(@filteredProcs['afterEach']) != 0) {
                 @procAfterEach = @filteredProcs['afterEach'][0]
             }
 
@@ -315,7 +314,7 @@ _msunit_include_add(closure() {
         string_append(@builder, '\n')
         string_append(@builder, '\n')
         foreach(@script: @tests in @states) {
-            if(_is_empty(@tests)) {
+            if(array_size(@tests) == 0) {
                 continue()
             }
             
@@ -440,7 +439,7 @@ _msunit_include_add(closure() {
 
         string_append(@builder, '\r===========================================================\n')
 
-        if (!_is_empty(@failedTests)) {
+        if (array_size(@failedTests) != 0) {
             string_append(@builder, '\n')
             string_append(@builder, color(@colors['info']))
             string_append(@builder, 'Failed tests:\n')
@@ -514,7 +513,7 @@ _msunit_include_add(closure() {
     @attributes['tabcompleter'] = closure(@m, @self, array @args) {
         @input = @args[-1]
         @args = @args[..-2]
-        @completions = array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!_contains(@args, @c))})
+        @completions = array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!array_contains(@args, @c))})
         
         return(array_filter(@completions, closure(@key, @value) {
         	return(length(@input) <= length(@value) 

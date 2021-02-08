@@ -1,5 +1,5 @@
 proc _msunit_register_module(array @settings, array @options = null) {
-    array @defaultOptions = _msunit_static_method('loadYml', 'ResourseLoader', 'setting')
+    array @defaultOptions = yml_decode(read(file_resolve(_msunit_import_resourse_root().'/setting.yml')))
     array @moduleSetting = @defaultOptions['module']
 
     @options = @options ||| array()
@@ -7,14 +7,14 @@ proc _msunit_register_module(array @settings, array @options = null) {
     string @root
     string @id
 
-    if (_key_in(@settings, 'id')) {
+    if (array_index_exists(@settings, 'id')) {
         @id = @settings['id']
 
     } else {
         throw(NotFoundException, 'You must specify the "id"')
     }
 
-    if (_key_in(@settings, 'root')) {
+    if (array_index_exists(@settings, 'root')) {
         @moduleSetting['root'] = @settings['root']
         @root = @settings['root']
 
@@ -26,28 +26,28 @@ proc _msunit_register_module(array @settings, array @options = null) {
         throw(NotFoundException, 'You must specify the "root"')
     }
 
-    if (_key_in(@settings, 'tests')) {
+    if (array_index_exists(@settings, 'tests')) {
         @moduleSetting['rootTests'] = @root.'/'.@settings['tests']
 
     } else {
         @moduleSetting['rootTests'] = "@root/ms"
     }
 
-    if (_key_in(@settings, 'resources')) {
+    if (array_index_exists(@settings, 'resources')) {
         @moduleSetting['rootResources'] = @root.'/'.@settings['resources']
 
     } else {
         @moduleSetting['rootResources'] = "@root/resources"
     }
 
-    if (_key_in(@settings, 'setting_groups')) {
+    if (array_index_exists(@settings, 'setting_groups')) {
         @moduleSetting['settingGroups'] = @root.'/'.@settings['setting_groups']
     
     } else {
         @moduleSetting['settingGroups'] = "@root/settings.yml"
     }
 
-    if (_key_in(@settings, 'extension')) {
+    if (array_index_exists(@settings, 'extension')) {
         @moduleSetting['extension'] = @root.'/'.@settings['extension'].'/main.ms'
     
     } else {
@@ -67,14 +67,14 @@ proc _msunit_register_module(array @settings, array @options = null) {
         write_file(@moduleSetting['settingGroups'], yml_encode(associative_array()))
     }
 
-    if (_key_in(@settings, 'test_pattern')) {
+    if (array_index_exists(@settings, 'test_pattern')) {
         @moduleSetting['testPattern'] = @settings['test_pattern']
     
     } else {
         @moduleSetting['testPattern'] = '.*-test\\.ms$'
     }
 
-    if (_key_in(@settings, 'outs')) {
+    if (array_index_exists(@settings, 'outs')) {
         @outs = array()
         foreach(@out in @settings['outs']) {
             @outs[] = _msunit_new_out(@out)
@@ -90,7 +90,7 @@ proc _msunit_register_module(array @settings, array @options = null) {
 
     if(!_msunit_is_application_started()) {
         @modules = _msunit_import_modules()
-        if(_key_in(@modules, @id)) {
+        if(array_index_exists(@modules, @id)) {
             throw(Exception, "That module '@id' already registered")
         }
 
@@ -105,27 +105,23 @@ proc _msunit_register_module(array @settings, array @options = null) {
 array proc _msunit_get_outs(string @root) {
     return(
         array(
-            _msunit_new_out(
-                closure(@text, @caller) {
-                    if(@caller == '~console' || @caller == 'CONSOLE') {
-                        console(@text, false)
-                    
-                    } else {
-                        tmsg(@caller, @text)
-                    }
+            closure(@text, @caller) {
+                if(@caller == '~console' || @caller == 'CONSOLE') {
+                    console(@text, false)
+                
+                } else {
+                    tmsg(@caller, @text)
                 }
-            ),
-            _msunit_new_out(
-                closure(@text) {
-                    @pathToLog = file_resolve("@root/logs/".simple_date('yyyy.MM.dd').'.log')
-                    if (!file_exists(@pathToLog)) {
-                        _msunit_make_file(@pathToLog, @root)
-                    }
-                    
-                    write_file(@pathToLog, strip_colors(@text), 'APPEND')
-                    write_file(@pathToLog, '\n', 'APPEND')
+            },
+            closure(@text) {
+                @pathToLog = file_resolve("@root/logs/".simple_date('yyyy.MM.dd').'.log')
+                if (!file_exists(@pathToLog)) {
+                    _msunit_make_file(@pathToLog, @root)
                 }
-            )
+                
+                write_file(@pathToLog, strip_colors(@text), 'APPEND')
+                write_file(@pathToLog, '\n', 'APPEND')
+            }
         )
     )
 }

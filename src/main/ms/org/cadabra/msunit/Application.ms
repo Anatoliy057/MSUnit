@@ -10,7 +10,7 @@ _msunit_include_add(closure() {
     @app['testers'] = associative_array()
 
     @app['test'] = closure(@m, @self, string @id, string @caller, array @commandArguments) {
-        if(!_key_in(@self['testers'], @id)) {
+        if(!array_index_exists(@self['testers'], @id)) {
             msg(color('DARK_RED')."That module '@id' not register")
             die()
         }
@@ -47,12 +47,12 @@ _msunit_include_add(closure() {
             'usage': '/unit <module> [groups...]',
             'aliases':array('unit'),
             'executor': closure(@alias, @caller, @args) {
-                if(_size(@args) == 0) {
+                if(array_size(@args) == 0) {
                     return(false)
                 
                 } else {
                     @id = @args[0]
-                    @userGroups = if (_size(@args) == 1, array(), @args[1..-1])
+                    @userGroups = if (array_size(@args) == 1, array(), @args[1..-1])
                     _method('test', @self, @id, @caller, @userGroups)
                 }
             })

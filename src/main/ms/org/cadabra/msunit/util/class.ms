@@ -2,7 +2,7 @@ proc _msunit_get_class(string @className) {
     @root = _msunit_import_root()
     @classes = import('org.cadabra.msunit.util.class')
 
-    if (_key_in(@classes, @className)) {
+    if (array_index_exists(@classes, @className)) {
         return(@classes[@className])
     
     } else {

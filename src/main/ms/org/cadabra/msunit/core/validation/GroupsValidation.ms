@@ -10,7 +10,7 @@ _msunit_include_add(closure() {
     @validator['updateSettingGroups'] = closure(@m, @self, @settingGroups, array @scripts) {
         @updatedSettingGroups = array()
 
-        if(!_is_empty(@settingGroups) && (!is_array(@settingGroups) || !is_associative(@settingGroups))) {
+        if(array_size(@settingGroups) != 0 && (!is_array(@settingGroups) || !is_associative(@settingGroups))) {
             return(@settingGroups)
         }
 
@@ -52,7 +52,7 @@ _msunit_include_add(closure() {
                 @group = @splitted[0]
                 @test = @splitted[1]
 
-                if (!_contains(@groups, @group)) {
+                if (!array_contains(@groups, @group)) {
                     @messages[] = _method(
                         'fatal',
                         @messager,
@@ -62,7 +62,7 @@ _msunit_include_add(closure() {
                 }
                 
                 @tests = _method('getTestsGroup', @grouper, @group)
-                if (!_contains(@tests, @test)) {
+                if (!array_contains(@tests, @test)) {
                     @messages[] = _method(
                         'fatal',
                         @messager,
@@ -71,7 +71,7 @@ _msunit_include_add(closure() {
                 }
             
             } else {
-                if (!_contains(@groups, @userGroup)) {
+                if (!array_contains(@groups, @userGroup)) {
                     @messages[] = _method(
                         'fatal',
                         @messager,
@@ -93,7 +93,7 @@ _msunit_include_add(closure() {
         })
 
         foreach(@scriptGroup: @groups in @settingGroups) {
-            if (!_contains(@formatTestsScripts, @scriptGroup)) {
+            if (!array_contains(@formatTestsScripts, @scriptGroup)) {
                 @messages[] = _method(
                     'warn',
                     @messager,
@@ -140,7 +140,7 @@ _msunit_include_add(closure() {
                 "Group '@group' must be @expect, but @actually at @script"
             )
         
-        } else if(_contains(@scripts, @group)) {
+        } else if(array_contains(@scripts, @group)) {
             @messages[] = _method(
                 'fatal',
                 @messager,
