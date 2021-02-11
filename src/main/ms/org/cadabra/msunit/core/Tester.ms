@@ -84,15 +84,13 @@ _msunit_include_add(closure() {
         @self['countTests'] = @countTests
     }
 
-    proc _msunit_build_task(@self, string @script, string @trimScript, array @testFilter, array @scriptResult) {
+    proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult) {
         @oldProcs = get_procedures()
         include(@script)
         @newProcs = get_procedures()
         @procs = _msunit_array_minus(@newProcs, @oldProcs)
 
         @options = @self['options']
-
-        @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
         
         @procsFilter = _msunit_get_procs_sorter()
         @filteredProcs = _method('filterProcs', @procsFilter, @procs, @options)
@@ -136,24 +134,23 @@ _msunit_include_add(closure() {
                 @exception = @e[]
                 @exception['stackTrace'] = @exception['stackTrace'][..-3]
                 
-                @state = _msunit_new_test_state(@options)
+                @state = _msunit_new_test_state(@formatScript, @options)
                 _method('setException', @state, @exception)
                 @state['time'] = @time
                 @scriptResult['before all'] = @state
                 
                 return()
             }
-
             
             foreach(@test in @tests) {
                 if (!_method('isChosenTest', @testFilter, @formatScript, @test)) {
                     continue()
                 }
                 
-                @state = _msunit_new_test_state(@options)
+                @state = _msunit_new_test_state(@formatScript, @options)
                 @scriptResult[@test] = @state
                 
-                @nameThread = _msunit_thread_name(@trimScript, @test)
+                @nameThread = _msunit_thread_name(@formatScript, @test)
                 x_new_thread(@nameThread, closure() {
                     @time = -nano_time()
                     try {
@@ -210,7 +207,7 @@ _msunit_include_add(closure() {
                 @exception = @e[]
                 @exception['stackTrace'] = @exception['stackTrace'][..-3]
                 
-                @state = _msunit_new_test_state(@options)
+                @state = _msunit_new_test_state(@formatScript, @options)
                 _method('setException', @state, @exception)
                 @state['time'] = @time
                 @scriptResult['after all'] = @state
@@ -256,8 +253,9 @@ _msunit_include_add(closure() {
         foreach(@trimScript in @trimScripts) {
             @script = file_resolve("@rootTests/@trimScript")
             @scriptState = associative_array()
-            @states[@trimScript] = @scriptState
-            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @trimScript, @testFilter, @scriptState))
+            @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
+            @states[@formatScript] = @scriptState
+            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @formatScript, @testFilter, @scriptState))
         }
 
         @self['countFinishedTests'] = 0

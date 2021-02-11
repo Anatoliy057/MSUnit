@@ -367,8 +367,12 @@ proc _restart_assert_time(@log) {
     }
 }
 
-proc _get_state_test() {
+array proc _get_state_test() {
     return(_msunit_get_state_environment())
+}
+
+array proc _get_module_setting() {
+    return(_msunit_get_environment()['setting'])
 }
 
 proc _unit_get_resource(string @filename) {

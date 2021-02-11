@@ -1,6 +1,6 @@
 array proc _msunit_parse_thread() {
     @idThread = x_get_current_thread()[25..]
-    @splitted = split(':', @idThread)
+    @splitted = split('$', @idThread)
     
     return(array(
         trimScript: @splitted[0],
@@ -9,7 +9,7 @@ array proc _msunit_parse_thread() {
 }
 
 string proc _msunit_thread_name(string @trimScript, string @test) {
-    return("(MSUnit) @trimScript:@test")
+    return("(MSUnit) @trimScript$@test")
 }
 
 string proc _msutil_parse_stack_trace(array @stackTrace) {

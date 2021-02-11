@@ -1,4 +1,4 @@
-array proc _msunit_new_test_state(array @options) {
+array proc _msunit_new_test_state(string @formatScript, array @options) {
     array @self = associative_array()
 
     foreach(@key: @attr in _msunit_get_class('TestState')) {
@@ -15,6 +15,7 @@ array proc _msunit_new_test_state(array @options) {
     @self['skipped'] = false
     @self['time'] = 0
 
+    @self['formatScript'] = @formatScript
     @self['assertTime'] = @options['test']['assertTimeout']
     @self['testTime'] = @options['test']['testTimeout']
     @self['attentionTime'] = @options['test']['attentionTime']
