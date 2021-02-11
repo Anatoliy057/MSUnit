@@ -101,7 +101,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['formatScript'] = closure(@m, @self, string @script) {
-        return(reg_replace('.ms$', '', reg_replace('[\\\\/]', '.', @script)))
+        return(reg_replace('.ms$', '', reg_replace('[^\\.\\_\\w]', '_', reg_replace('[\\\\/]', '.', @script))))
     }
 
     _msunit_register_class('Grouper', @attributes)

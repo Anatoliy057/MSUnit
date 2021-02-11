@@ -106,6 +106,16 @@ logger-test:
 - `unit test !test-test:_test_mytest` - all tests except test-test.ms : {_test_mytest}
 - `unit test !all:_test_mytest` - all tests except _test_mytest
 
+## Syntax command
+
+> `unit <module> [--reinit] [groups...]`
+
+- **module** - id of module
+
+- **--reinit** - module reinitialization (recompile tests, update settings)
+
+- **groups** - groups of tests
+
 ## Auxiliary procedures
 
 ### **_before_all(testName)**
@@ -185,7 +195,7 @@ _msunit_register_module(array(
 - `_assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
 - `_assert_proc_array_throw(ClassType type, string proc_name, array args, [mixed msg])`
 - `_assert_closure_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
-- `_assert_key_exist(string key, array array, [mixed msg])`
+- `_assert_key_exist(array array, string key, [mixed msg])`
 - `_assert_key_not_exist(string key, array array, [mixed msg])`
 
 ### Supporting Procedures

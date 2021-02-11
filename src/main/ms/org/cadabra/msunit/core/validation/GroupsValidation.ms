@@ -33,7 +33,7 @@ _msunit_include_add(closure() {
         array @messages = array()
 
         @groups = _method('getGroups', @grouper)
-        @pattern = '^['.@not.']?[\\.\\-\\_\\w]+('.@separator.'[\\_\\w]+)?$'
+        @pattern = '^['.@not.']?[\\.\\_\\w]+('.@separator.'[\\_\\w]+)?$'
 
         foreach(@userGroup in @userGroups) {
             if (!_reg_like(@pattern, @userGroup)) {

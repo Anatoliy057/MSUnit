@@ -92,8 +92,15 @@ _msunit_include_add(closure() {
 
         @options = @self['options']
 
+        @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
+        
         @procsFilter = _msunit_get_procs_sorter()
         @filteredProcs = _method('filterProcs', @procsFilter, @procs, @options)
+        @tests = @filteredProcs['tests']
+
+        if(!_method('isChosenGroup', @testFilter, @formatScript)) {
+            return(closure() {})
+        }
 
         @task = closure() {
             
@@ -137,9 +144,8 @@ _msunit_include_add(closure() {
                 return()
             }
 
-            @tests = @filteredProcs['tests']
+            
             foreach(@test in @tests) {
-                @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
                 if (!_method('isChosenTest', @testFilter, @formatScript, @test)) {
                     continue()
                 }
@@ -217,6 +223,8 @@ _msunit_include_add(closure() {
     }
 
     @attributes['test'] = closure(@m, @self, string @caller, array @userGroups) {
+        _msunit_static_method('-command', 'Commander', @self, @userGroups)
+
         @moduleSetting = @self['moduleSetting']
         @rootTests = @self['moduleSetting']['rootTests']
         @options = @self['options']
@@ -281,7 +289,7 @@ _msunit_include_add(closure() {
                     @color = color('GREEN')
                 }
                 
-                print("\r@color @percent% [@statusBar] @curretnCount/@countTests")
+                print("\r@color @percent% [@statusBar] @curretnCount/@countTests".color('PLAIN_WHITE'))
                 
                 @prevCount = @curretnCount
             }
@@ -513,7 +521,8 @@ _msunit_include_add(closure() {
     @attributes['tabcompleter'] = closure(@m, @self, array @args) {
         @input = @args[-1]
         @args = @args[..-2]
-        @completions = array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!array_contains(@args, @c))})
+        @completions = _msunit_static_method('-getCommands', 'Commander')
+        array_push_all(@completions, array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!array_contains(@args, @c))}))
         
         return(array_filter(@completions, closure(@key, @value) {
         	return(length(@input) <= length(@value) 

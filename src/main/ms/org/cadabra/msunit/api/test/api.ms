@@ -200,7 +200,7 @@ proc _assert_type(ClassType @type, mixed @object, mixed @msg = null) {
     }
 }
 
-proc _assert_key_exist(string @key, array @array, mixed @msg = null) {
+proc _assert_key_exist(array @array, string @key, mixed @msg = null) {
     if (!is_associative(@array)) {
         throw(CastException, 'Array not associative')
     }

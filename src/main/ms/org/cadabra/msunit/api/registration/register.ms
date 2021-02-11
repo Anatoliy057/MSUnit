@@ -49,15 +49,18 @@ proc _msunit_register_module(array @settings, array @options = null) {
 
     if (array_index_exists(@settings, 'extension')) {
         @moduleSetting['extension'] = @root.'/'.@settings['extension'].'/main.ms'
+        @moduleSetting['rootExtension'] = @root.'/'.@settings['extension']
     
     } else {
         @moduleSetting['extension'] = "@root/extension/main.ms"
+        @moduleSetting['rootExtension'] = "@root/extension"
     }
 
     @moduleSetting['rootTests'] = file_resolve(@moduleSetting['rootTests'])
     @moduleSetting['rootResources'] = file_resolve(@moduleSetting['rootResources'])
     @moduleSetting['settingGroups'] = file_resolve(@moduleSetting['settingGroups'])
     @moduleSetting['extension'] = file_resolve(@moduleSetting['extension'])
+    @moduleSetting['rootExtension'] = file_resolve(@moduleSetting['rootExtension'])
 
     _msunit_make_folder(@moduleSetting['rootTests'], @root)
     _msunit_make_folder(@moduleSetting['rootResources'], @root)
@@ -71,7 +74,7 @@ proc _msunit_register_module(array @settings, array @options = null) {
         @moduleSetting['testPattern'] = @settings['test_pattern']
     
     } else {
-        @moduleSetting['testPattern'] = '.*-test\\.ms$'
+        @moduleSetting['testPattern'] = '.*_test\\.ms$'
     }
 
     if (array_index_exists(@settings, 'outs')) {

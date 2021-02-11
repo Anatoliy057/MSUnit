@@ -94,5 +94,24 @@ _msunit_include_add(closure() {
         return(@filter[@script][@test])
     }
 
+    @attributes['isChosenGroup'] = closure(@m, @self, string @script) {
+        @filter = @self['filter']
+        if (@filter == null) {
+            return(true)
+        }
+        
+        if (!array_index_exists(@filter, @script)) {
+            return(false)
+        }
+
+        foreach(@test: @val in @filter[@script]) {
+            if(@val) {
+                return(true)
+            }
+        }
+
+        return(false)
+    }
+
     _msunit_register_class('TestFilter', @attributes)
 })
