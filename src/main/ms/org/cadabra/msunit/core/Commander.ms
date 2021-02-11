@@ -5,17 +5,17 @@ array proc _msunit_get_commander() {
 _msunit_include_add(closure() {
     array @commander = associative_array()
 
-    @commander['-command'] = closure(@m, @self, array @tester, array @userArgs) {
+    @commander['doCommands'] = closure(@m, @self, array @tester, array @userArgs) {
         @indexesToRemove = array()
         for(@i = 0, @i < array_size(@userArgs), @i++) {
             @arg = @userArgs[@i]
             if(_reg_like('^[\\-]+.*', @arg)) {
-                @command = reg_replace('[\\-]', '', @arg)
-                if(array_index_exists(@self, @command)) {
-                    _method(@command, @self, @tester, @userArgs, @i, @indexesToRemove)
+                if(array_index_exists(@self, @arg)) {
+                    _method(@arg, @self, @tester, @userArgs, @i, @indexesToRemove)
                 }
             }
         }
+        
         @offset = 0
         foreach(@index in @indexesToRemove) {
             array_remove(@userArgs, @index - @offset)
@@ -23,7 +23,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @commander['reinit'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+    @commander['--reinit'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
         @indexesToRemove[] = @pos
         
         @moduleSetting = @tester['moduleSetting']
@@ -32,7 +32,7 @@ _msunit_include_add(closure() {
         _method('init', @tester)
     }
 
-    @commander['-getCommands'] = closure(@m, @self) {
+    @commander['getCommands'] = closure(@m, @self) {
         return(array('--reinit'))
     }
 

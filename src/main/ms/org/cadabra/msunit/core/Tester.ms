@@ -223,7 +223,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['test'] = closure(@m, @self, string @caller, array @userGroups) {
-        _msunit_static_method('-command', 'Commander', @self, @userGroups)
+        _msunit_static_method('doCommands', 'Commander', @self, @userGroups)
 
         @moduleSetting = @self['moduleSetting']
         @rootTests = @self['moduleSetting']['rootTests']
@@ -521,7 +521,7 @@ _msunit_include_add(closure() {
     @attributes['tabcompleter'] = closure(@m, @self, array @args) {
         @input = @args[-1]
         @args = @args[..-2]
-        @completions = _msunit_static_method('-getCommands', 'Commander')
+        @completions = _msunit_static_method('getCommands', 'Commander')
         array_push_all(@completions, array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!array_contains(@args, @c))}))
         
         return(array_filter(@completions, closure(@key, @value) {
