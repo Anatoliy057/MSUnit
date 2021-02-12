@@ -43,7 +43,6 @@ proc _msunit_make_folder() {_msunit_unsupported()}
 proc _msunit_make_folders() {_msunit_unsupported()}
 proc _msunit_get_all_scripts() {_msunit_unsupported()}
 proc _msunit_replace_in_array() {_msunit_unsupported()}
-proc _msunit_array_minus() {_msunit_unsupported()}
 proc _msunit_get_procs() {_msunit_unsupported()}
 proc _method() {_msunit_unsupported()}
 proc _method_array() {_msunit_unsupported()}

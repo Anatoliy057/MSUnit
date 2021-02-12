@@ -49,7 +49,7 @@ _msunit_include_add(closure() {
             @trimScript = @script[cslice(@lenghtRoot + 1, -1)]
             @trimScripts[] = @trimScript
             @procs = _msunit_get_procs(@script)
-            @filteredProcs = _method('filterProcs', @procsFilter, @procs, @options)
+            @filteredProcs = _method('sortProcs', @procsFilter, @procs, @options)
             @testsMap[_msunit_static_method('formatScript', 'Grouper', @trimScript)] = @filteredProcs['tests']
             array_push_all(@messages, _method('valid', @scriptValidator, @trimScript, @filteredProcs))
         }
@@ -85,15 +85,14 @@ _msunit_include_add(closure() {
     }
 
     proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult) {
-        @oldProcs = get_procedures()
         include(@script)
         @newProcs = get_procedures()
-        @procs = _msunit_array_minus(@newProcs, @oldProcs)
+        @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
 
         @options = @self['options']
         
         @procsFilter = _msunit_get_procs_sorter()
-        @filteredProcs = _method('filterProcs', @procsFilter, @procs, @options)
+        @filteredProcs = _method('sortProcs', @procsFilter, @procs, @options)
         @tests = @filteredProcs['tests']
 
         if(!_method('isChosenGroup', @testFilter, @formatScript)) {
@@ -165,7 +164,7 @@ _msunit_include_add(closure() {
                     
                     } catch(Exception @e) {
                         @exception = @e[]
-                        @exception['stackTrace'] = @exception['stackTrace'][..-2]
+                        @exception['stackTrace'] = @exception['stackTrace']//[..-2]
                         _method('setException', @state, @exception)
                         
                     } finally {
@@ -220,6 +219,7 @@ _msunit_include_add(closure() {
     }
 
     @attributes['test'] = closure(@m, @self, string @caller, array @userGroups) {
+        @time = -nano_time()
         _msunit_static_method('doCommands', 'Commander', @self, @userGroups)
 
         @moduleSetting = @self['moduleSetting']
@@ -260,7 +260,6 @@ _msunit_include_add(closure() {
 
         @self['countFinishedTests'] = 0
         _msunit_set_environment(@moduleSetting, @states)
-        @time = -nano_time()
         _msunit_tasker_start(@runner)
 
         @size = _msunit_tasker_size_waiting(@runner)

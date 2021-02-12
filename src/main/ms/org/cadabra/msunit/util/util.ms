@@ -112,24 +112,10 @@ void proc _msunit_replace_in_array(array @source, array @replacement, boolean @s
     }
 }
 
-array proc _msunit_array_minus(array @arr1, array @arr2) {
-    if (is_associative(@arr1)) {
-        throw(CastException, 'First array must be not associative array')
-    } else if (is_associative(@arr2)) {
-        throw(CastException, 'Second array must be not associative array')
-    }
-    @result = array()
-    foreach(@val in @arr1) {
-        if (!array_contains(@arr2, @val), @result[] = @val)
-    }
-    return(@result)
-}
-
 array proc _msunit_get_procs(@path) {
-    @old_procs = get_procedures()
     include(@path)
-    @new_procs = get_procedures()
-    @procs = _msunit_array_minus(@new_procs, @old_procs)
+    @newProcs = get_procedures()
+    @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
     return(@procs)
 }
 
