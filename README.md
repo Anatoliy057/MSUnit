@@ -108,11 +108,13 @@ logger-test:
 
 ## Syntax command
 
-> `unit <module> [--reinit] [groups...]`
+> `unit <module> [--reinit] [--nobar] [groups...]`
 
 - **module** - id of module
 
 - **--reinit** - module reinitialization (recompile tests, update settings)
+
+- **--nobar** - disable loading status bar
 
 - **groups** - groups of tests
 

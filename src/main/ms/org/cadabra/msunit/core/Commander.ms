@@ -32,8 +32,14 @@ _msunit_include_add(closure() {
         _method('init', @tester)
     }
 
+    @commander['--nobar'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+        @indexesToRemove[] = @pos
+        
+        @tester['flags'][] = 'nobar'
+    }
+
     @commander['getCommands'] = closure(@m, @self) {
-        return(array('--reinit'))
+        return(array('--reinit', '--nobar'))
     }
 
     _msunit_register_class('Commander', @commander)

@@ -8,6 +8,7 @@ array proc _msunit_new_tester(string @id, array @options) {
     @self['id'] = @id
     @self['options'] = @options
     @self['moduleSetting'] = @options['module']
+    @self['flags'] = array()
 
     _method('init', @self)
 
@@ -230,6 +231,8 @@ _msunit_include_add(closure() {
         @trimScripts = @self['trimScripts']
         @grouper = @self['grouper']
         @countTests = @self['countTests']
+        @flags = @self['flags']
+        @self['flags'] = array()
 
         @messager = _msunit_get_validation_messager()
         @groupsValidator = _msunit_get_groups_validator()
@@ -264,32 +267,37 @@ _msunit_include_add(closure() {
 
         @size = _msunit_tasker_size_waiting(@runner)
         @prevCount = 0
-        while(_msunit_tasker_complited(@runner) != @size) {
-            @curretnCount = @self['countFinishedTests']
-            if(@curretnCount != @prevCount) {
-                @statusBar = res_create_resource('STRING_BUILDER', 50)
-                @percent = integer(100 * @curretnCount / @countTests)
-                @loadProgress = integer(@percent/2)
-                
-                for(@i = 0, @i < @loadProgress, @i++, string_append(@statusBar, '#'))
-                
-                for(@i = @loadProgress, @i < 50, @i++, string_append(@statusBar, ' '))
-                
-                @color
-                if(@percent < 25) {
-                    @color = color('DARK_RED')
-                
-                } if (@percent < 75) {
-                    @color = color('YELLOW')
-                
-                } else {
-                    @color = color('GREEN')
+        if(!array_contains(@flags, 'nobar')) {
+            while(_msunit_tasker_complited(@runner) != @size) {
+                @curretnCount = @self['countFinishedTests']
+                if(@curretnCount != @prevCount) {
+                    @statusBar = res_create_resource('STRING_BUILDER', 50)
+                    @percent = integer(100 * @curretnCount / @countTests)
+                    @loadProgress = integer(@percent/2)
+
+                    for(@i = 0, @i < @loadProgress, @i++, string_append(@statusBar, '#'))
+
+                    for(@i = @loadProgress, @i < 50, @i++, string_append(@statusBar, ' '))
+
+                    @color
+                    if(@percent < 25) {
+                        @color = color('DARK_RED')
+
+                    } if (@percent < 75) {
+                        @color = color('YELLOW')
+
+                    } else {
+                        @color = color('GREEN')
+                    }
+
+                    print("\r@color @percent% [@statusBar] @curretnCount/@countTests".color('PLAIN_WHITE'))
+
+                    @prevCount = @curretnCount
                 }
-                
-                print("\r@color @percent% [@statusBar] @curretnCount/@countTests".color('PLAIN_WHITE'))
-                
-                @prevCount = @curretnCount
             }
+
+        } else {
+            while(_msunit_tasker_complited(@runner) != @size) {}
         }
         
         @time += nano_time()
@@ -518,8 +526,11 @@ _msunit_include_add(closure() {
     @attributes['tabcompleter'] = closure(@m, @self, array @args) {
         @input = @args[-1]
         @args = @args[..-2]
-        @completions = _msunit_static_method('getCommands', 'Commander')
-        array_push_all(@completions, array_filter(@self['grouper']['completions'], closure(@i, @c) {return(!array_contains(@args, @c))}))
+        
+        @completions = array()
+        array_push_all(@completions, _msunit_static_method('getCommands', 'Commander'))
+        array_push_all(@completions, @self['grouper']['completions'])
+        @completions = array_filter(@completions, closure(@i, @c) {return(!array_contains(@args, @c))})
         
         return(array_filter(@completions, closure(@key, @value) {
         	return(length(@input) <= length(@value) 
