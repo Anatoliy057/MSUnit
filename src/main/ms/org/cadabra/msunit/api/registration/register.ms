@@ -1,8 +1,5 @@
-proc _msunit_register_module(array @settings, array @options = null) {
-    array @defaultOptions = yml_decode(read(file_resolve(_msunit_import_resourse_root().'/setting.yml')))
-    array @moduleSetting = @defaultOptions['module']
-
-    @options = @options ||| array()
+proc _msunit_register_module(array @settings) {
+    array @moduleSetting = array()
 
     string @root
     string @id
@@ -40,6 +37,13 @@ proc _msunit_register_module(array @settings, array @options = null) {
         @moduleSetting['rootResources'] = "@root/resources"
     }
 
+    if (array_index_exists(@settings, 'data')) {
+        @moduleSetting['rootData'] = @root.'/'.@settings['data']
+
+    } else {
+        @moduleSetting['rootData'] = "@root/data"
+    }
+
     if (array_index_exists(@settings, 'setting_groups')) {
         @moduleSetting['settingGroups'] = @root.'/'.@settings['setting_groups']
     
@@ -56,6 +60,12 @@ proc _msunit_register_module(array @settings, array @options = null) {
         @moduleSetting['rootExtension'] = "@root/extension"
     }
 
+    @testsSetting = _msunit_import_tests_setting()[]
+    if (array_index_exists(@settings, 'tests_setting')) {
+        _msunit_replace_in_array(@testsSetting, @settings['tests_setting'])
+    }
+    @moduleSetting['testsSetting'] = @testsSetting
+
     @moduleSetting['rootTests'] = file_resolve(@moduleSetting['rootTests'])
     @moduleSetting['rootResources'] = file_resolve(@moduleSetting['rootResources'])
     @moduleSetting['settingGroups'] = file_resolve(@moduleSetting['settingGroups'])
@@ -70,13 +80,6 @@ proc _msunit_register_module(array @settings, array @options = null) {
         write_file(@moduleSetting['settingGroups'], yml_encode(associative_array()))
     }
 
-    if (array_index_exists(@settings, 'test_pattern')) {
-        @moduleSetting['testPattern'] = @settings['test_pattern']
-    
-    } else {
-        @moduleSetting['testPattern'] = '.*_test\\.ms$'
-    }
-
     if (array_index_exists(@settings, 'outs')) {
         @outs = array()
         foreach(@out in @settings['outs']) {
@@ -89,20 +92,24 @@ proc _msunit_register_module(array @settings, array @options = null) {
         @moduleSetting['outs'] = _msunit_get_outs(@root)
     }
 
-    _msunit_replace_in_array(@defaultOptions, @options)
-
     if(!_msunit_is_application_started()) {
         @modules = _msunit_import_modules()
         if(array_index_exists(@modules, @id)) {
             throw(Exception, "That module '@id' already registered")
         }
 
-        @modules[@id] = @defaultOptions
+        @modules[@id] = @moduleSetting
 
     } else {
         @app = _msunit_get_application()
-        _method('registerTester', @app, @id, @defaultOptions)
+        _method('registerTester', @app, @id, @moduleSetting)
     }
+}
+
+void proc _msunit_set_options(array @options) {
+    @defaultOptions = _msunit_import_options()
+    _msunit_replace_in_array(@defaultOptions, @options)
+    _msunit_export_options(@options)
 }
 
 array proc _msunit_get_outs(string @root) {

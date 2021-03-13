@@ -1,4 +1,4 @@
-array proc _msunit_new_tester(string @id, array @options) {
+array proc _msunit_new_tester(string @id, array @moduleSetting, array @options) {
     array @self = associative_array()
 
     foreach(@key: @attr in _msunit_get_class('Tester')) {
@@ -7,8 +7,7 @@ array proc _msunit_new_tester(string @id, array @options) {
 
     @self['id'] = @id
     @self['options'] = @options
-    @self['moduleSetting'] = @options['module']
-    @self['flags'] = array()
+    @self['moduleSetting'] = @moduleSetting
 
     _method('init', @self)
 
@@ -21,6 +20,7 @@ _msunit_include_add(closure() {
     @attributes['init'] = closure(@m, @self) { 
         @caller = '~console'
         @moduleSetting = @self['moduleSetting']
+        @testsSetting = @moduleSetting['testsSetting']
         @options = @self['options']
         @id = @self['id']
 
@@ -31,7 +31,7 @@ _msunit_include_add(closure() {
 
         // Load and filter scripts of tests
         @pathToTests = @moduleSetting['rootTests']
-        @pattern = @moduleSetting['testPattern']
+        @pattern = @testsSetting['scriptPattern']
         @scripts = _msunit_get_all_scripts(@pathToTests)
         @filteredScripts = array()
         foreach(@script in @scripts) {
@@ -50,7 +50,7 @@ _msunit_include_add(closure() {
             @trimScript = @script[cslice(@lenghtRoot + 1, -1)]
             @trimScripts[] = @trimScript
             @procs = _msunit_get_procs(@script)
-            @filteredProcs = _method('sortProcs', @procsFilter, @procs, @options)
+            @filteredProcs = _method('sortProcs', @procsFilter, @procs, @testsSetting)
             @testsMap[_msunit_static_method('formatScript', 'Grouper', @trimScript)] = @filteredProcs['tests']
             array_push_all(@messages, _method('valid', @scriptValidator, @trimScript, @filteredProcs))
         }
@@ -77,6 +77,7 @@ _msunit_include_add(closure() {
         @self['trimScripts'] = @trimScripts
         @grouper = _msunit_new_grouper(@updatedSettingGroups, @testsMap, @options)
         @self['grouper'] = @grouper
+        @self['testsSetting'] = @testsSetting
 
         @countTests = 0
         foreach(@formatScript: @tests in @testsMap) {
@@ -91,9 +92,10 @@ _msunit_include_add(closure() {
         @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
 
         @options = @self['options']
+        @testsSetting = @self['testsSetting']
         
         @procsFilter = _msunit_get_procs_sorter()
-        @filteredProcs = _method('sortProcs', @procsFilter, @procs, @options)
+        @filteredProcs = _method('sortProcs', @procsFilter, @procs, @testsSetting)
         @tests = @filteredProcs['tests']
 
         if(!_method('isChosenGroup', @testFilter, @formatScript)) {
@@ -101,6 +103,7 @@ _msunit_include_add(closure() {
         }
 
         @task = closure() {
+            x_init_thread_globals()
             
             string @procBeforeAll = '_msunit_void'
             string @procBeforeEach = '_msunit_void'
@@ -126,15 +129,19 @@ _msunit_include_add(closure() {
             @time = -nano_time()
             @beforeAll
             try {
-                @return = array(call_proc(@procBeforeAll))
-                @beforeAll = if(typeof(@return[0]) == typeof(_msunit_void()), null, @return[0])
+                @beforeAll = execute(closure() {
+                    include(_msunit_import_test_unsup_api())
+                    @return = array(call_proc(@procBeforeAll))
+                    @beforeAll = if(typeof(@return[0]) == typeof(_msunit_void()), null, @return[0])
+                    return(@beforeAll)
+                })
             
             } catch (Exception @e) {
                 @time += nano_time()
                 @exception = @e[]
-                @exception['stackTrace'] = @exception['stackTrace'][..-3]
+                @exception['stackTrace'] = @exception['stackTrace'][..-4]
                 
-                @state = _msunit_new_test_state(@formatScript, @options)
+                @state = _msunit_new_test_state(@formatScript, @testsSetting)
                 _method('setException', @state, @exception)
                 @state['time'] = @time
                 @scriptResult['before all'] = @state
@@ -147,25 +154,27 @@ _msunit_include_add(closure() {
                     continue()
                 }
                 
-                @state = _msunit_new_test_state(@formatScript, @options)
+                @state = _msunit_new_test_state(@formatScript, @testsSetting)
                 @scriptResult[@test] = @state
                 
                 @nameThread = _msunit_thread_name(@formatScript, @test)
+                @idThread = _msunit_thread_id(@formatScript, @test)
                 x_new_thread(@nameThread, closure() {
+                    x_init_thread_globals()
                     @time = -nano_time()
                     try {
-                        @return = array(call_proc(@procBeforeEach, @test))
+                        @return = array(call_proc(@procBeforeEach, @idThread))
                         @beforeEach = if(typeof(@return[0]) == typeof(_msunit_void()), null, @return[0])
                         
-                        @argsTest = array_filter(array(@beforeAll, @beforeEach), closure(@i, @v) {return(@v != null)})
+                        @argsTest = array(@idThread, @beforeAll, @beforeEach)
                         @return = array(call_proc_array(@test, @argsTest))
                         @return = if(typeof(@return[0]) == typeof(_msunit_void()), null, @return[0])
                         
-                        call_proc(@procAfterEach, @test, @return)
+                        call_proc(@procAfterEach, @idThread, @return)
                     
                     } catch(Exception @e) {
                         @exception = @e[]
-                        @exception['stackTrace'] = @exception['stackTrace']//[..-2]
+                        @exception['stackTrace'] = @exception['stackTrace'][..-2]
                         _method('setException', @state, @exception)
                         
                     } finally {
@@ -200,14 +209,17 @@ _msunit_include_add(closure() {
 
             @time = -nano_time()
             try {
-                call_proc(@procAfterAll)
+                execute(closure() {
+                    include(_msunit_import_test_unsup_api())
+                    call_proc(@procAfterAll)
+                })
             
             } catch (Exception @e) {
                 @time += nano_time()
                 @exception = @e[]
-                @exception['stackTrace'] = @exception['stackTrace'][..-3]
+                @exception['stackTrace'] = @exception['stackTrace'][..-4]
                 
-                @state = _msunit_new_test_state(@formatScript, @options)
+                @state = _msunit_new_test_state(@formatScript, @testsSetting)
                 _method('setException', @state, @exception)
                 @state['time'] = @time
                 @scriptResult['after all'] = @state
@@ -221,7 +233,7 @@ _msunit_include_add(closure() {
 
     @attributes['test'] = closure(@m, @self, string @caller, array @userGroups) {
         @time = -nano_time()
-        _msunit_static_method('doCommands', 'Commander', @self, @userGroups)
+        @flags = _msunit_static_method('doCommands', 'Commander', @self, @userGroups)
 
         @moduleSetting = @self['moduleSetting']
         @rootTests = @self['moduleSetting']['rootTests']
@@ -231,8 +243,6 @@ _msunit_include_add(closure() {
         @trimScripts = @self['trimScripts']
         @grouper = @self['grouper']
         @countTests = @self['countTests']
-        @flags = @self['flags']
-        @self['flags'] = array()
 
         @messager = _msunit_get_validation_messager()
         @groupsValidator = _msunit_get_groups_validator()
@@ -245,7 +255,7 @@ _msunit_include_add(closure() {
 
         @testFilter = _msunit_new_test_filter(@options, @grouper)
         _method('compile', @testFilter, @userGroups, @options)
-        
+
         //Marker procedure
         proc _unit() {}
         include(_msunit_import_test_api())
@@ -263,6 +273,10 @@ _msunit_include_add(closure() {
 
         @self['countFinishedTests'] = 0
         _msunit_set_environment(@moduleSetting, @states)
+        if(!array_index_exists(@flags, '--save-data') && file_exists(@moduleSetting['rootData'])) {
+            delete_file(@moduleSetting['rootData'])
+            create_dir(@moduleSetting['rootData'])
+        }
         _msunit_tasker_start(@runner)
 
         @size = _msunit_tasker_size_waiting(@runner)
@@ -303,6 +317,9 @@ _msunit_include_add(closure() {
         @time += nano_time()
         _msunit_tasker_stop(@runner)
         _msunit_clear_environment()
+        if(!array_index_exists(@flags, '--save-data') && file_exists(@moduleSetting['rootData'])) {
+            delete_file(@moduleSetting['rootData'])
+        }
         
         _method('logStates', @self, @caller, @states, @time)
     }

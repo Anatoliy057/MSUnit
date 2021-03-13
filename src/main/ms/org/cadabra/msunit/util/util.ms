@@ -9,7 +9,11 @@ array proc _msunit_parse_thread() {
 }
 
 string proc _msunit_thread_name(string @trimScript, string @test) {
-    return("(MSUnit) @trimScript$@test")
+    return('(MSUnit) '._msunit_thread_id(@trimScript, @test))
+}
+
+string proc _msunit_thread_id(string @trimScript, string @test) {
+    return("@trimScript$@test")
 }
 
 string proc _msutil_parse_stack_trace(array @stackTrace) {

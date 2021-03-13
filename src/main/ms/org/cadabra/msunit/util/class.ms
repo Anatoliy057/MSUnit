@@ -1,6 +1,6 @@
 proc _msunit_get_class(string @className) {
     @root = _msunit_import_root()
-    @classes = import('org.cadabra.msunit.util.class')
+    @classes = original_import('org.cadabra.msunit.util.class')
 
     if (array_index_exists(@classes, @className)) {
         return(@classes[@className])
@@ -11,7 +11,7 @@ proc _msunit_get_class(string @className) {
 }
 
 proc _msunit_register_class(string @className, array @attributes) {
-    @classes = import('org.cadabra.msunit.util.class')
+    @classes = original_import('org.cadabra.msunit.util.class')
 
     @attributes['__class__'] = @className
 

@@ -1,11 +1,11 @@
-array proc _msunit_new_test_state(string @formatScript, array @options) {
+array proc _msunit_new_test_state(string @formatScript, array @testsSetting) {
     array @self = associative_array()
 
     foreach(@key: @attr in _msunit_get_class('TestState')) {
         @self[@key] = @attr
     }
 
-    @self['ASSERT_TIME'] = @options['test']['assertTimeout']
+    @self['ASSERT_TIME'] = @testsSetting['assertTimeout']
 
     @self['userLog'] = res_create_resource('STRING_BUILDER')
     @self['testMessage'] = null
@@ -16,9 +16,9 @@ array proc _msunit_new_test_state(string @formatScript, array @options) {
     @self['time'] = 0
 
     @self['formatScript'] = @formatScript
-    @self['assertTime'] = @options['test']['assertTimeout']
-    @self['testTime'] = @options['test']['testTimeout']
-    @self['attentionTime'] = @options['test']['attentionTime']
+    @self['assertTime'] = @testsSetting['assertTimeout']
+    @self['testTime'] = @testsSetting['testTimeout']
+    @self['attentionTime'] = @testsSetting['attentionTime']
 
     return(@self)
 }

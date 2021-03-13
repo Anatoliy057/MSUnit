@@ -4,7 +4,8 @@ void proc _msunit_include_add(closure @include) {
 
 void proc _msunit_include_all() {
     foreach(@include in import('org.cadabra.msunit.__include__')) {
-        execute_current(@include)
+        set_current_env(@include)
+        @include()
     }
 }
 

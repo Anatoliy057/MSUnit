@@ -64,7 +64,7 @@ proc _test_mytest() {
 
 In addition to the tests themselves, there are auxiliary procedures such as: *_before_each*, *_after_all*, e.t.c.
 
-See in section [auxiliary procedures](#Auxiliary%20procedures)
+See in section [auxiliary procedures](#Auxiliary-procedures)
 
 ### **Command to run**
 
@@ -106,9 +106,24 @@ logger-test:
 - `unit test !test-test:_test_mytest` - all tests except test-test.ms : {_test_mytest}
 - `unit test !all:_test_mytest` - all tests except _test_mytest
 
+### Data files
+
+In each test, you can create files that are deleted after the module test expires.They are located by default `"root/data/{name_current_thread}/"`.
+
+You can save files by specifying the `"--save-data"` flag when running tests
+
+
+### Globals constants
+
+For each test, global constants are unique and do not overlap. But at the same time, constants from the main logic are not transferred to tests, that is, they are empty.
+
+It is recommended to initialize them in `_before_each_`
+
+***
+
 ## Syntax command
 
-> `unit <module> [--reinit] [--nobar] [groups...]`
+> `unit <module> [--reinit] [--nobar] [--save-data] [groups...]`
 
 - **module** - id of module
 
@@ -116,7 +131,11 @@ logger-test:
 
 - **--nobar** - disable loading status bar
 
+- **--save-data** - enable save data files
+
 - **groups** - groups of tests
+
+***
 
 ## Auxiliary procedures
 
@@ -163,9 +182,11 @@ _msunit_register_module(array(
   [tests: string],
   [extension: string],
   [resources: string],
+  [data: string],
   [setting_groups: string],
   [outs: array]
-), @options)
+  [tests_setting: array]
+))
 ```
 
 - **id** - Unique identifier for pluggable tests
@@ -173,44 +194,88 @@ _msunit_register_module(array(
 - **tests** - Local path to tests, by default *"root/ms"*
 - **extension** - Local path to scripts, that runs before running tests, by default *"root/extension"*
 - **resources** - Local path to resources, by default *"root/resources"*
+- **data** - Local path to root data files for each test, by default *"root/data"*
 - **setting_groups** - Local path to yml file map "test: [groups...]", by default *"root/setting.yml"*
 - **outs** - array of loggers, taken from `_msunit_get_outs` by default
-- **@options** - array of options, see [default](src/main/resources/setting.yml)
+- **tests_setting** - see [default value](src/main/resources/tests_setting.yml)
+
+### Set options
+
+To customize the framework for your machine, use the setup procedure:
+
+>`void _msunit_set_options(array @options)`.
+
+See the [default value](src/main/resources/options.yml)
 
 ### Assertions
 
-- `_assert_true_obj(Booleanish o, [mixed msg])`
-- `_assert_false_obj(Booleanish o, [mixed msg])`
-- `_assert_true(boolean bool, [mixed msg])`
-- `_assert_false(boolean bool, [mixed msg])`
-- `_assert_null(mixed object, [mixed msg])`
-- `_assert_not_null(mixed object, [mixed msg])`
-- `_assert_equals(mixed exp, mixed act, [mixed msg])`
-- `_assert_ref_eq(mixed val1, mixed val2, [mixed msg])`
-- `_assert_not_equals(mixed arg1, mixed arg2, [mixed msg])`
-- `_assert_size(int size, array arr, [mixed msg])`
-- `_assert_length(int length, mixed act, [mixed msg])`
-- `_assert_empty(mixed object, [mixed msg])`
-- `_assert_not_empty(mixed object, [mixed msg])`
-- `_assert_type(ClassType type, mixed object, [mixed msg])`
-- `_assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
-- `_assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
-- `_assert_proc_array_throw(ClassType type, string proc_name, array args, [mixed msg])`
-- `_assert_closure_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
-- `_assert_key_exist(array array, string key, [mixed msg])`
-- `_assert_key_not_exist(string key, array array, [mixed msg])`
+- `void _assert_true_obj(Booleanish o, [mixed msg])`
+- `void _assert_false_obj(Booleanish o, [mixed msg])`
+- `void _assert_true(boolean bool, [mixed msg])`
+- `void _assert_false(boolean bool, [mixed msg])`
+- `void _assert_null(mixed object, [mixed msg])`
+- `void _assert_not_null(mixed object, [mixed msg])`
+- `void _assert_equals(mixed exp, mixed act, [mixed msg])`
+- `void _assert_ref_eq(mixed val1, mixed val2, [mixed msg])`
+- `void _assert_not_equals(mixed arg1, mixed arg2, [mixed msg])`
+- `void _assert_size(int size, array arr, [mixed msg])`
+- `void _assert_length(int length, mixed act, [mixed msg])`
+- `void _assert_empty(mixed object, [mixed msg])`
+- `void _assert_not_empty(mixed object, [mixed msg])`
+- `void _assert_type(ClassType type, mixed object, [mixed msg])`
+- `void _assert_proc_throw(ClassType type, string proc_name, [mixed msg])`
+- `void _assert_closure_throw(ClassType type, closure lymda, [mixed msg])`
+- `void _assert_proc_array_throw(ClassType type, string proc_name, array args, [mixed msg])`
+- `void _assert_closure_array_throw(ClassType type, closure lymda, array args, [mixed msg])`
+- `void _assert_key_exist(array array, string key, [mixed msg])`
+- `void _assert_key_not_exist(string key, array array, [mixed msg])`
 
 ### Supporting Procedures
 
-- `_print(mixed msg)`
-- `_println([mixed msg])`
-- `_sleep(number seconds)`
-- `_skip_test()`
-- `_assert_time(int seconds)`
-- `_test_time(int seconds)`
-- `_attension_time(int seconds)`
-- `_restart_assert_time()`
-- `_x_safe(closure lymda)`
+- `void _print(mixed msg)`
+    
+    Displays a message in the body of the test log
+
+- `void _println([mixed msg])`
+    
+    Displays a message with break line in the body of the test log
+
+- `void _sleep(number seconds)`
+    
+    Sleeps the test for the specified number of seconds (Assert and procedure timout is sleep too)
+
+- `void _skip_test()`
+    
+    Stops the test and marks it as skipped
+
+- `void _assert_time(int seconds)`
+    
+    Sets the value of "assert timeout" to the specified number of seconds
+
+- `void _test_time(int seconds)`
+    
+    Sets the value of "test timeout" to the specified number of seconds
+
+- `void _attension_time(int seconds)`
+    
+    Sets the value of "attension time" to the specified number of seconds
+
+- `void _restart_assert_time()`
+    
+    Restarts assertion timeout to default
+
+- `void _x_safe(closure lymda)`
+    
+    Executes closure, will not end even when the test or assertion timeout
+
+- `string _unit_get_data(string @filename = '')`
+    
+    Returns the file path to the data file of test
+
+- `string proc _unit_get_resource(string @filename)`
+    
+    Returns the file path to the resource file of module
+
 
 # Environment 
 

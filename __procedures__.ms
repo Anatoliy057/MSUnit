@@ -1,5 +1,5 @@
 proc _msunit_unsupported() {
-    console('Unsupported operation at '.get_stack_trace()[1]['id'])
+    throw(UnsupportedOperationException, 'Unsupported operation at '.get_stack_trace()[1]['id'])
 }
 
 proc _msunit_new_out() {_msunit_unsupported()}
@@ -25,9 +25,13 @@ proc _msunit_static_method() {_msunit_unsupported()}
 proc _msunit_import_root() {_msunit_unsupported()}
 proc _msunit_import_resourse_root() {_msunit_unsupported()}
 proc _msunit_import_test_api() {_msunit_unsupported()}
+proc _msunit_import_test_unsup_api() {_msunit_unsupported()}
 proc _msunit_import_modules() {_msunit_unsupported()}
 proc _msunit_is_application_started() {_msunit_unsupported()}
 proc _msunit_application_start() {_msunit_unsupported()}
+proc _msunit_export_options() {_msunit_unsupported()}
+proc _msunit_import_options() {_msunit_unsupported()}
+proc _msunit_import_tests_setting() {_msunit_unsupported()}
 
 proc _msunit_set_environment() {_msunit_unsupported()}
 proc _msunit_clear_environment() {_msunit_unsupported()}
@@ -37,6 +41,7 @@ proc _msunit_get_setting_environment() {_msunit_unsupported()}
 
 proc _msunit_parse_thread() {_msunit_unsupported()}
 proc _msunit_thread_name() {_msunit_unsupported()}
+proc _msunit_thread_id() {_msunit_unsupported()}
 proc _msutil_parse_stack_trace() {_msunit_unsupported()}
 proc _msunit_make_file() {_msunit_unsupported()}
 proc _msunit_make_folder() {_msunit_unsupported()}

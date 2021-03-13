@@ -6,9 +6,9 @@ proc _before_each() {
     return('World!')
 }
 
-proc _test_supportProcs_successfully(@a, @b) {
+proc _test_supportProcs_successfully(@test, @before_all, @before_each) {
     _println(@arguments)
-    _assert_equals('Hello World!', "@a @b")
+    _assert_equals('Hello World!', "@before_all @before_each")
     return('Goodbye world!')
 }
 

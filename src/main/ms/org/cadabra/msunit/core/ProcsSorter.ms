@@ -5,44 +5,44 @@ array proc _msunit_get_procs_sorter() {
 _msunit_include_add(closure() {
     array @procsSorter = associative_array()
 
-    @procsSorter['sortProcs'] = closure(@m, @self, array @procs, array @options) {
+    @procsSorter['sortProcs'] = closure(@m, @self, array @procs, array @testsSetting) {
         @filteredProcs = associative_array()
 
-        @filteredProcs['tests'] = _method('getTests', @self, @procs, @options)
-        @filteredProcs['beforeEach'] = _method('getBeforeEach', @self, @procs, @options)
-        @filteredProcs['beforeAll'] = _method('getBeforeAll', @self, @procs, @options)
-        @filteredProcs['afterEach'] = _method('getAfterEach', @self, @procs, @options)
-        @filteredProcs['afterAll'] = _method('getAfterAll', @self, @procs, @options)
+        @filteredProcs['tests'] = _method('getTests', @self, @procs, @testsSetting)
+        @filteredProcs['beforeEach'] = _method('getBeforeEach', @self, @procs, @testsSetting)
+        @filteredProcs['beforeAll'] = _method('getBeforeAll', @self, @procs, @testsSetting)
+        @filteredProcs['afterEach'] = _method('getAfterEach', @self, @procs, @testsSetting)
+        @filteredProcs['afterAll'] = _method('getAfterAll', @self, @procs, @testsSetting)
     
         return(@filteredProcs)
     }
 
-    @procsSorter['getTests'] = closure(@m, @self, array @procs, array @options) {
-        @filter = @options['test']['procs']['test']
+    @procsSorter['getTests'] = closure(@m, @self, array @procs, array @testsSetting) {
+        @filter = @testsSetting['procs']['test']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getBeforeEach'] = closure(@m, @self, array @procs, array @options) {
-        @filter = @options['test']['procs']['beforeEach']
+    @procsSorter['getBeforeEach'] = closure(@m, @self, array @procs, array @testsSetting) {
+        @filter = @testsSetting['procs']['beforeEach']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getBeforeAll'] = closure(@m, @self, array @procs, array @options) {
-        @filter = @options['test']['procs']['beforeAll']
+    @procsSorter['getBeforeAll'] = closure(@m, @self, array @procs, array @testsSetting) {
+        @filter = @testsSetting['procs']['beforeAll']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getAfterEach'] = closure(@m, @self, array @procs, array @options) {
-        @filter = @options['test']['procs']['afterEach']
+    @procsSorter['getAfterEach'] = closure(@m, @self, array @procs, array @testsSetting) {
+        @filter = @testsSetting['procs']['afterEach']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getAfterAll'] = closure(@m, @self, array @procs, array @options) {
-        @filter = @options['test']['procs']['afterAll']
+    @procsSorter['getAfterAll'] = closure(@m, @self, array @procs, array @testsSetting) {
+        @filter = @testsSetting['procs']['afterAll']
 
         return(_method('filter', @self, @procs, @filter))
     }

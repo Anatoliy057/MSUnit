@@ -1,0 +1,11 @@
+---
+attentionTime: 1000000000
+testTimeout: 10
+assertTimeout: 5
+procs: 
+  afterEach: ^_after_each.*
+  beforeEach: ^_before_each.*
+  beforeAll: ^_before_all.*
+  afterAll: ^_after_all.*
+  test: ^_test.*
+scriptPattern: .*_test\.ms$

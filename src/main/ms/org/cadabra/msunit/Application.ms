@@ -30,21 +30,23 @@ _msunit_include_add(closure() {
     }
 
     @app['registerTesters'] = closure(@m, @self) {
+        @options = _msunit_import_options()
         @modules = _msunit_import_modules()
 
-        foreach(@id: @options in @modules) {
-            @self['testers'][@id] = _msunit_new_tester(@id, @options)
+        foreach(@id: @moduleSetting in @modules) {
+            @self['testers'][@id] = _msunit_new_tester(@id, @moduleSetting, @options)
         }
     }
 
-    @app['registerTester'] = closure(@m, @self, string @id, array @options) {
-        @self['testers'][@id] = _msunit_new_tester(@id, @options)
+    @app['registerTester'] = closure(@m, @self, string @id, array @moduleSetting) {
+        @options = _msunit_import_options()
+        @self['testers'][@id] = _msunit_new_tester(@id, @moduleSetting, @options)
     }
 
     @app['registerCommand'] = closure(@m, @self) {
         register_command('unit', array(
             'description': 'MSUnit module control',
-            'usage': '/unit <module> [groups...]',
+            'usage': '/unit <module> [--reinit] [--nobar] [groups...]',
             'aliases':array('unit'),
             'executor': closure(@alias, @caller, @args) {
                 if(array_size(@args) == 0) {
