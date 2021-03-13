@@ -30,7 +30,7 @@ Registration is done in one procedure:
 
 ```ms
 _msunit_register_module(array(
-  id: test,
+  id: 'test',
   root: file_resolve('root')
 ))
 ```
