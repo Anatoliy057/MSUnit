@@ -1,4 +1,4 @@
-if(is_proc('_unit')) {
+if(is_proc('_msunit_')) {
 
 proc _x_safe() {_msunit_unsupported()}
 proc _print() {_msunit_unsupported()}

@@ -86,7 +86,7 @@ _msunit_include_add(closure() {
         @self['countTests'] = @countTests
     }
 
-    proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult) {
+    closure proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult, array @flags) {
         include(@script)
         @newProcs = get_procedures()
         @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
@@ -103,7 +103,9 @@ _msunit_include_add(closure() {
         }
 
         @task = closure() {
-            x_init_thread_globals()
+            if(!array_index_exists(@flags, '--no-globals')) {
+                x_init_thread_globals()
+            }
             
             string @procBeforeAll = '_msunit_void'
             string @procBeforeEach = '_msunit_void'
@@ -160,7 +162,10 @@ _msunit_include_add(closure() {
                 @nameThread = _msunit_thread_name(@formatScript, @test)
                 @idThread = _msunit_thread_id(@formatScript, @test)
                 x_new_thread(@nameThread, closure() {
-                    x_init_thread_globals()
+                    if(!array_index_exists(@flags, '--no-globals')) {
+                        x_init_thread_globals()
+                    }
+                    
                     @time = -nano_time()
                     try {
                         @return = array(call_proc(@procBeforeEach, @idThread))
@@ -257,7 +262,7 @@ _msunit_include_add(closure() {
         _method('compile', @testFilter, @userGroups, @options)
 
         //Marker procedure
-        proc _unit() {}
+        proc _msunit_() {}
         include(_msunit_import_test_api())
         include(@moduleSetting['extension'])
 
@@ -268,7 +273,7 @@ _msunit_include_add(closure() {
             @scriptState = associative_array()
             @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
             @states[@formatScript] = @scriptState
-            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @formatScript, @testFilter, @scriptState))
+            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @formatScript, @testFilter, @scriptState, @flags))
         }
 
         @self['countFinishedTests'] = 0
@@ -281,7 +286,7 @@ _msunit_include_add(closure() {
 
         @size = _msunit_tasker_size_waiting(@runner)
         @prevCount = 0
-        if(!array_contains(@flags, 'nobar')) {
+        if(!array_index_exists(@flags, '--no-bar')) {
             while(_msunit_tasker_complited(@runner) != @size) {
                 @curretnCount = @self['countFinishedTests']
                 if(@curretnCount != @prevCount) {

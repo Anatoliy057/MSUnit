@@ -1,4 +1,4 @@
-if(is_proc('_unit')) {
+if(is_proc('_msunit_')) {
 
 void proc _x_safe(closure @lymda) {
     x_safe_execute(@lymda)

@@ -2,7 +2,7 @@
 core: 
   # Number of simultaneously run test files
   threads: 4
-  # Waiting time until next check
+  # Waiting time (seconds) until next check
   delay: 0.01
 groups: 
   # Test exclusion

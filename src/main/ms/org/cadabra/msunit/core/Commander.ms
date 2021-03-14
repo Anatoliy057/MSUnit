@@ -37,11 +37,15 @@ _msunit_include_add(closure() {
         _method('init', @tester)
     }
 
-    @commander['--nobar'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+    @commander['--no-bar'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
         return(true)
     }
 
     @commander['--save-data'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+        return(true)
+    }
+
+    @commander['--no-globals'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
         return(true)
     }
 

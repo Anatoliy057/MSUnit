@@ -46,7 +46,7 @@ _msunit_include_add(closure() {
     @app['registerCommand'] = closure(@m, @self) {
         register_command('unit', array(
             'description': 'MSUnit module control',
-            'usage': '/unit <module> [--reinit] [--nobar] [groups...]',
+            'usage': '/unit <module> [--reinit] [--no-bar] [groups...]',
             'aliases':array('unit'),
             'executor': closure(@alias, @caller, @args) {
                 if(array_size(@args) == 0) {

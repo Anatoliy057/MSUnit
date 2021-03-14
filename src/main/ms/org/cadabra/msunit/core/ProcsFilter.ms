@@ -6,7 +6,7 @@ _msunit_include_add(closure() {
     array @procsFilter = associative_array()
 
     execute(closure() {
-        proc _unit() {}
+        proc _msunit_() {}
         include(_msunit_import_test_api())
         @procs = get_procedures()
         @map = associative_array()

@@ -57,10 +57,15 @@ Example
 ```ms
 # ms/test-test.ms
 
-proc _test_mytest() {
+proc _test_mytest(@test) {
+    _print(@test)
     _assert_equals(1, 1)
 }
 ```
+
+> @test is a unique name of test
+
+Regarding the environment of test: all the procedures that were declared before the call of `_init_msunit` are visible, as for the global constants (import, export), they are not there - for each test they are their own and in start are empty, thanks to this you will not be able to influence the main one in any way server operation. You can enable the original globals by using the "--no-globals" flag.
 
 In addition to the tests themselves, there are auxiliary procedures such as: *_before_each*, *_after_all*, e.t.c.
 
@@ -88,8 +93,8 @@ util-test:
   - all
   - util
 logger-test:
-  - util
   - all
+  - util
   - log
 ```
 
@@ -108,30 +113,25 @@ logger-test:
 
 ### Data files
 
-In each test, you can create files that are deleted after the module test expires.They are located by default `"root/data/{name_current_thread}/"`.
+In each test, you can create files that are deleted after the module test expires.They are located by default `"root/data/@nameCurrentThread/"`.
 
 You can save files by specifying the `"--save-data"` flag when running tests
-
-
-### Globals constants
-
-For each test, global constants are unique and do not overlap. But at the same time, constants from the main logic are not transferred to tests, that is, they are empty.
-
-It is recommended to initialize them in `_before_each_`
 
 ***
 
 ## Syntax command
 
-> `unit <module> [--reinit] [--nobar] [--save-data] [groups...]`
+> `unit <module> [--reinit] [--no-bar] [--save-data] [--no-globals] [groups...]`
 
 - **module** - id of module
 
 - **--reinit** - module reinitialization (recompile tests, update settings)
 
-- **--nobar** - disable loading status bar
+- **--no-bar** - disable loading status bar
 
 - **--save-data** - enable save data files
+
+- **--no-globals** - cancels initialization of globals for each test
 
 - **groups** - groups of tests
 
@@ -145,7 +145,7 @@ Default pattern: *\_before\_all.\**
 
 Runs one time before all tests
 
-The return value is passed to the all tests as the first argument
+The return value is passed to the all tests as the second argument
 
 ### **_before_each(testName)**
 
@@ -153,7 +153,7 @@ Default pattern: *\_before\_each.\**
 
 Runs every time before tests
 
-Accepts test name and the return value is passed to the test as the second argument
+Accepts test name and the return value is passed to the test as the third argument
 
 ### **_after_all()**
 
@@ -288,3 +288,4 @@ See the [default value](src/main/resources/options.yml)
 
 - Extensions:
   - [CHUnit](https://github.com/Anatoliy057/CHUnit)
+  - [CHFiles](https://github.com/PseudoKnight/CHFiles)

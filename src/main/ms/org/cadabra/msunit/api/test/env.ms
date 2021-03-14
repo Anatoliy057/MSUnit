@@ -1,4 +1,4 @@
-if(is_proc('_unit')) {
+if(is_proc('_msunit_')) {
 
 void proc _msunit_set_environment(array @moduleSetting, array @states) {
     export('org.cadabra.msunit.environment', array(

@@ -1,4 +1,4 @@
-if(is_proc('_unit')) {
+if(is_proc('_msunit_')) {
 
 array proc _string() {
 
