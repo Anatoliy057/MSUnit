@@ -86,7 +86,7 @@ _msunit_include_add(closure() {
         @self['countTests'] = @countTests
     }
 
-    closure proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult, array @flags) {
+    proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult, array @flags) {
         include(@script)
         @newProcs = get_procedures()
         @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)

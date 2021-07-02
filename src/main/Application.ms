@@ -39,6 +39,10 @@ _msunit_include_add(closure() {
     }
 
     @app['registerTester'] = closure(@m, @self, string @id, array @moduleSetting) {
+        if(array_index_exists(@self['testers'], @id)) {
+            throw(Exception, "That module '@id' already registered")
+        }
+
         @options = _msunit_import_options()
         @self['testers'][@id] = _msunit_new_tester(@id, @moduleSetting, @options)
     }

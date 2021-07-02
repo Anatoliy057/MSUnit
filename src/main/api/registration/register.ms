@@ -48,7 +48,7 @@ proc _msunit_register_module(array @settings) {
         @moduleSetting['settingGroups'] = @root.'/'.@settings['setting_groups']
     
     } else {
-        @moduleSetting['settingGroups'] = "@root/settings.yml"
+        @moduleSetting['settingGroups'] = "@root/groups.yml"
     }
 
     if (array_index_exists(@settings, 'extension')) {
@@ -104,6 +104,12 @@ proc _msunit_register_module(array @settings) {
         @app = _msunit_get_application()
         _method('registerTester', @app, @id, @moduleSetting)
     }
+
+    @saveSettings = @moduleSetting[]
+    @saveSettings['usedBy'] = 'msunit'
+    array_remove(@saveSettings, 'outs')
+    @pathToSetting = "@root/settings.yml"
+    write_file(@pathToSetting, yml_encode(@saveSettings, true), 'OVERWRITE')
 }
 
 void proc _msunit_set_options(array @options) {

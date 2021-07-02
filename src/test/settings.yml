@@ -1,31 +1,19 @@
-assert_boolean_test:
-- all
-- assert
-assert_booleanish_test:
-- all
-- assert
-assert_capacity_test:
-- all
-- assert
-assert_empty_test:
-- all
-- assert
-assert_eq_test:
-- all
-- assert
-assert_null_test:
-- all
-- assert
-assert_out_test:
-- all
-- assert
-assert_throw_test:
-- all
-- assert
-assert_type_test:
-- all
-- assert
-before_after_test:
-- all
-other_test:
-- all
+extension: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\extension\main.ms
+root: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test
+rootData: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test/data
+rootExtension: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\extension
+rootResources: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\resources
+rootTests: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\ms
+settingGroups: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\groups.yml
+testsSetting:
+  assertTimeout: 5
+  attentionTime: 1000000000
+  procs:
+    afterAll: ^_after_all.*
+    afterEach: ^_after_each.*
+    beforeAll: ^_before_all.*
+    beforeEach: ^_before_each.*
+    test: ^_test.*
+  scriptPattern: .*_test\.ms$
+  testTimeout: 10
+usedBy: msunit
