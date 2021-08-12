@@ -14,7 +14,7 @@ array proc _msunit_new_test_filter(array @options, array @grouper) {
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['defaultTrueCompile'] = closure(@m, @self) { 
+    proc _defaultTrueCompile(@self) { 
         @filter = associative_array()
 
         @filter['$default']['$all'] = true
@@ -22,7 +22,7 @@ _msunit_include_add(closure() {
         return(@filter)
     }
 
-    @attributes['defaultFalseCompile'] = closure(@m, @self) { 
+    proc _defaultFalseCompile(@self) { 
         @filter = associative_array()
 
         @filter['$default']['$all'] = false
@@ -30,7 +30,7 @@ _msunit_include_add(closure() {
         return(@filter)
     }
 
-    @attributes['compile'] = closure(@m, @self, array @userGroups) {
+    proc _compile(@self, array @userGroups) {
         if (array_size(@userGroups) == 0) {
             @self['filter'] = null
             return()
@@ -81,7 +81,7 @@ _msunit_include_add(closure() {
         @self['filter'] = @filter
     }
 
-    @attributes['isChosenTest'] = closure(@m, @self, string @script, string @test) {
+    proc _isChosenTest(@self, string @script, string @test) {
         @filter = @self['filter']
         if (@filter == null) {
             return(true)
@@ -94,7 +94,7 @@ _msunit_include_add(closure() {
         return(@filter[@script][@test])
     }
 
-    @attributes['isChosenGroup'] = closure(@m, @self, string @script) {
+    proc _isChosenGroup(@self, string @script) {
         @filter = @self['filter']
         if (@filter == null) {
             return(true)
@@ -113,5 +113,11 @@ _msunit_include_add(closure() {
         return(false)
     }
 
-    _msunit_register_class('TestFilter', @attributes)
+    _msunit_register_class('TestFilter', @attributes, array(
+        'defaultTrueCompile': '_defaultTrueCompile',
+        'defaultFalseCompile': '_defaultFalseCompile',
+        'compile': '_compile',
+        'isChosenTest': '_isChosenTest',
+        'isChosenGroup': '_isChosenGroup',
+    ))
 })

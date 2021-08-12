@@ -5,7 +5,7 @@ proc _print() {_msunit_unsupported()}
 proc _println() {_msunit_unsupported()}
 proc _sleep() {_msunit_unsupported()}
 proc _assert_time() {_msunit_unsupported()}
-proc _test_time() {_msunit_unsupported()}
+proc _time_test() {_msunit_unsupported()}
 proc _attension_time() {_msunit_unsupported()}
 proc _skip_test() {_msunit_unsupported()}
 proc _assert_ref_eq() {_msunit_unsupported()}

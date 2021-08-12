@@ -119,16 +119,32 @@ void proc _msunit_replace_in_array(array @source, array @replacement, boolean @s
 array proc _msunit_get_procs(@path) {
     include(@path)
     @newProcs = get_procedures()
-    @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
-    return(@procs)
+    //@procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
+    return(@newProcs)
+}
+
+proc _msunit_static_method(string @method, string @class) {
+    @object = _msunit_get_class(@class)
+    @arguments[1] = @object
+    return(_method_array(@arguments))
 }
 
 proc _method(string @method, array @self) {
-    return(execute_array(@arguments, @self[@method]))
+    @passedArgs = array()
+    for(@i = 1, @i < length(@arguments), @i++) {
+        @passedArgs[] = @arguments[@i]
+    }
+    return(do_func_array(@self[@method], @passedArgs))
 }
 
 proc _method_array(array @args) {
-    return(execute_array(@args, @args[1][@args[0]]))
+    @method = @args[0]
+    @obj = @args[1]
+    @passedArgs = array()
+    for(@i = 1, @i < length(@args), @i++) {
+        @passedArgs[] = @args[@i]
+    }
+    return(do_func_array(@obj[@method], @passedArgs))
 }
 
 boolean proc _reg_like(string @pattern, string @subject) {

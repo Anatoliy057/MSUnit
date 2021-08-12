@@ -10,14 +10,13 @@ array proc _msunit_new_tester(string @id, array @moduleSetting, array @options) 
     @self['moduleSetting'] = @moduleSetting
 
     _method('init', @self)
-
     return(@self)
 }
 
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['init'] = closure(@m, @self) { 
+    proc _init(@self) { 
         @caller = '~console'
         @moduleSetting = @self['moduleSetting']
         @testsSetting = @moduleSetting['testsSetting']
@@ -86,10 +85,10 @@ _msunit_include_add(closure() {
         @self['countTests'] = @countTests
     }
 
-    proc _msunit_build_task(@self, string @script, string @formatScript, array @testFilter, array @scriptResult, array @flags) {
+    proc _buildTask(@self, string @script, string @formatScript, array @testFilter, array @scriptResult, array @flags) {
         include(@script)
-        @newProcs = get_procedures()
-        @procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
+        @procs = get_procedures()
+        //@procs = _msunit_static_method('filter', 'ProcsFilter', @newProcs)
 
         @options = @self['options']
         @testsSetting = @self['testsSetting']
@@ -103,10 +102,6 @@ _msunit_include_add(closure() {
         }
 
         @task = closure() {
-            if(!array_index_exists(@flags, '--no-globals')) {
-                x_init_thread_globals()
-            }
-            
             string @procBeforeAll = '_msunit_void'
             string @procBeforeEach = '_msunit_void'
             string @procAfterAll = '_msunit_void'
@@ -162,10 +157,6 @@ _msunit_include_add(closure() {
                 @nameThread = _msunit_thread_name(@formatScript, @test)
                 @idThread = _msunit_thread_id(@formatScript, @test)
                 x_new_thread(@nameThread, closure() {
-                    if(!array_index_exists(@flags, '--no-globals')) {
-                        x_init_thread_globals()
-                    }
-                    
                     @time = -nano_time()
                     try {
                         @return = array(call_proc(@procBeforeEach, @idThread))
@@ -236,7 +227,7 @@ _msunit_include_add(closure() {
         return(@task)
     }
 
-    @attributes['test'] = closure(@m, @self, string @caller, array @userGroups) {
+    proc _test(@self, string @caller, array @userGroups) {
         @time = -nano_time()
         @flags = _msunit_static_method('doCommands', 'Commander', @self, @userGroups)
 
@@ -273,7 +264,7 @@ _msunit_include_add(closure() {
             @scriptState = associative_array()
             @formatScript = _msunit_static_method('formatScript', 'Grouper', @trimScript)
             @states[@formatScript] = @scriptState
-            _msunit_tasker_add(@runner, _msunit_build_task(@self, @script, @formatScript, @testFilter, @scriptState, @flags))
+            _msunit_tasker_add(@runner, _method('buildTask', @self, @script, @formatScript, @testFilter, @scriptState, @flags))
         }
 
         @self['countFinishedTests'] = 0
@@ -329,7 +320,7 @@ _msunit_include_add(closure() {
         _method('logStates', @self, @caller, @states, @time)
     }
 
-    @attributes['logStates'] = closure(@m, @self, string @caller, array @states, number @fullTime) {
+    proc _logStates(@self, string @caller, array @states, number @fullTime) {
         @separator = @self['options']['groups']['separator']
         @colors = @self['options']['log']['colors']
         @logger = @self['logger']
@@ -342,8 +333,7 @@ _msunit_include_add(closure() {
         int @countSkipped = 0
         
         @builder = res_create_resource('STRING_BUILDER')
-        string_append(@builder, '\r                                                                ')
-        string_append(@builder, '\n[TIME] ')
+        string_append(@builder, '[TIME] ')
         string_append(@builder, "[@id] ")
         string_append(@builder,  simple_date('yyyy.MM.dd \'at\' HH:mm:ss'))
         string_append(@builder, '\n')
@@ -356,7 +346,9 @@ _msunit_include_add(closure() {
             @formatScript = _msunit_static_method('formatScript', 'Grouper', @script)
 
             string_append(@builder, color(@colors['script']))
-            string_append(@builder, '\r###########################################################\n')
+            string_append(@builder, '\r###########################################################')
+            string_append(@builder, color(@colors['default']))
+            string_append(@builder, '\n')
             string_append(@builder, 'Script: ')
             string_append(@builder, color('UNDERLINE'))
             string_append(@builder, @formatScript)
@@ -427,34 +419,36 @@ _msunit_include_add(closure() {
                 }
 
                 string_append(@builder, @time)
-                string_append(@builder, '\n')
-                string_append(@builder, color(@colors['default']))                
+                string_append(@builder, color(@colors['default']))  
+                string_append(@builder, '\n')             
                 if (@assertMessage != null) {
                     string_append(@builder, color(@colors['message']))
                     string_append(@builder, 'Message: ')
-                    string_append(@builder, @assertMessage)
-                    string_append(@builder, '\n')
+                    string_append(@builder, replace(@assertMessage, '\n', color(@colors['default']).'\n'.color(@colors['message'])))
                     string_append(@builder, color(@colors['default']))
+                    string_append(@builder, '\n')
                 }
 
                 if (@userLog != '') {
+                    string_append(@builder, '\n')
                     string_append(@builder, color(@colors['userLog']))
-                    string_append(@builder, '\n')
-                    string_append(@builder, @userLog)
-                    string_append(@builder, '\n')
+                    string_append(@builder, replace(@userLog, '\n', color(@colors['default']).'\n'.color(@colors['userLog'])))
                     string_append(@builder, color(@colors['default']))
+                    string_append(@builder, '\n')
+                    
                 }
 
                 if (!@isSuccessful) {
                     string_append(@builder, color(@colors['testLog']))
                     string_append(@builder, @testMessage)
+                    string_append(@builder, color(@colors['default']))
                     string_append(@builder, '\n')
                     if(@stackTrace != null) {
-                        string_append(@builder, _msutil_parse_stack_trace(@stackTrace))
+                        string_append(@builder, color(@colors['testLog']))
+                        string_append(@builder, replace(_msutil_parse_stack_trace(@stackTrace), '\n', color(@colors['default']).'\n'.color(@colors['testLog'])))
+                        string_append(@builder, color(@colors['default']))
                         string_append(@builder, '\n')
                     }
-
-                    string_append(@builder, color(@colors['default']))
                 }
             }
 
@@ -478,9 +472,11 @@ _msunit_include_add(closure() {
             string_append(@builder, '\n')
             string_append(@builder, color(@colors['info']))
             string_append(@builder, 'Failed tests:\n')
-            string_append(@builder, color(@colors['testFail']))                
             foreach(@failTest in @failedTests) {
-                string_append(@builder, "- @failTest\n")
+                string_append(@builder, color(@colors['testFail']))
+                string_append(@builder, "- @failTest")
+                string_append(@builder, color(@colors['default']))
+                string_append(@builder, '\n')
             }
             
             string_append(@builder, color(@colors['default']))
@@ -494,7 +490,7 @@ _msunit_include_add(closure() {
         _method('log', @logger, string(@builder), @caller)
     }
 
-    @attributes['logStatistics'] = closure(@m, @self, int @tests, int @failures, int @skipped, @builder, @colors) {
+    proc _logStatistics(@self, int @tests, int @failures, int @skipped, @builder, @colors) {
         if (@tests != 0) {
             string_append(@builder, color(@colors['test']))
         
@@ -529,7 +525,7 @@ _msunit_include_add(closure() {
         string_append(@builder, color(@colors['default']))
     }
 
-    @attributes['log'] = closure(@m, @self, array @messages, array @messager, string @caller) {
+    proc _log(@self, array @messages, array @messager, string @caller) {
         @logger = @self['logger']
         @id = @self['id']
         @codeFatal = _method('getStatusCode', @messager, 'fatal')
@@ -545,7 +541,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @attributes['tabcompleter'] = closure(@m, @self, array @args) {
+    proc _tabcompleter(@self, array @args) {
         @input = @args[-1]
         @args = @args[..-2]
         
@@ -560,5 +556,13 @@ _msunit_include_add(closure() {
         }))
     }
 
-    _msunit_register_class('Tester', @attributes)
+    _msunit_register_class('Tester', @attributes, array(
+        'init': '_init',
+        'test': '_test',
+        'logStates': '_logStates',
+        'logStatistics': '_logStatistics',
+        'log': '_log',
+        'tabcompleter': '_tabcompleter',
+        'buildTask': '_buildTask',
+    ))
 })

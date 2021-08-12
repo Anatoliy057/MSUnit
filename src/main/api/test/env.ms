@@ -8,7 +8,7 @@ void proc _msunit_set_environment(array @moduleSetting, array @states) {
 }
 
 void proc _msunit_clear_environment() {
-    original_export('org.cadabra.msunit.environment', null)
+    export('org.cadabra.msunit.environment', null)
 }
 
 array proc _msunit_get_state() {
@@ -24,7 +24,7 @@ array proc _msunit_get_context() {
 }
 
 array proc _msunit_get_environment() {
-    return(original_import('org.cadabra.msunit.environment'))
+    return(import('org.cadabra.msunit.environment'))
 }
 
 }

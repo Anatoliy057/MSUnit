@@ -31,7 +31,7 @@ void proc _assert_time(int @seconds) {
     }
 }
 
-void proc _test_time(int @seconds) {
+void proc _time_test(int @seconds) {
     @state = _get_state_test()
     synchronized(x_get_current_thread()) {
         @state['testTime'] = @seconds

@@ -38,7 +38,7 @@ array proc _msunit_new_mock(string @env, string @procName, array @handlers, arra
     eval(@script)
 
     x_replace_procedure(@mockName, @procName)
-    x_add_procedure(@env, @mockName)
+    //x_add_procedure(@env, @mockName)
     x_replace_procedure(@env, @procName, @proxyName)
 
     return(@self)
@@ -47,11 +47,11 @@ array proc _msunit_new_mock(string @env, string @procName, array @handlers, arra
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['getProc'] = closure(@m, @self) {
+    proc _getProc(@self) {
         return(@self['proc'])
     }
 
-    @attributes['handle'] = closure(@m, @self, @args) {
+    proc _handle(@self, @args) {
         foreach(@handle in @self['handlers']) {
             if(_method(@handle, 'isSuitable', @agrs)) {
                 return(_method(@handle, 'return'))
@@ -59,5 +59,8 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('Mock', @attributes)
+    _msunit_register_class('Mock', @attributes, array(
+        'getProc': '_getProc',
+        'handle': '_handle',
+    ))
 })

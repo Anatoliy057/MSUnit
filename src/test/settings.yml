@@ -1,10 +1,10 @@
-extension: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\extension\main.ms
-root: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test
-rootData: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test/data
-rootExtension: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\extension
-rootResources: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\resources
-rootTests: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\ms
-settingGroups: C:\Users\Anatoliy\Dev\minecraft\1.15.2\plugins\CommandHelper\unit\src\test\groups.yml
+extension: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test\extension\main.ms
+root: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test
+rootData: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test/data
+rootExtension: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test\extension
+rootResources: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test\resources
+rootTests: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test\ms
+settingGroups: C:\Users\anud0721\dev\minecraft\1.16.5\plugins\CommandHelper\MSUnit\src\test\groups.yml
 testsSetting:
   assertTimeout: 5
   attentionTime: 1000000000

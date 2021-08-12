@@ -5,40 +5,40 @@ array proc _msunit_get_application() {
 _msunit_include_add(closure() {
     array @app = associative_array()
 
-    string @THREAD_NAME = '(MSUNIT) Tester thread'
+    @app['THREAD_NAME'] = '(MSUNIT) Tester thread'
 
     @app['testers'] = associative_array()
 
-    @app['test'] = closure(@m, @self, string @id, string @caller, array @commandArguments) {
+    proc _test(@self, string @id, string @caller, array @commandArguments) {
         if(!array_index_exists(@self['testers'], @id)) {
             msg(color('DARK_RED')."That module '@id' not register")
             die()
         }
 
+        @THREAD_NAME = @self['THREAD_NAME']
         x_thread_join(@THREAD_NAME)
-
         x_new_thread(@THREAD_NAME, closure() {
             @tester = @self['testers'][@id]
             _method('test', @tester, @caller, @commandArguments)
         })
     }
 
-    @app['start'] = closure(@m, @self) {
+    proc _start(@self) {
         _msunit_application_start()
         _method('registerTesters', @self)
         _method('registerCommand', @self)
     }
 
-    @app['registerTesters'] = closure(@m, @self) {
+    proc _registerTesters(@self) {
         @options = _msunit_import_options()
         @modules = _msunit_import_modules()
-
         foreach(@id: @moduleSetting in @modules) {
             @self['testers'][@id] = _msunit_new_tester(@id, @moduleSetting, @options)
+            console(array_keys(@self['testers'][@id]))
         }
     }
 
-    @app['registerTester'] = closure(@m, @self, string @id, array @moduleSetting) {
+    proc _registerTester(@self, string @id, array @moduleSetting) {
         if(array_index_exists(@self['testers'], @id)) {
             throw(Exception, "That module '@id' already registered")
         }
@@ -47,7 +47,7 @@ _msunit_include_add(closure() {
         @self['testers'][@id] = _msunit_new_tester(@id, @moduleSetting, @options)
     }
 
-    @app['registerCommand'] = closure(@m, @self) {
+    proc _registerCommand(@self) {
         register_command('unit', array(
             'description': 'MSUnit module control',
             'usage': '/unit <module> [--reinit] [--no-bar] [groups...]',
@@ -69,7 +69,7 @@ _msunit_include_add(closure() {
         })
     }
 
-    @app['tabcompleter'] = closure(@m, @self, @alias, @sender, @args, @info) {
+    proc _tabcompleter(@self, @alias, @sender, @args, @info) {
         @input = @args[-1]
         if(array_size(@args) == 1) {
             return(
@@ -90,5 +90,12 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('Application', @app)
+    _msunit_register_class('Application', @app, array(
+        'test': '_test',
+        'start': '_start',
+        'registerTesters': '_registerTesters',
+        'registerTester': '_registerTester',
+        'registerCommand': '_registerCommand',
+        'tabcompleter': '_tabcompleter',
+    ))
 }) 

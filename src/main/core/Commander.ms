@@ -7,7 +7,7 @@ _msunit_include_add(closure() {
 
     @commander['patternCommand'] = '^[\\-]+.*'
 
-    @commander['doCommands'] = closure(@m, @self, array @tester, array @userArgs) {
+    proc _doCommand(@self, array @tester, array @userArgs) {
         @flags = associative_array()
         @pattern = @self['patternCommand']
         @indexesToRemove = array()
@@ -30,29 +30,31 @@ _msunit_include_add(closure() {
         return(@flags)
     }
 
-    @commander['--reinit'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {        
+    proc _reinit(@self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {        
         @moduleSetting = @tester['moduleSetting']
         x_recompile_includes(@moduleSetting['rootExtension'])
         x_recompile_includes(@moduleSetting['rootTests'])
         _method('init', @tester)
     }
 
-    @commander['--no-bar'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+    proc _disableBar(@self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
         return(true)
     }
 
-    @commander['--save-data'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
+    proc _saveData(@self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
         return(true)
     }
 
-    @commander['--no-globals'] = closure(@m, @self, array @tester, array @userArgs, int @pos, array @indexesToRemove) {
-        return(true)
-    }
-
-    @commander['getCommands'] = closure(@m, @self) {
+    proc _getCommands(@self) {
         @pattern = @self['patternCommand']
         return(array_filter(array_keys(@self), closure(@i, @key) {return(_reg_like(@pattern, @key))}))
     }
 
-    _msunit_register_class('Commander', @commander)
+    _msunit_register_class('Commander', @commander, array(
+        'doCommands': '_doCommand',
+        '--reinit': '_reinit',
+        '--no-bar': '_disableBar',
+        '--save-data': '_saveData',
+        'getCommands': '_getCommands',
+    ))
 })

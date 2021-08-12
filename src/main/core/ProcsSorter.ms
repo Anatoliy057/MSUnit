@@ -5,7 +5,7 @@ array proc _msunit_get_procs_sorter() {
 _msunit_include_add(closure() {
     array @procsSorter = associative_array()
 
-    @procsSorter['sortProcs'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _sortProcs(@self, array @procs, array @testsSetting) {
         @filteredProcs = associative_array()
 
         @filteredProcs['tests'] = _method('getTests', @self, @procs, @testsSetting)
@@ -17,41 +17,49 @@ _msunit_include_add(closure() {
         return(@filteredProcs)
     }
 
-    @procsSorter['getTests'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _getTests(@self, array @procs, array @testsSetting) {
         @filter = @testsSetting['procs']['test']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getBeforeEach'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _getBeforeEach(@self, array @procs, array @testsSetting) {
         @filter = @testsSetting['procs']['beforeEach']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getBeforeAll'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _getBeforeAll(@self, array @procs, array @testsSetting) {
         @filter = @testsSetting['procs']['beforeAll']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getAfterEach'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _getAfterEach(@self, array @procs, array @testsSetting) {
         @filter = @testsSetting['procs']['afterEach']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['getAfterAll'] = closure(@m, @self, array @procs, array @testsSetting) {
+    proc _getAfterAll(@self, array @procs, array @testsSetting) {
         @filter = @testsSetting['procs']['afterAll']
 
         return(_method('filter', @self, @procs, @filter))
     }
 
-    @procsSorter['filter'] = closure(@m, @self, array @procs, string @filter) {
+    proc _filter(@self, array @procs, string @filter) {
         return(array_filter(@procs, closure(@key, @value) {
             return(_reg_like(@filter, @value))
         }))
     }
 
-    _msunit_register_class('ProcsSorter', @procsSorter)
+    _msunit_register_class('ProcsSorter', @procsSorter, array(
+        'sortProcs': '_sortProcs',
+        'getTests': '_getTests',
+        'getBeforeEach': '_getBeforeEach',
+        'getBeforeAll': '_getBeforeAll',
+        'getAfterEach': '_getAfterEach',
+        'getAfterAll': '_getAfterAll',
+        'filter': '_filter',
+    ))
 })

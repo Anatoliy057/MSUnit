@@ -7,7 +7,7 @@ _msunit_include_add(closure() {
 
     @validator['patternGroup'] = '[\\.\\_\\-\\w]+'
 
-    @validator['updateSettingGroups'] = closure(@m, @self, @settingGroups, array @scripts) {
+    proc _updateSettingGroups(@self, @settingGroups, array @scripts) {
         @updatedSettingGroups = array()
 
         if(array_size(@settingGroups) != 0 && (!is_array(@settingGroups) || !is_associative(@settingGroups))) {
@@ -26,7 +26,7 @@ _msunit_include_add(closure() {
         return(@updatedSettingGroups)
     }
 
-    @validator['validUserGroups'] = closure(@m, @self, array @userGroups, array @grouper, array @options) {
+    proc _validUserGroups(@self, array @userGroups, array @grouper, array @options) {
         @not = @options['groups']['not']
         @separator = @options['groups']['separator']
         @messager = _msunit_get_validation_messager()
@@ -84,7 +84,7 @@ _msunit_include_add(closure() {
         return(@messages)
     }
 
-    @validator['validSettingGroups'] = closure(@m, @self, array @settingGroups, array @testsScripts) {
+    proc _validSettingGroups(@self, array @settingGroups, array @testsScripts) {
         @messager = _msunit_get_validation_messager()
         array @messages = array()
 
@@ -129,7 +129,7 @@ _msunit_include_add(closure() {
         return(@messages)
     }
 
-    @validator['validGroup'] = closure(@m, @self, array @messager, array @messages, @group, string @script, array @scripts) {
+    proc _validGroup(@self, array @messager, array @messages, @group, string @script, array @scripts) {
         @pattern = @self['patternGroup']
         if (!is_string(@group)) {
             @actually = typeof(@group)
@@ -156,5 +156,10 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('GroupsValidation', @validator)
+    _msunit_register_class('GroupsValidation', @validator, array(
+        'updateSettingGroups': '_updateSettingGroups',
+        'validUserGroups': '_validUserGroups',
+        'validSettingGroups': '_validSettingGroups',
+        'validGroup': '_validGroup',
+    ))
 })

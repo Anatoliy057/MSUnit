@@ -63,7 +63,7 @@ array proc _msunit_new_grouper(array @groupsScriptMap, array @testsScriptMap, ar
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['getGroupsScript'] = closure(@m, @self, string @script) {
+    proc _getGroupsScript(@self, string @script) {
         @formatScript = _method('formatScript', @self, @script)
         if(array_index_exists(@self['groupsScriptMap'], @formatScript)) {
             return(@self['groupsScriptMap'][@formatScript])
@@ -72,7 +72,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @attributes['getScriptsGroup'] = closure(@m, @self, string @group) {
+    proc _getScriptsGroup(@self, string @group) {
         if(array_index_exists(@self['scriptsGroupMap'], @group)) {
             return(@self['scriptsGroupMap'][@group])
         } else {
@@ -80,15 +80,15 @@ _msunit_include_add(closure() {
         }
     }
 
-    @attributes['getScripts'] = closure(@m, @self) {
+    proc _getScripts(@self) {
         return(array_keys(@self['groupsScriptMap']))
     }
 
-    @attributes['getGroups'] = closure(@m, @self) {
+    proc _getGroups(@self) {
         return(array_keys(@self['testsGroupMap']))
     }
 
-    @attributes['getTestsGroup'] = closure(@m, @self, string @group) {
+    proc _getTestsGroup(@self, string @group) {
         if(array_index_exists(@self['testsGroupMap'], @group)) {
             return(@self['testsGroupMap'][@group])
         } else {
@@ -96,13 +96,21 @@ _msunit_include_add(closure() {
         }
     }
 
-    @attributes['getCompletions'] = closure(@m, @self) {
+    proc _getCompletions(@self) {
         return(@self['completions'])
     }
 
-    @attributes['formatScript'] = closure(@m, @self, string @script) {
+    proc _formatScript(@self, string @script) {
         return(reg_replace('.ms$', '', reg_replace('[^\\.\\_\\w]', '_', reg_replace('[\\\\/]', '.', @script))))
     }
 
-    _msunit_register_class('Grouper', @attributes)
+    _msunit_register_class('Grouper', @attributes, array(
+        'getGroupsScript': '_getGroupsScript',
+        'getScriptsGroup': '_getScriptsGroup',
+        'getScripts': '_getScripts',
+        'getGroups': '_getGroups',
+        'getTestsGroup': '_getTestsGroup',
+        'getCompletions': '_getCompletions',
+        'formatScript': '_formatScript',
+    ))
 })

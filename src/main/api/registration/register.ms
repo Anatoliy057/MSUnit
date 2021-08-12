@@ -97,7 +97,6 @@ proc _msunit_register_module(array @settings) {
         if(array_index_exists(@modules, @id)) {
             throw(Exception, "That module '@id' already registered")
         }
-
         @modules[@id] = @moduleSetting
 
     } else {

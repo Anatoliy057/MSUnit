@@ -26,7 +26,7 @@ array proc _msunit_new_test_state(string @formatScript, array @testsSetting) {
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['setException'] = closure(@m, @self, array @e) {
+    proc _setException(@self, array @e) {
         @messageEx = @e['message']
         @typeEx = @e['classType']
         @message = "An unexpected @typeEx was thrown"
@@ -36,15 +36,19 @@ _msunit_include_add(closure() {
         @self['successful'] = false
     }
 
-    @attributes['setAssertTimeout'] = closure(@m, @self) {
+    proc _setAssertTimeout(@self) {
         @self['successful'] = false
         @self['testMessage'] = 'Time passed waiting for the call _assert*'
     }
 
-    @attributes['setTestTimeout'] = closure(@m, @self) {
+    proc _setTestTimeout(@self) {
         @self['successful'] = false
         @self['testMessage'] = 'Time passed waiting for finish procedure'
     }
 
-    _msunit_register_class('TestState', @attributes)
+    _msunit_register_class('TestState', @attributes, array(
+        'setException': '_setException',
+        'setAssertTimeout': '_setAssertTimeout',
+        'setTestTimeout': '_setTestTimeout',
+    ))
 })

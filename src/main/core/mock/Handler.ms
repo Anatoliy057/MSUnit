@@ -15,11 +15,11 @@ array proc _msunit_new_handler(array @classTypes, mixed @return) {
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['return'] = closure(@m, @self) {
+    proc _return(@self) {
         return(@self['proc'])
     }
 
-    @attributes['isSuitable'] = closure(@m, @self, @args) {
+    proc _isSuitable(@self, @args) {
         foreach(@handle in @self['handlers']) {
             if(_method(@handle, 'isSuitable', @agrs)) {
                 return(_method(@handle, 'return'))
@@ -27,5 +27,8 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('Handler', @attributes)
+    _msunit_register_class('Handler', @attributes, array(
+        'return': '_return',
+        'isSuitable': '_isSuitable',
+    ))
 })

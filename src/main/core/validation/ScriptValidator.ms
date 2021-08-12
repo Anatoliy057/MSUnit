@@ -5,7 +5,7 @@ array proc _msunit_get_script_validator() {
 _msunit_include_add(closure() {
     array @validator = associative_array()
 
-    @validator['valid'] = closure(@m, @self, string @script, array @procs) {
+    proc _valid(@self, string @script, array @procs) {
         @messager = _msunit_get_validation_messager()
 
         array @messages = array()
@@ -38,7 +38,7 @@ _msunit_include_add(closure() {
         return(@messages)
     }
 
-    @validator['validTests'] = closure(@m, @self, string @script, array @tests, array @messager) {
+    proc _validTests(@self, string @script, array @tests, array @messager) {
         if (array_size(@tests) == 0) {
             return(_method(
                 'warn',
@@ -51,7 +51,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @validator['validBeforeEach'] = closure(@m, @self, string @script, array @beforeEach, array @messager) {
+    proc _validBeforeEach(@self, string @script, array @beforeEach, array @messager) {
         if (array_size(@beforeEach) > 1) {
             return(_method(
                 'fatal',
@@ -64,7 +64,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @validator['validBeforeEach'] = closure(@m, @self, string @script, array @beforeAll, array @messager) {
+    proc _validBeforeEach(@self, string @script, array @beforeAll, array @messager) {
         if (array_size(@beforeAll) > 1) {
             return(_method(
                 'fatal',
@@ -77,7 +77,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @validator['validAfterEach'] = closure(@m, @self, string @script, array @afterEach, array @messager) { 
+    proc _validAfterEach(@self, string @script, array @afterEach, array @messager) { 
         if (array_size(@afterEach) > 1) {
             return(_method(
                 'fatal',
@@ -90,7 +90,7 @@ _msunit_include_add(closure() {
         }
     }
 
-    @validator['validAfterAll'] = closure(@m, @self, string @script, array @afterAll, array @messager) {
+    proc _validAfterAll(@self, string @script, array @afterAll, array @messager) {
         if (array_size(@afterAll) > 1) {
             return(_method(
                 'fatal',
@@ -103,5 +103,12 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('ScriptValidator', @validator)
+    _msunit_register_class('ScriptValidator', @validator, array(
+        'valid': '_valid',
+        'validTests': '_validTests',
+        'validBeforeEach': '_validBeforeEach',
+        'validBeforeEach': '_validBeforeEach',
+        'validAfterEach': '_validAfterEach',
+        'validAfterAll': '_validAfterAll',
+    ))
 })

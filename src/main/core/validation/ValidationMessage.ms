@@ -5,7 +5,7 @@ array proc _msunit_get_validation_messager() {
 _msunit_include_add(closure() {
     array @messager = associative_array()
 
-    @messager['getStatusCode'] = closure(@m, @self, string @status) {
+    proc _getStatusCode(@self, string @status) {
         return(switch(
             @status,
             'success', 100,
@@ -16,7 +16,7 @@ _msunit_include_add(closure() {
         ))
     }
 
-    @messager['getColorStatus'] = closure(@m, @self, string @status) {
+    proc _getColorStatus(@self, string @status) {
         return(switch(@status,
             'success', color('GREEN'),
             'warn', color('YELLOW'),
@@ -26,34 +26,34 @@ _msunit_include_add(closure() {
         ))
     }
 
-    @messager['warn'] = closure(@m, @self, string @message) {
+    proc _warn(@self, string @message) {
         return(array(
             status: 'warn',
             message: @message
         ))
     }
 
-    @messager['error'] = closure(@m, @self, string @message) {
+    proc _error(@self, string @message) {
         return(array(
             status: 'error',
             message: @message
         ))
     }
 
-    @messager['fatal'] = closure(@m, @self, string @message) {
+    proc _fatal(@self, string @message) {
         return(array(
             status: 'fatal',
             message: @message
         ))
     }
 
-    @messager['success'] = closure(@m, @self) {
+    proc _success(@self) {
         return(array(
             status: 'success'
         ))
     }
 
-    @messager['format'] = closure(@m, @self, array @msgObject, string @id = null) {
+    proc _format(@self, array @msgObject, string @id = null) {
         @status = to_upper(@msgObject['status'])
         @message = @msgObject['message']
         @c = _method('getColorStatus', @self, @msgObject['status'])
@@ -67,5 +67,13 @@ _msunit_include_add(closure() {
         }
     }
 
-    _msunit_register_class('ValidationMessage', @messager)
+    _msunit_register_class('ValidationMessage', @messager, array(
+        'getStatusCode': '_getStatusCode',
+        'getColorStatus': '_getColorStatus',
+        'warn': '_warn',
+        'error': '_error',
+        'fatal': '_fatal',
+        'success': '_success',
+        'format': '_format',
+    ))
 })

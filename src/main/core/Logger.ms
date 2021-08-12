@@ -13,11 +13,11 @@ array proc _msunit_new_logger(array @outs) {
 _msunit_include_add(closure() {
     array @attributes = associative_array()
 
-    @attributes['log'] = closure(@m, @self, string @message, string @caller) {
+    proc _log(@self, string @message, string @caller) {
         foreach(@out in @self['outs']) {
             @out(@message, @caller)
         }
     }
 
-    _msunit_register_class('Logger', @attributes)
+    _msunit_register_class('Logger', @attributes, array('log': '_log'))
 })
